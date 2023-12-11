@@ -606,9 +606,7 @@ void SceneHierarchyPanel::AddChildrenFromReferencedASET(std::shared_ptr<EntityTr
     const std::vector<std::shared_ptr<Resource>>& asetReferences = asetReference->GetReferences();
     const std::vector<std::shared_ptr<Resource>>& asebReferences = asebReference->GetReferences();
 
-    const ResourceInfoRegistry::ResourceInfo& templateReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(asetReferences[0]->GetHash());
-
-    if (templateReferenceInfo.type == "TEMP")
+    if (asetReferences[0]->GetResourceHeaderHeader().m_type == 'TEMP')
     {
         childNode->templateResources.push_back(asetReference);
         childNode->blueprintResources.push_back(asebReference);
@@ -620,11 +618,14 @@ void SceneHierarchyPanel::AddChildrenFromReferencedASET(std::shared_ptr<EntityTr
 
         for (size_t i = 1; i < asetReferences.size() - 1; ++i)
         {
-            std::shared_ptr<TemplateEntity> reference = std::static_pointer_cast<TemplateEntity>(asetReferences[i]);
-
-            if (!reference->GetTemplateEntity())
+            if (asetReferences[i]->GetResourceHeaderHeader().m_type == 'TEMP')
             {
-                LoadAndDeserializeTEMP(reference);
+                std::shared_ptr<TemplateEntity> reference = std::static_pointer_cast<TemplateEntity>(asetReferences[i]);
+
+                if (!reference->GetTemplateEntity())
+                {
+                    LoadAndDeserializeTEMP(reference);
+                }
             }
         }
     }

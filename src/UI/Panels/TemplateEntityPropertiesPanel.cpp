@@ -229,10 +229,13 @@ void TemplateEntityPropertiesPanel::RenderEntityProperties()
 
 			for (size_t j = 0; j < asetReferences.size(); ++j)
 			{
-				std::shared_ptr<TemplateEntity> tempResource = std::static_pointer_cast<TemplateEntity>(asetReferences[j]);
-				const int rootEntityIndex = tempResource->GetTemplateEntity()->rootEntityIndex;
+				if (asetReferences[i]->GetResourceHeaderHeader().m_type == 'TEMP')
+				{
+					std::shared_ptr<TemplateEntity> tempResource = std::static_pointer_cast<TemplateEntity>(asetReferences[j]);
+					const int rootEntityIndex = tempResource->GetTemplateEntity()->rootEntityIndex;
 
-				RenderEntityProperties(tempResource, rootEntityIndex, i, j, visitedProperties);
+					RenderEntityProperties(tempResource, rootEntityIndex, i, j, visitedProperties);
+				}
 			}
 		}
 	}
