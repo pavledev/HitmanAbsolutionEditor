@@ -783,7 +783,7 @@ void RenderPrimitive::ConvertToOBJ(const std::string& objFilePath)
 
 				textReference->SetHeaderLibraries(&referenceInfo.headerLibraries);
 				textReference->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
-				texture.Deserialize(textReference->GetResourceData(), textReference->GetResourceDataSize());
+				//texture.Deserialize(textReference->GetResourceData(), textReference->GetResourceDataSize());
 				texture.ConvertTextureToPNG(textures[j].name);
 				textReference->DeleteResourceData();
 			}
@@ -978,7 +978,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 
 			textReference->SetHeaderLibraries(&referenceInfo.headerLibraries);
 			textReference->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
-			texture.Deserialize(textReference->GetResourceData(), textReference->GetResourceDataSize());
+			//texture.Deserialize(textReference->GetResourceData(), textReference->GetResourceDataSize());
 			texture.ConvertTextureToPNG(&blob);
 
 			Microsoft::glTF::Material material;
