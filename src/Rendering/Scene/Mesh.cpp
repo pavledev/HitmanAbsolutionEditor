@@ -220,7 +220,7 @@ void Mesh::CreateMaterial(const RenderPrimitive::Mesh* mesh, std::shared_ptr<Res
 
         textReference->SetHeaderLibraries(&referenceInfo.headerLibraries);
         textReference->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
-        texture.Deserialize(textReference->GetResourceData(), textReference->GetResourceDataSize());
+        //texture.Deserialize(textReference->GetResourceData(), textReference->GetResourceDataSize());
         texture.ConvertTextureToDDS(textures[i].blob);
 
         textReference->DeleteResourceData();
