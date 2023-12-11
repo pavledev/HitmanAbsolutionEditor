@@ -1,0 +1,9 @@
+[submodule "External/vcpkg"]
+	path = External/vcpkg
+	url = https://github.com/microsoft/vcpkg
+[submodule "External/mINI"]
+	path = External/mINI
+	url = https://github.com/pulzed/mINI
+[submodule "External/IconFontCppHeaders"]
+	path = External/IconFontCppHeaders
+	url = https://github.com/juliettef/IconFontCppHeaders

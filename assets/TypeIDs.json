@@ -1,0 +1,564 @@
+{
+  "typeIDs": [
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 1,
+        "m_nTypeAlignment": 1,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "bool"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 1,
+      "pTypeInfo": {
+        "m_nTypeSize": 1,
+        "m_nTypeAlignment": 1,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "char"
+      }
+    },
+    {
+      "flags": 0,
+      "typeNum": 2,
+      "pTypeInfo": {
+        "m_nTypeSize": 1,
+        "m_nTypeAlignment": 1,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "int8"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 3,
+      "pTypeInfo": {
+        "m_nTypeSize": 2,
+        "m_nTypeAlignment": 2,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "int16"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 4,
+      "pTypeInfo": {
+        "m_nTypeSize": 4,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "int32"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 5,
+      "pTypeInfo": {
+        "m_nTypeSize": 8,
+        "m_nTypeAlignment": 8,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "int64"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 6,
+      "pTypeInfo": {
+        "m_nTypeSize": 1,
+        "m_nTypeAlignment": 1,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "uint8"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 7,
+      "pTypeInfo": {
+        "m_nTypeSize": 2,
+        "m_nTypeAlignment": 2,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "uint16"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 8,
+      "pTypeInfo": {
+        "m_nTypeSize": 4,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "uint32"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 9,
+      "pTypeInfo": {
+        "m_nTypeSize": 8,
+        "m_nTypeAlignment": 8,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "uint64"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 10,
+      "pTypeInfo": {
+        "m_nTypeSize": 4,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "float32"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 11,
+      "pTypeInfo": {
+        "m_nTypeSize": 8,
+        "m_nTypeAlignment": 8,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "float64"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 12,
+      "pTypeInfo": {
+        "m_nTypeSize": 8,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "SVector2"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 13,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "SVector3"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 14,
+      "pTypeInfo": {
+        "m_nTypeSize": 48,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "SMatrix43"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 15,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "SColorRGB"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 16,
+      "pTypeInfo": {
+        "m_nTypeSize": 16,
+        "m_nTypeAlignment": 0,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "SColorRGBA"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 17,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "SEntityTemplateReference"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 18,
+      "pTypeInfo": {
+        "m_nTypeSize": 24,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "SBodyPartDamageMultipliers"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 19,
+      "pTypeInfo": {
+        "m_nTypeSize": 8,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZRuntimeResourceID"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 20,
+      "pTypeInfo": {
+        "m_nTypeSize": 8,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "ZString"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 21,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZCurve"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 22,
+      "pTypeInfo": {
+        "m_nTypeSize": 8,
+        "m_nTypeAlignment": 8,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZGameTime"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 23,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZSpeakerLevels"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 24,
+      "pTypeInfo": {
+        "m_nTypeSize": 48,
+        "m_nTypeAlignment": 8,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZEntityReference"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 25,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<SEntityTemplateReference>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 26,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<float32>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 27,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<ZGameTime>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 28,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<SVector2>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 29,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<bool>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 30,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<ZSharedSensorDef.SVisibilitySetting>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 31,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<ZString>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 32,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<SSettingsParamMultiplier>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 33,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<SColorRGB>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 34,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<ECameraState>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 35,
+      "pTypeInfo": {
+        "m_nTypeSize": 12,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 48,
+        "pszTypeName": "TArray<ZEntityReference>"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 4,
+        "m_nTypeAlignment": 0,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "IBoneWeightEntity"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 4,
+        "m_nTypeAlignment": 0,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "IEntity"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 4,
+        "m_nTypeAlignment": 0,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ISoundAmbienceElement"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 4,
+        "m_nTypeAlignment": 0,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ISoundVolumetricGeom"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 4,
+        "m_nTypeAlignment": 0,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "IStreamingStateManagerEntity"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 20,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZAnimSetEntity"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 0,
+        "m_nTypeAlignment": 0,
+        "m_nTypeInfoFlags": 0,
+        "pszTypeName": "ZContractSearchEngineGroup"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 4,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZEntityRef"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 164,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZHM5SoundBulletImpactMatrix"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 36,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZHM5SoundBulletImpactMatrixCell"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 764,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZHM5SoundFootstepMatrix"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 28,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZHM5SoundFootstepMatrixCell"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 20,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZHM5SoundPhysicsImpactMatrixCell"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 28,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZHM5SoundRicochetMatrixCell"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 124,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZHM5SoundShellImpactMatrix"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 28,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZHM5SoundShellImpactMatrixCell"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 272,
+        "m_nTypeAlignment": 8,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZSoundBlendContainerPhysics"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 132,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZSoundBlendItem"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 56,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZSoundBlendTrack"
+      }
+    },
+	{
+      "flags": 0,
+      "typeNum": 0,
+      "pTypeInfo": {
+        "m_nTypeSize": 28,
+        "m_nTypeAlignment": 4,
+        "m_nTypeInfoFlags": 4,
+        "pszTypeName": "ZSoundParameterCurve"
+      }
+    }
+  ]
+}
