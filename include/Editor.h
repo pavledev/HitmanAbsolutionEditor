@@ -29,15 +29,8 @@ public:
 	std::shared_ptr<Document> GetLastActiveDocument() const;
 
 	void SetupLayout(std::shared_ptr<Document> document, const ImGuiID dockspaceID, const ImVec2 dockspaceSize);
-	void SetupSceneDocumentLayout(std::shared_ptr<Document> document, const ImGuiID dockspaceID, const ImVec2 dockspaceSize);
-	void SetupLibraryInfoDocumentLayout(std::shared_ptr<Document> document, const ImGuiID dockspaceID, const ImVec2 dockspaceSize);
-	void SetupResourceDocumentLayout(std::shared_ptr<Document> document, const ImGuiID dockspaceID, const ImVec2 dockspaceSize);
-	void SetupRenderPrimitiveDocumentLayout(std::shared_ptr<Document> document, const ImGuiID dockspaceID, const ImVec2 dockspaceSize);
-	void TopLevelMenuBar(std::shared_ptr<Document> document, ImGuiID dockspace_id, ImVec2 dockspace_size);
-	void UpdatePlatformTitleBar(std::shared_ptr<Document> document);
 	void UpdateDocumentLocation(std::shared_ptr<Document> document, const ImGuiID toplevelDockspaceID);
 	void UpdateDocumentContents(std::shared_ptr<Document> document);
-	void RenderMenuBarForSceneDocument();
 
 private:
 	Editor();
@@ -51,9 +44,6 @@ private:
 
 	std::shared_ptr<DirectXRenderer> directXRenderer;
 	std::shared_ptr<ImGuiRenderer> imGuiRenderer;
-
-	std::shared_ptr<SceneViewportPanel> sceneViewportPanel;
-	std::shared_ptr<ResourceBrowserPanel> resourceBrowserPanel;
 
 	std::vector<std::shared_ptr<Document>> documents;
 	std::shared_ptr<Document> lastActiveDocument;
