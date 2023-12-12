@@ -18,22 +18,3 @@ void ZEntityReference::SerializeToJson(rapidjson::PrettyWriter<rapidjson::String
 
 	writer.EndObject();
 }
-
-void ZEntityReference::SerializeToMemory(ZBinarySerializer& binarySerializer, const unsigned int offset)
-{
-	unsigned int entityIDOffset = offset + offsetof(ZEntityReference, m_EntityID);
-	unsigned int exposedEntityOffset = offset + offsetof(ZEntityReference, m_sExposedEntity);
-
-	m_EntityID.SerializeToMemory(binarySerializer, entityIDOffset);
-	m_sExposedEntity.SerializeToMemory(binarySerializer, exposedEntityOffset);
-}
-
-ZEntityReference* ZEntityReference::DeserializeFromJson(const rapidjson::Value& object)
-{
-	ZEntityReference* entityReference = new ZEntityReference();
-
-	entityReference->m_EntityID = *ZEntityID::DeserializeFromJson(object["entityIndex"]);
-	entityReference->m_sExposedEntity = *ZString::DeserializeFromJson(object["exposedEntity"].GetString());
-
-	return entityReference;
-}
