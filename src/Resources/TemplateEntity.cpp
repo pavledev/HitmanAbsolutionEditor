@@ -74,7 +74,6 @@ void TemplateEntity::Parse(void* templateEntity)
 
 void TemplateEntity::ParseProperties(void* templateEntity, const unsigned int propertyValuesStartAddress, const unsigned int propertyValuesEndAddress, TArray<SEntityTemplateProperty>& properties)
 {
-	static std::unordered_map<void*, void*> dataAddresses;
 	const unsigned int propertyValueCount = ResourceUtility::CalculateArrayElementsCount(propertyValuesStartAddress, propertyValuesEndAddress, 0xC); //0xC is size of SEntityTemplateProperty
 
 	properties.Resize(propertyValueCount);
@@ -93,13 +92,6 @@ void TemplateEntity::ParseProperties(void* templateEntity, const unsigned int pr
 
 		properties[i].nPropertyID = entityTemplateProperty->nPropertyID;
 		properties[i].value.SetTypeID(typeID2);
-
-		if (dataAddresses.contains(data))
-		{
-			properties[i].value.SetData(dataAddresses[data]);
-
-			continue;
-		}
 
 		const char* typeName = typeID2->pTypeInfo->GetTypeName();
 
@@ -352,8 +344,6 @@ void TemplateEntity::ParseProperties(void* templateEntity, const unsigned int pr
 
 			properties[i].value.SetData(data2);
 		}
-
-		//dataAddresses.insert(std::make_pair(data, properties[i].value.GetData()));
 	}
 }
 
