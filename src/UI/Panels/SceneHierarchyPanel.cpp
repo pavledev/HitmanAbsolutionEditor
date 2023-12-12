@@ -587,7 +587,7 @@ void SceneHierarchyPanel::AddChildrenFromReferencedASET(std::shared_ptr<EntityTr
     std::shared_ptr<AspectEntityType> asetReference = std::static_pointer_cast<AspectEntityType>(tempReferences[templateReferenceIndex]);
     std::shared_ptr<AspectEntityBlueprint> asebReference = std::static_pointer_cast<AspectEntityBlueprint>(tbluReferences[blueprintReferenceIndex]);
 
-    if (!asetReference->IsResourceInfoLoaded())
+    if (!asetReference->IsResourceLoaded())
     {
         const ResourceInfoRegistry::ResourceInfo& asetResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(asetReference->GetHash());
 
@@ -595,7 +595,7 @@ void SceneHierarchyPanel::AddChildrenFromReferencedASET(std::shared_ptr<EntityTr
         asetReference->LoadResource(0, asetResourceInfo.headerLibraries[0].chunkIndex, asetResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
     }
 
-    if (!asebReference->IsResourceInfoLoaded())
+    if (!asebReference->IsResourceLoaded())
     {
         const ResourceInfoRegistry::ResourceInfo& asebResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(asebReference->GetHash());
 
