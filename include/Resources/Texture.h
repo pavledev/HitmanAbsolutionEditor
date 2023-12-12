@@ -9,15 +9,13 @@
 #include "Glacier/Render/SRenderFormatDesc.h"
 #include "Glacier/Render/ERenderResourceMipInterpolation.h"
 
-#include "IO/BinaryReader.h"
+#include "Resources/Resource.h"
 
-class Texture
+class Texture : public Resource
 {
 public:
-    ~Texture();
-    void Deserialize(const std::string& texPath);
-    void Deserialize(void* data, const unsigned int dataSize);
-    void Deserialize(BinaryReader& binaryReader);
+    ~Texture() override;
+    void Deserialize();
     ZTextureMap::SMipLevel GetMipLevel(unsigned int level);
     static DXGI_FORMAT GetDXGIFormat(const ERenderFormat renderFormat);
     static ERenderFormat GetRenderFormat(const DXGI_FORMAT dxgiFormat);
