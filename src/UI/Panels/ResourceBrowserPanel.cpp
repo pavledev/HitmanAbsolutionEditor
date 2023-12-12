@@ -17,6 +17,7 @@
 #include "Registry/ResourceInfoRegistry.h"
 #include "UI/Documents/TemplateEntityDocument.h"
 #include "UI/Documents/TextureDocument.h"
+#include "UI/Documents/CppEntityDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -407,7 +408,14 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
     std::shared_ptr<Resource> resource;
     std::shared_ptr<Document> resourceDocument;
 
-    if (resourceInfo.type == "TEMP")
+    if (resourceInfo.type == "CPPT")
+    {
+        std::shared_ptr<CppEntityDocument> templateEntityDocument = std::make_shared<CppEntityDocument>(resourceName.c_str(), ICON_MDI_LANGUAGE_CPP, Document::Type::CppEntity, resourceInfo.hash, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(templateEntityDocument->GetCppEntity());
+        resourceDocument = std::static_pointer_cast<Document>(templateEntityDocument);
+    }
+    else if (resourceInfo.type == "TEMP")
     {
         std::shared_ptr<TemplateEntityDocument> templateEntityDocument = std::make_shared<TemplateEntityDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::TemplateEntity, resourceInfo.hash, defaultDockID);
         
