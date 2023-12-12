@@ -17,7 +17,7 @@ Resource::Resource()
 	headerDataSize = 0;
 	resourceData = nullptr;
 	resourceDataSize = 0;
-	isResourceInfoLoaded = false;
+	isResourceLoaded = false;
 }
 
 Resource::~Resource()
@@ -292,7 +292,7 @@ void Resource::LoadResource(const unsigned int headerLibraryIndex, const unsigne
 				headerLibraryResourceID = std::format("[[assembly:/Common/PC.layoutconfig].pc_layoutdef](assembly:/scenes/{}/{}_main.entity).pc_headerlib", (*headerLibraries)[headerLibraryIndex].resourceID, (*headerLibraries)[headerLibraryIndex].resourceID);
 			}
 
-			isResourceInfoLoaded = false;
+			isResourceLoaded = false;
 			headerLibraryFilePath = ResourceUtility::ConvertResourceIDToFilePath(headerLibraryResourceID);
 			this->indexInLibrary = indexInLibrary;
 
@@ -376,7 +376,12 @@ void Resource::LoadResource(const unsigned int headerLibraryIndex, const unsigne
 			}
 		}
 
-		isResourceInfoLoaded = true;
+		isResourceLoaded = true;
+
+		if (resourceLoadedCallback)
+		{
+			resourceLoadedCallback();
+		}
 	}
 	catch (std::ios_base::failure& ex)
 	{
@@ -508,9 +513,9 @@ void Resource::LoadBackReferences(BinaryReader& headerLibraryBinaryReader, const
 	}
 }
 
-bool Resource::IsResourceInfoLoaded() const
+bool Resource::IsResourceLoaded() const
 {
-	return isResourceInfoLoaded;
+	return isResourceLoaded;
 }
 
 const std::vector<Resource::HeaderLibrary>* Resource::GetHeaderLibraries() const
@@ -537,4 +542,9 @@ void Resource::AddReference(const ZRuntimeResourceID& runtimeResourceID, const E
 	resourceReference->hash = referenceHash;
 
 	references.push_back(resourceReference);
+}
+
+void Resource::SetResourceLoadedCallback(ResourceLoadedCallback resourceLoadedCallback)
+{
+	this->resourceLoadedCallback = resourceLoadedCallback;
 }
