@@ -9,16 +9,16 @@
 #include "Utility/ResourceUtility.h"
 #include "Resources/Texture.h"
 
-ResourceInfoPanel::ResourceInfoPanel(const char* name, const char* icon) : BasePanel(name, icon)
+ResourceInfoPanel::ResourceInfoPanel(const char* name, const char* icon, std::shared_ptr<Resource> resource) : BasePanel(name, icon)
 {
-	resource = nullptr;
+	this->resource = resource;
 }
 
 void ResourceInfoPanel::Render()
 {
 	Begin();
 
-	if (!resource->IsResourceInfoLoaded())
+	if (!resource->IsResourceLoaded())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2, ImGui::GetWindowSize().y / 2));
 		ImGui::Text("Loading Resource Info...");
@@ -219,10 +219,8 @@ void ResourceInfoPanel::Render()
 	End();
 }
 
-void ResourceInfoPanel::SetResource(std::shared_ptr<Resource> resource)
+void ResourceInfoPanel::OnResourceLoaded()
 {
-	this->resource = resource;
-
 	if (resource->GetHeaderLibraries()->size() > 0)
 	{
 		currentHeaderLibraryResourceID = (*resource->GetHeaderLibraries())[0].resourceID;
