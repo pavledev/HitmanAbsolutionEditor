@@ -16,6 +16,7 @@
 #include "UI/Panels/BoneHierarchyPanel.h"
 #include "Registry/ResourceInfoRegistry.h"
 #include "UI/Documents/TemplateEntityDocument.h"
+#include "UI/Documents/TextureDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -406,12 +407,6 @@ void ResourceBrowserPanel::LoadResource(std::shared_ptr<Resource> resource, cons
 void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNode)
 {
     const ImGuiID defaultDockID = Editor::GetInstance().GetLastActiveDocument() ? Editor::GetInstance().GetLastActiveDocument()->GetCurrentDockID() : 0;
-
-    std::shared_ptr<ResourceViewerPanel> resourceViewerPanel = std::make_shared<ResourceViewerPanel>("Resource Viewer", ICON_MDI_INFORMATION);
-    std::shared_ptr<ResourceInfoPanel> resourceInfoPanel = std::make_shared<ResourceInfoPanel>("Resource Info", ICON_MDI_INFORMATION);
-    std::shared_ptr<HexViewerPanel> headerLibraryHexViewerPanel = std::make_shared<HexViewerPanel>("Header Library Hex Viewer", ICON_MDI_MEMORY, false);
-    std::shared_ptr<HexViewerPanel> resourceLibraryhexViewerPanel = std::make_shared<HexViewerPanel>("Resource Library Hex Viewer", ICON_MDI_MEMORY, true);
-
     const ResourceInfoRegistry::ResourceInfo& resourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(resourceNode.hash);
     std::string resourceName = ResourceUtility::GetResourceName(resourceInfo.resourceID);
 
@@ -425,6 +420,13 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
         resource = std::static_pointer_cast<Resource>(templateEntityDocument->GetTemplateEntity());
         resourceDocument = std::static_pointer_cast<Document>(templateEntityDocument);
     }
+    else if (resourceInfo.type == "TEXT")
+    {
+        std::shared_ptr<TextureDocument> textureDocument = std::make_shared<TextureDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::Texture, resourceInfo.hash, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(textureDocument->GetTexture());
+        resourceDocument = std::static_pointer_cast<Document>(textureDocument);
+    }
     else if (resourceInfo.type == "PRIM")
     {
         /*resource = std::make_shared<RenderPrimitive>();
@@ -436,29 +438,15 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
         resourceDocument->AddPanel(std::make_shared<BoneHierarchyPanel>("Bone Hierarchy", ICON_MDI_VIEW_LIST, renderPrimitive));
         resourceDocument->AddPanel(std::make_shared<ComponentPropertiesPanel>("Properties", ICON_MDI_WRENCH));*/
     }
-    else
-    {
-        resource = std::make_shared<Resource>();
-        resourceDocument = std::make_shared<Document>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::Resource, resourceInfo.hash, true, false);
-    }
 
     resource->SetHash(resourceInfo.hash);
     resource->SetResourceID(resourceInfo.resourceID);
     resource->SetHeaderLibraries(&resourceInfo.headerLibraries);
     resource->SetName(resourceName);
 
-    //resourceDocument->AddPanel(resourceViewerPanel);
-    //resourceDocument->AddPanel(resourceInfoPanel);
-    //resourceDocument->AddPanel(headerLibraryHexViewerPanel);
-    //resourceDocument->AddPanel(resourceLibraryhexViewerPanel);
     Editor::GetInstance().GetDocuments().push_back(resourceDocument);
 
     std::thread thread(&ResourceBrowserPanel::LoadResource, this, resource, resourceNode);
 
     thread.detach();
-
-    /*resourceViewerPanel->SetResource(resource);
-    resourceInfoPanel->SetResource(resource);
-    headerLibraryHexViewerPanel->SetResource(resource);
-    resourceLibraryhexViewerPanel->SetResource(resource);*/
 }
