@@ -13,7 +13,10 @@ HashMapSearchPanel::HashMapSearchPanel(const char* name, const char* icon) : Bas
 
 void HashMapSearchPanel::Render()
 {
-    Begin();
+    if (!Begin())
+    {
+        return;
+    }
 
     if (!ResourceIDRegistry::GetInstance().IsLoaded())
     {

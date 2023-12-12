@@ -34,7 +34,10 @@ ResourceBrowserPanel::~ResourceBrowserPanel()
 
 void ResourceBrowserPanel::Render()
 {
-    Begin();
+    if (!Begin())
+    {
+        return;
+    }
 
     ImGui::PushFont(Editor::GetInstance().GetImGuiRenderer()->GetMiddleFont());
 

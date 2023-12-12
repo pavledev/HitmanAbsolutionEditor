@@ -146,7 +146,10 @@ void SceneHierarchyPanel2::CreateEntities()
 
 void SceneHierarchyPanel2::Render()
 {
-    Begin();
+    if (!Begin())
+    {
+        return;
+    }
 
     if (renderPrimitive->GetMeshes().size() == 0)
     {

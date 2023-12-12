@@ -27,7 +27,10 @@ HeaderLibrariesSearchPanel::HeaderLibrariesSearchPanel(const char* name, const c
 
 void HeaderLibrariesSearchPanel::Render()
 {
-    Begin();
+    if (!Begin())
+    {
+        return;
+    }
 
     ImGui::PushFont(Editor::GetInstance().GetImGuiRenderer()->GetMiddleFont());
     ImGui::Text("Header Libraries");

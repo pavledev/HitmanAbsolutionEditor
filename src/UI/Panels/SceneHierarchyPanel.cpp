@@ -105,7 +105,10 @@ SceneHierarchyPanel::SceneHierarchyPanel(const char* name, const char* icon, std
 
 void SceneHierarchyPanel::Render()
 {
-    Begin();
+    if (!Begin())
+    {
+        return;
+    }
 
     ImGui::PushFont(Editor::GetInstance().GetImGuiRenderer()->GetMiddleFont());
 

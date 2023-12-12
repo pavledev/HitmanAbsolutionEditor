@@ -12,7 +12,10 @@ HexViewerPanel::HexViewerPanel(const char* name, const char* icon, const bool sh
 
 void HexViewerPanel::Render()
 {
-    Begin();
+    if (!Begin())
+    {
+        return;
+    }
 
     if (!resource->GetResourceData())
     {

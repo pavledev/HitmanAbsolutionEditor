@@ -28,7 +28,10 @@ ConsolePanel::ConsolePanel(const char* name, const char* icon) : BasePanel(name,
 
 void ConsolePanel::Render()
 {
-	Begin();
+	if (!Begin())
+	{
+		return;
+	}
 
 	Logger& logger = Logger::GetInstance();
 	const std::vector<Logger::Message> messages = logger.GetMessages();

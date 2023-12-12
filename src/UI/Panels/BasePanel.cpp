@@ -23,11 +23,23 @@ const char* BasePanel::GetID() const
 	return id.c_str();
 }
 
-void BasePanel::Begin(ImGuiWindowFlags windowFlags)
+bool* BasePanel::GetOpen()
 {
+	return &open;
+}
+
+bool BasePanel::Begin(ImGuiWindowFlags windowFlags)
+{
+	if (!open)
+	{
+		return false;
+	}
+
 	ImGui::SetNextWindowSize(ImVec2(480, 640), ImGuiCond_FirstUseEver);
 
 	ImGui::Begin(id.c_str(), &open, windowFlags | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing);
+
+	return true;
 }
 
 void BasePanel::End() const

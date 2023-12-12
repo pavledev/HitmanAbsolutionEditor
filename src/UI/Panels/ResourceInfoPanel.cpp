@@ -16,7 +16,10 @@ ResourceInfoPanel::ResourceInfoPanel(const char* name, const char* icon, std::sh
 
 void ResourceInfoPanel::Render()
 {
-	Begin();
+	if (!Begin())
+	{
+		return;
+	}
 
 	if (!resource->IsResourceLoaded())
 	{

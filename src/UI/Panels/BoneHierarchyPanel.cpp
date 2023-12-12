@@ -10,7 +10,10 @@ BoneHierarchyPanel::BoneHierarchyPanel(const char* name, const char* icon, std::
 
 void BoneHierarchyPanel::Render()
 {
-    Begin();
+    if (!Begin())
+    {
+        return;
+    }
 
     if (renderPrimitive->GetBoneRig())
     {

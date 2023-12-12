@@ -107,7 +107,10 @@ TemplateEntityPropertiesPanel::TemplateEntityPropertiesPanel(const char* name, c
 
 void TemplateEntityPropertiesPanel::Render()
 {
-	Begin();
+	if (!Begin())
+	{
+		return;
+	}
 
 	ImGui::PushFont(Editor::GetInstance().GetImGuiRenderer()->GetMiddleFont());
 

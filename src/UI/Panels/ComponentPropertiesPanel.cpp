@@ -11,7 +11,10 @@ ComponentPropertiesPanel::ComponentPropertiesPanel(const char* name, const char*
 
 void ComponentPropertiesPanel::Render()
 {
-	Begin();
+	if (!Begin())
+	{
+		return;
+	}
 
 	std::shared_ptr<Camera> camera = SceneRenderer::GetCamera();
 

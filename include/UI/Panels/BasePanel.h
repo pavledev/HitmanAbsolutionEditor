@@ -12,7 +12,8 @@ public:
 	const char* GetName() const;
 	const char* GetIcon() const;
 	const char* GetID() const;
-	void Begin(ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None);
+	bool* GetOpen();
+	bool Begin(ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None);
 	void End() const;
 	virtual void Render() = 0;
 	void SetID(const std::string& id);

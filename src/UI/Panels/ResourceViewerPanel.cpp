@@ -55,7 +55,10 @@ void ResourceViewerPanel::Render()
         windowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar;
     }
 
-    Begin(windowFlags);
+    if (!Begin(windowFlags))
+    {
+        return;
+    }
 
     if (!resource->GetResourceData())
     {

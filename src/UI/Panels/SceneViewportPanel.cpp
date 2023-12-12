@@ -24,7 +24,10 @@ SceneViewportPanel::SceneViewportPanel(const char* name, const char* icon) : Bas
 
 void SceneViewportPanel::Render()
 {
-	Begin();
+	if (!Begin())
+	{
+		return;
+	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);

@@ -19,7 +19,10 @@ LibraryPanel::LibraryPanel(const char* name, const char* icon) : BasePanel(name,
 
 void LibraryPanel::Render()
 {
-	Begin();
+	if (!Begin())
+	{
+		return;
+	}
 
 	ImGui::PushFont(Editor::GetInstance().GetImGuiRenderer()->GetMiddleFont());
 
