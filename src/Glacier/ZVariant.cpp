@@ -397,10 +397,6 @@ void ZVariant::SerializeToMemory(ZBinarySerializer& binarySerializer, const unsi
 				{
 					static_cast<ZSpeakerLevels*>(m_pData)->SerializeToMemory(binarySerializer, dataOffset2);
 				}
-				else if (typeName == "ZEntityReference")
-				{
-					static_cast<ZEntityReference*>(m_pData)->SerializeToMemory(binarySerializer, dataOffset2);
-				}
 				else if (typeName == "TArray<SEntityTemplateReference>")
 				{
 					static_cast<TArray<SEntityTemplateReference>*>(m_pData)->SerializeToMemory(binarySerializer, dataOffset2);
@@ -440,10 +436,6 @@ void ZVariant::SerializeToMemory(ZBinarySerializer& binarySerializer, const unsi
 				else if (typeName == "TArray<ECameraState>")
 				{
 					static_cast<TArray<ECameraState>*>(m_pData)->SerializeToMemory(binarySerializer, dataOffset2);
-				}
-				else if (typeName == "TArray<ZEntityReference>")
-				{
-					static_cast<TArray<ZEntityReference>*>(m_pData)->SerializeToMemory(binarySerializer, dataOffset2);
 				}
 				else
 				{
@@ -786,10 +778,6 @@ ZVariant* ZVariant::DeserializeFromJson(const rapidjson::Value& object)
 	{
 		variant->m_pData = ZSpeakerLevels::DeserializeFromJson(object["value"].GetObj());
 	}
-	else if (typeName == "ZEntityReference")
-	{
-		variant->m_pData = ZEntityReference::DeserializeFromJson(object["value"].GetObj());
-	}
 	else if (typeName == "TArray<float32>")
 	{
 		variant->m_pData = TArray<float>::DeserializeFromJson(object["value"].GetArray());
@@ -829,10 +817,6 @@ ZVariant* ZVariant::DeserializeFromJson(const rapidjson::Value& object)
 	else if (typeName == "TArray<ECameraState>")
 	{
 		variant->m_pData = TArray<ECameraState>::DeserializeFromJson(object["value"].GetArray());
-	}
-	else if (typeName == "TArray<ZEntityReference>")
-	{
-		variant->m_pData = TArray<ZEntityReference>::DeserializeFromJson(object["value"].GetArray());
 	}
 	else
 	{
