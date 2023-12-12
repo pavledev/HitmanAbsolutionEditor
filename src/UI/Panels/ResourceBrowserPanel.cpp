@@ -425,7 +425,7 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
     }
     else if (resourceInfo.type == "TEXT")
     {
-        std::shared_ptr<TextureDocument> textureDocument = std::make_shared<TextureDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::Texture, resourceInfo.hash, defaultDockID);
+        std::shared_ptr<TextureDocument> textureDocument = std::make_shared<TextureDocument>(resourceName.c_str(), ICON_MDI_IMAGE, Document::Type::Texture, resourceInfo.hash, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(textureDocument->GetTexture());
         resourceDocument = std::static_pointer_cast<Document>(textureDocument);
