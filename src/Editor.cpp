@@ -207,9 +207,7 @@ void Editor::RenderContent()
             continue;
         }
 
-        if (documents[i]->GetType() == Document::Type::Scene)
         {
-            //RenderMenuBarForSceneDocument();
         }
 
         documents[i]->RenderMenuBar();
@@ -223,7 +221,7 @@ void Editor::RenderContent()
 
         if (!*document->GetOpen())
         {
-            if (document->GetWasOpened() && documents[i]->GetType() != Document::Type::LibraryInfo)
+            if (document->GetWasOpened())
             {
                 if (lastActiveDocument == document)
                 {
