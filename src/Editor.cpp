@@ -19,12 +19,12 @@
 #include "UI/Panels/ResourceViewerPanel.h"
 #include "UI/Panels/HeaderLibrariesSearchPanel.h"
 #include "UI/Panels/HashMapSearchPanel.h"
+#include "UI/Documents/SceneDocument.h"
+#include "UI/Documents/LibraryInfoDocument.h"
 
 Editor::Editor()
 {
     hwnd = nullptr;
-    sceneViewportPanel = nullptr;
-    resourceBrowserPanel = nullptr;
     lastActiveDocument = nullptr;
     floatingToolsOnlyVisibleWhenParentIsFocused = true;
 
@@ -87,32 +87,9 @@ bool Editor::Setup()
 
     Timer::Initialize();
 
-    std::shared_ptr<SceneHierarchyPanel> sceneHierarchyPanel = std::make_shared<SceneHierarchyPanel>("Scene Hierarchy", ICON_MDI_VIEW_LIST, nullptr);
-    sceneViewportPanel = std::make_shared<SceneViewportPanel>("Scene Viewport", ICON_MDI_MONITOR);
-    std::shared_ptr<ConsolePanel> consolePanel = std::make_shared<ConsolePanel>("Console", ICON_MDI_CONSOLE);
-    resourceBrowserPanel = std::make_shared<ResourceBrowserPanel>("Asset Browser", ICON_MDI_FOLDER_OPEN);
-    std::shared_ptr<LibraryPanel> libraryPanel = std::make_shared<LibraryPanel>("Library Info", ICON_MDI_FILE_DOCUMENT);
-    std::shared_ptr<HeaderLibrariesSearchPanel> headerLibrariesSearchPanel = std::make_shared<HeaderLibrariesSearchPanel>("Search Header Libraries", ICON_MDI_FILE_DOCUMENT);
-    std::shared_ptr<HashMapSearchPanel> hashMapSearchPanel = std::make_shared<HashMapSearchPanel>("Search Hash Map", ICON_MDI_FILE_DOCUMENT);
-
-    std::shared_ptr<Document> sceneDocument = std::make_shared<Document>("Scene", ICON_MDI_TERRAIN, Document::Type::Scene);
-    std::shared_ptr<Document> libraryInfoDocument = std::make_shared<Document>("Library Info", ICON_MDI_FILE_DOCUMENT, Document::Type::LibraryInfo, false, false);
-    std::shared_ptr<Document> headerLibrariesSearchDocument = std::make_shared<Document>("Search Header Libraries", ICON_MDI_FILE_DOCUMENT, Document::Type::LibraryInfo, false, false);
-    std::shared_ptr<Document> hashMapSearchDocument = std::make_shared<Document>("Search Hash Map", ICON_MDI_FILE_DOCUMENT, Document::Type::LibraryInfo, false, false);
-
-    sceneDocument->AddPanel(sceneHierarchyPanel);
-    sceneDocument->AddPanel(sceneViewportPanel);
-    sceneDocument->AddPanel(consolePanel);
-    sceneDocument->AddPanel(resourceBrowserPanel);
-
-    libraryInfoDocument->AddPanel(libraryPanel);
-    headerLibrariesSearchDocument->AddPanel(headerLibrariesSearchPanel);
-    hashMapSearchDocument->AddPanel(hashMapSearchPanel);
+    std::shared_ptr<SceneDocument> sceneDocument = std::make_shared<SceneDocument>("Scene", ICON_MDI_TERRAIN, Document::Type::Scene);
 
     documents.push_back(sceneDocument);
-    documents.push_back(libraryInfoDocument);
-    documents.push_back(headerLibrariesSearchDocument);
-    documents.push_back(hashMapSearchDocument);
 
     Settings& settings = Settings::GetInstance();
 
@@ -232,22 +209,17 @@ void Editor::RenderContent()
 
         if (documents[i]->GetType() == Document::Type::Scene)
         {
-            RenderMenuBarForSceneDocument();
+            //RenderMenuBarForSceneDocument();
         }
+
+        documents[i]->RenderMenuBar();
 
         UpdateDocumentLocation(documents[i], rootDockspaceID);
     }
 
-    size_t resourceIndex = -1;
-
     for (size_t i = 0; i < documents.size(); ++i)
     {
         std::shared_ptr<Document> document = documents[i];
-
-        if (documents[i]->GetType() == Document::Type::Resource)
-        {
-            ++resourceIndex;
-        }
 
         if (!*document->GetOpen())
         {
@@ -313,9 +285,6 @@ void Editor::RenderContent()
 
         ImGui::EndPopup();
     }
-
-    //static bool show_demo_window = true;
-    //ImGui::ShowDemoWindow(&show_demo_window);
 
     ImGui::End();
 }
@@ -411,191 +380,7 @@ void Editor::SetupLayout(std::shared_ptr<Document> document, const ImGuiID docks
     ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_DockSpace);
     ImGui::DockBuilderSetNodeSize(dockspaceID, dockspaceSize);
 
-    switch (document->GetType())
-    {
-        case Document::Type::Scene:
-            SetupSceneDocumentLayout(document, dockspaceID, dockspaceSize);
-            break;
-        case Document::Type::LibraryInfo:
-            SetupLibraryInfoDocumentLayout(document, dockspaceID, dockspaceSize);
-            break;
-        case Document::Type::Resource:
-            SetupResourceDocumentLayout(document, dockspaceID, dockspaceSize);
-            break;
-        case Document::Type::TemplateEntity:
-            document->CreateLayout(dockspaceID, dockspaceSize);
-            break;
-        case Document::Type::RenderPrimitive:
-            SetupRenderPrimitiveDocumentLayout(document, dockspaceID, dockspaceSize);
-            break;
-    }
-}
-
-void Editor::SetupSceneDocumentLayout(std::shared_ptr<Document> document, const ImGuiID dockspaceID, const ImVec2 dockspaceSize)
-{
-    ImGuiID mainDockID = dockspaceID;
-    ImGuiID leftDockID = ImGui::DockBuilderSplitNode(mainDockID, ImGuiDir_Left, 0.2f, nullptr, &mainDockID);
-    ImGuiID rightDockID = ImGui::DockBuilderSplitNode(mainDockID, ImGuiDir_Right, 0.2f, nullptr, &mainDockID);
-    ImGuiID downDockID = ImGui::DockBuilderSplitNode(mainDockID, ImGuiDir_Down, 0.25f, nullptr, &mainDockID);
-
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(0, document->GetCurrentDockspaceID()).c_str(), leftDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(1, document->GetCurrentDockspaceID()).c_str(), mainDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(2, document->GetCurrentDockspaceID()).c_str(), downDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(3, document->GetCurrentDockspaceID()).c_str(), rightDockID);
-    ImGui::DockBuilderFinish(dockspaceID);
-}
-
-void Editor::SetupLibraryInfoDocumentLayout(std::shared_ptr<Document> document, const ImGuiID dockspaceID, const ImVec2 dockspaceSize)
-{
-    ImGuiID mainDockID = dockspaceID;
-
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(0, document->GetCurrentDockspaceID()).c_str(), mainDockID);
-    ImGui::DockBuilderFinish(dockspaceID);
-}
-
-void Editor::SetupResourceDocumentLayout(std::shared_ptr<Document> document, const ImGuiID dockspaceID, const ImVec2 dockspaceSize)
-{
-    ImGuiID mainDockID = dockspaceID;
-    ImGuiID rightDockID = ImGui::DockBuilderSplitNode(mainDockID, ImGuiDir_Right, 0.5f, nullptr, &mainDockID);
-
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(0, document->GetCurrentDockspaceID()).c_str(), mainDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(1, document->GetCurrentDockspaceID()).c_str(), rightDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(2, document->GetCurrentDockspaceID()).c_str(), rightDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(3, document->GetCurrentDockspaceID()).c_str(), rightDockID);
-    ImGui::DockBuilderFinish(dockspaceID);
-}
-
-void Editor::SetupRenderPrimitiveDocumentLayout(std::shared_ptr<Document> document, const ImGuiID dockspaceID, const ImVec2 dockspaceSize)
-{
-    ImGuiID mainDockID = dockspaceID;
-    ImGuiID leftDockID = ImGui::DockBuilderSplitNode(mainDockID, ImGuiDir_Left, 0.4f, nullptr, &mainDockID);
-    ImGuiID leftDownDockID = ImGui::DockBuilderSplitNode(leftDockID, ImGuiDir_Down, 0.4f, nullptr, &leftDockID);
-    ImGuiID rightDockID = ImGui::DockBuilderSplitNode(mainDockID, ImGuiDir_Right, 0.4f, nullptr, &mainDockID);
-
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(0, document->GetCurrentDockspaceID()).c_str(), leftDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(1, document->GetCurrentDockspaceID()).c_str(), leftDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(2, document->GetCurrentDockspaceID()).c_str(), leftDownDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(3, document->GetCurrentDockspaceID()).c_str(), mainDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(4, document->GetCurrentDockspaceID()).c_str(), rightDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(5, document->GetCurrentDockspaceID()).c_str(), rightDockID);
-    ImGui::DockBuilderDockWindow(document->CalculatePanelID(6, document->GetCurrentDockspaceID()).c_str(), rightDockID);
-    ImGui::DockBuilderFinish(dockspaceID);
-}
-
-// doc may be NULL here (we have a special case for when there are no document)
-void Editor::TopLevelMenuBar(std::shared_ptr<Document> doc, ImGuiID dockspace_id, ImVec2 dockspace_size)
-{
-    if (!ImGui::BeginMenuBar())
-        return;
-
-    if (ImGui::BeginMenu("File"))
-    {
-        ImGui::MenuItem("New", "Ctrl+N");
-        ImGui::MenuItem("Open", "Ctrl+O");
-        if (ImGui::BeginMenu("Open Recent"))
-        {
-            //OpenDocumentSelector();
-            ImGui::EndMenu();
-        }
-        ImGui::MenuItem("Save", "Ctrl+S");
-        ImGui::MenuItem("Save As", "Ctrl+Shift+S");
-        ImGui::Separator();
-        ImGui::MenuItem("Close", "Ctrl+W", false, doc != NULL);
-        ImGui::Separator();
-        ImGui::MenuItem("Exit", "Alt+F4");
-        ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Edit"))
-    {
-        bool menu_enabled = (doc != NULL);
-
-        // Dummy entries
-        ImGui::MenuItem("Undo", "Ctrl+Z", false, menu_enabled);
-        ImGui::MenuItem("Redo", "Ctrl+Y", false, menu_enabled);
-        ImGui::Separator();
-        ImGui::MenuItem("Cut", "Ctrl+X", false, menu_enabled);
-        ImGui::MenuItem("Copy", "Ctrl+C", false, menu_enabled);
-        ImGui::MenuItem("Paste", "Ctrl+V", false, menu_enabled);
-        ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Windows"))
-    {
-        //bool menu_enabled = (doc != NULL);
-
-        //if (doc != NULL)
-        //{
-        //    for (int n = 0; n < MyEditorToolType_Count_; n++)
-        //        if (doc->ToolAvail[n])
-        //            ImGui::MenuItem(g_EditorToolNames[n], NULL, &doc->ToolVisible[n], menu_enabled);
-        //    ImGui::Separator();
-        //}
-
-        //if (ImGui::BeginMenu("Layout", menu_enabled))
-        //{
-        //    if (ImGui::MenuItem("Preset: Flat"))
-        //        MyEditor_LayoutPreset(doc, dockspace_id, dockspace_size, MyEditorLayoutPreset_Flat, ImGuiDir_None);
-        //    if (ImGui::MenuItem("Preset: Default (Left)"))
-        //        MyEditor_LayoutPreset(doc, dockspace_id, dockspace_size, MyEditorLayoutPreset_Standard, ImGuiDir_Left);
-        //    if (ImGui::MenuItem("Preset: Default (Right)"))
-        //        MyEditor_LayoutPreset(doc, dockspace_id, dockspace_size, MyEditorLayoutPreset_Standard, ImGuiDir_Right);
-        //    ImGui::Separator();
-
-        //    if (ImGui::MenuItem("Apply current layout to all open documents"))
-        //    {
-        //        for (int doc_n = 0; doc_n < editor->Docs.Size; doc_n++)
-        //        {
-        //            MyEditorDoc* dst_doc = editor->Docs[doc_n];
-        //            if (dst_doc == doc)
-        //                continue;
-        //            dst_doc->CopyToolsVisibilityFrom(doc);
-        //            MyEditor_LayoutCopy(doc->CurrDockspaceID, dst_doc->CurrDockspaceID);
-        //        }
-        //    }
-        //    ImGui::Separator();
-
-        //    if (ImGui::MenuItem("*Debug: Clear Layout"))
-        //    {
-        //        doc->ResetToolsVisibility();
-        //        ImGuiID dock_main_id = dockspace_id;
-        //        ImGui::DockBuilderRemoveNodeChildNodes(dock_main_id);
-        //        ImGui::DockBuilderRemoveNodeDockedWindows(dock_main_id);   // Remove everything, including windows we don't know about (e.g. Demo Window)
-        //        ImGui::DockBuilderFinish(dockspace_id);
-        //    }
-
-        //    if (ImGui::MenuItem("*Debug: Merge all nodes"))
-        //    {
-        //        doc->ResetToolsVisibility();
-        //        ImGuiID dock_main_id = dockspace_id;
-        //        ImGui::DockBuilderRemoveNodeChildNodes(dock_main_id);      // Anything docked into any split child node will be moved to the root of the dockspace.
-        //        ImGui::DockBuilderFinish(dockspace_id);
-        //    }
-
-        //    ImGui::EndMenu();
-        //}
-
-        ImGui::EndMenu();
-    }
-
-    ImGui::Text("(LastActiveDocument: '%s')", lastActiveDocument ? lastActiveDocument->GetName() : "NULL");
-
-    ImGui::EndMenuBar();
-}
-
-// Demonstrate overriding OS title bar
-// For the main viewport core dear imgui would normally not touch it (and leave an application title bar)
-// This could probably be done elsewhere and in a better way...
-void Editor::UpdatePlatformTitleBar(std::shared_ptr<Document> doc)
-{
-    ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
-    ImGuiViewportP* viewport = (ImGuiViewportP*)ImGui::GetWindowViewport();
-    if (viewport->PlatformWindowCreated && (viewport->Flags & ImGuiViewportFlags_NoDecoration) == 0 && platform_io.Platform_SetWindowTitle)
-    {
-        char os_window_title[128];
-        ImFormatString(os_window_title, IM_ARRAYSIZE(os_window_title), "%s", doc->GetName()); // Here one could e.g. strip icons
-        platform_io.Platform_SetWindowTitle(viewport, os_window_title);
-    }
+    document->CreateLayout(dockspaceID, dockspaceSize);
 }
 
 // Submit document so we can retrieve its docking location
@@ -642,10 +427,6 @@ void Editor::UpdateDocumentLocation(std::shared_ptr<Document> document, const Im
     // This should ideally be a stack so we can handle closure immediately without an awkward gap where LastActiveDocument is NULL.
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
         lastActiveDocument = document;
-
-    // Override Platform Title Bar
-    if (visible)
-        UpdatePlatformTitleBar(document);
 
     ImGuiWindowClass* toolWindowsClass = document->GetToolWindowsClass();
     // Set WindowClass based on per-document ID, so tabs from Document A are not dockable in Document B etc. We could be using any ID suiting us, e.g. &doc
@@ -790,6 +571,7 @@ void Editor::UpdateDocumentContents(std::shared_ptr<Document> document)
 
     // Submit the menu bar
     //TopLevelMenuBar(document, dockspaceID, dockspaceSize);
+    //document->RenderMenuBar();
 
     // Submit the dockspace node
     ImGui::DockSpace(dockspaceID, dockspaceSize, ImGuiDockNodeFlags_None, document->GetToolWindowsClass());
@@ -798,106 +580,4 @@ void Editor::UpdateDocumentContents(std::shared_ptr<Document> document)
     const bool isLastFocusedDocument = lastActiveDocument == document;
 
     document->RenderPanels(isLastFocusedDocument);
-}
-
-void Editor::RenderMenuBarForSceneDocument()
-{
-    static std::string settingsLabel = std::format("{} Settings", ICON_MDI_COG);
-    static std::string searchHeaderLibrariesLabel = std::format("{} Search Header Libraries", ICON_MDI_MAGNIFY);
-    static std::string searchHashMapLabel = std::format("{} Search Hash Map", ICON_MDI_MAGNIFY);
-    static std::string deepSearchLabel = std::format("{} Deep Search", ICON_MDI_MAGNIFY);
-
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("Save"))
-            {
-                //ImGui::DockBuilderSetNodeSize(4, ImVec2(1280, 720));
-                //ImGui::DockBuilderSetNodeSize(5, ImVec2(1280, 720));
-                ImGui::DockBuilderSetNodeSize(6, ImVec2(1280, 720));
-            }
-
-            if (ImGui::MenuItem("Load"))
-            {
-
-            }
-
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("View"))
-        {
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Engine"))
-        {
-            if (ImGui::MenuItem("Connect with engine"))
-            {
-                PipeClient& pipeClient = PipeClient::GetInstance();
-                SharedMemoryClient& sharedMemoryClient = SharedMemoryClient::GetInstance();
-
-                if (pipeClient.IsConnectedWithEngine())
-                {
-                    Logger::GetInstance().Log(Logger::Level::Info, "Editor is already connected with engine.");
-                }
-                else
-                {
-                    pipeClient.Connect();
-                    pipeClient.SetMessageCallback(MemberDelegate<SceneViewportPanel, void(const std::string & type, const std::string & content)>(sceneViewportPanel.get(), &SceneViewportPanel::OnReceiveMessage));
-
-                    sharedMemoryClient.Connect();
-                }
-            }
-
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Library"))
-        {
-            if (ImGui::MenuItem("View Library Info"))
-            {
-                documents[1]->SetOpen(true);
-            }
-
-            if (ImGui::MenuItem("View Library Info2"))
-            {
-                documents[1]->SetOpen(false);
-            }
-
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Search"))
-        {
-            if (ImGui::MenuItem(searchHeaderLibrariesLabel.c_str()))
-            {
-                documents[2]->SetOpen(true);
-            }
-
-            if (ImGui::MenuItem(searchHashMapLabel.c_str()))
-            {
-                documents[3]->SetOpen(true);
-            }
-
-            if (ImGui::MenuItem(deepSearchLabel.c_str()))
-            {
-                documents[4]->SetOpen(true);
-            }
-
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Tools"))
-        {
-            if (ImGui::MenuItem(settingsLabel.c_str()))
-            {
-            }
-
-            ImGui::EndMenu();
-        }
-
-        ImGui::EndMenuBar();
-    }
 }
