@@ -36,22 +36,9 @@ Texture::~Texture()
     }
 }
 
-void Texture::Deserialize(const std::string& texPath)
+void Texture::Deserialize()
 {
-    BinaryReader binaryReader = BinaryReader(texPath);
-
-    Deserialize(binaryReader);
-}
-
-void Texture::Deserialize(void* data, const unsigned int dataSize)
-{
-    BinaryReader binaryReader = BinaryReader(data, dataSize);
-
-    Deserialize(binaryReader);
-}
-
-void Texture::Deserialize(BinaryReader& binaryReader)
-{
+    BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
     textureMapHeader = binaryReader.Read<ZTextureMap::STextureMapHeader>();
     data = binaryReader.Read<unsigned char>(binaryReader.GetSize() - binaryReader.GetPosition());
     texMetadata = GenerateTexMetadata();
