@@ -49,6 +49,11 @@ void SceneDocument::RenderMenuBar()
     {
         if (ImGui::BeginMenu("View"))
         {
+            for (size_t i = 0; i < panels.size(); ++i)
+            {
+                ImGui::MenuItem(panels[i]->GetName(), nullptr, panels[i]->GetOpen());
+            }
+
             ImGui::EndMenu();
         }
 
