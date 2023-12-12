@@ -54,22 +54,6 @@ void TemplateEntity::Parse(void* templateEntity)
 
 		ParseProperties(templateEntity, postInitPropertyValuesStartAddress, postInitPropertyValuesEndAddres, this->templateEntity->entityTemplates[i].postInitPropertyValues);
 	}
-
-	//Delete STypeID pointers in destructor of TypeRegistry
-	//Create std::unordered_map<STypeID*, void*> and delete values in destructor of EntityTemplate class
-	//Use delete operator function with size parameter
-
-	/*ZBinarySerializer binarySerializer;
-
-	const std::vector<std::shared_ptr<Resource>>& references = resource.GetReferences();
-	std::unordered_map<unsigned long long, unsigned int> references2;
-
-	for (unsigned int i = 0; i < references.size(); ++i)
-	{
-		references2.insert(std::make_pair(references[i]->GetRuntimeResourceID(), i));
-	}
-
-	binarySerializer.SerializeToFile(&this->templateEntity, "SERIALIZED.TEMP", &references2);*/
 }
 
 void TemplateEntity::ParseProperties(void* templateEntity, const unsigned int propertyValuesStartAddress, const unsigned int propertyValuesEndAddress, TArray<SEntityTemplateProperty>& properties)
