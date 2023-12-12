@@ -4,10 +4,10 @@
 #include "UI/Panels/HexViewerPanel.h"
 #include "Editor.h"
 
-HexViewerPanel::HexViewerPanel(const char* name, const char* icon, const bool showResourceData) : BasePanel(name, icon)
+HexViewerPanel::HexViewerPanel(const char* name, const char* icon, const bool showResourceData, std::shared_ptr<Resource> resource) : BasePanel(name, icon)
 {
     this->showResourceData = showResourceData;
-    resource = nullptr;
+    this->resource = resource;
 }
 
 void HexViewerPanel::Render()
@@ -46,11 +46,6 @@ void HexViewerPanel::Render()
     ImGui::PopFont();
 
     End();
-}
-
-void HexViewerPanel::SetResource(std::shared_ptr<Resource> resource)
-{
-    this->resource = resource;
 }
 
 void HexViewerPanel::GetHexBytes(const unsigned char* data, const size_t dataSize)
