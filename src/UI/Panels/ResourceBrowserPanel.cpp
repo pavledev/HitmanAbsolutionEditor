@@ -306,16 +306,7 @@ void ResourceBrowserPanel::AddChildren(ResourceNode& parentNode, const std::stri
             {
                 if (!isAspectEntityResource)
                 {
-                    int startIndex = 0;
-                    size_t endIndex = pathPart.find("]");
-
-                    if (parentPath.starts_with("m"))
-                    {
-                        startIndex = 1;
-                        --endIndex;
-                    }
-
-                    pathPart = pathPart.substr(startIndex, endIndex);
+                    pathPart = pathPart.substr(0, pathPart.find("]"));
                 }
 
                 pathPart += " (" + StringUtility::ToUpperCase(resourceInfo.type) + ")";
