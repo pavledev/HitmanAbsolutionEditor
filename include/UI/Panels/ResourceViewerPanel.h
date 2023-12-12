@@ -18,9 +18,8 @@
 class ResourceViewerPanel : public BasePanel
 {
 public:
-	ResourceViewerPanel(const char* name, const char* icon);
+	ResourceViewerPanel(const char* name, const char* icon, std::shared_ptr<Resource> resource);
 	void Render() override;
-	void SetResource(std::shared_ptr<Resource> resource);
 	void DisplayTexture();
 	void DisplayBehaviorTreeEntityBlueprint();
 	void DisplayCollisionData();
