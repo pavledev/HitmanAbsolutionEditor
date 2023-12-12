@@ -19,8 +19,9 @@ public:
         Scene,
         LibraryInfo,
         SearchHeaderLibraries,
-        Resource,
+        SearchHashMap,
         TemplateEntity,
+        Texture,
         RenderPrimitive
     };
 
@@ -55,6 +56,11 @@ public:
     std::string CalculatePanelID(const int index, const ImGuiID dockspaceID) const;
     void AddPanel(std::shared_ptr<BasePanel> panel);
     virtual void CreateLayout(const ImGuiID dockspaceID, const ImVec2 dockspaceSize)
+    {
+
+    }
+
+    virtual void RenderMenuBar()
     {
 
     }
