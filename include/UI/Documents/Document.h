@@ -20,6 +20,7 @@ public:
         LibraryInfo,
         SearchHeaderLibraries,
         SearchHashMap,
+        CppEntity,
         TemplateEntity,
         Texture,
         RenderPrimitive
