@@ -207,10 +207,12 @@ void Editor::RenderContent()
             continue;
         }
 
-        {
-        }
+        const bool isLastFocusedDocument = lastActiveDocument == documents[i];
 
-        documents[i]->RenderMenuBar();
+        if (isLastFocusedDocument)
+        {
+            documents[i]->RenderMenuBar();
+        }
 
         UpdateDocumentLocation(documents[i], rootDockspaceID);
     }
