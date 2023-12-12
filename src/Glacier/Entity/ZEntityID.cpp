@@ -1,5 +1,10 @@
 #include "Glacier/Entity/ZEntityID.h"
 
+ZEntityID::ZEntityID(const ZString& str)
+{
+	m_sStr = str;
+}
+
 void ZEntityID::SerializeToJson(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
 {
 	writer.StartObject();
