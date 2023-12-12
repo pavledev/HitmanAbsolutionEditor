@@ -60,3 +60,16 @@ std::shared_ptr<TemplateEntity> TemplateEntityDocument::GetTemplateEntity() cons
 {
     return templateEntity;
 }
+
+void TemplateEntityDocument::RenderMenuBar()
+{
+    if (!ImGui::BeginMenuBar())
+        return;
+
+    if (ImGui::BeginMenu("View"))
+    {
+        ImGui::EndMenu();
+    }
+
+    ImGui::EndMenuBar();
+}
