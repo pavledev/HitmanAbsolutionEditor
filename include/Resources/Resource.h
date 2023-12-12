@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "Glacier/Resource/SResourceHeaderHeader.h"
 #include "Glacier/Resource/ZRuntimeResourceID.h"
@@ -17,6 +18,8 @@ public:
         unsigned int chunkIndex;
         unsigned int indexInLibrary;
     };
+
+    using ResourceLoadedCallback = std::function<void()>;
 
     Resource();
     virtual ~Resource();
@@ -63,10 +66,11 @@ public:
     void LoadReferences();
     void LoadReferences(const BinaryReader& headerDataBinaryReader);
     void LoadBackReferences(BinaryReader& headerLibraryBinaryReader, const unsigned int referencesChunkSize);
-    bool IsResourceInfoLoaded() const;
+    bool IsResourceLoaded() const;
     const std::vector<HeaderLibrary>* GetHeaderLibraries() const;
     void SetHeaderLibraries(const std::vector<HeaderLibrary>* headerLibraries);
     void AddReference(const ZRuntimeResourceID& runtimeResourceID, const EResourceReferenceFlags resourceReferenceFlags);
+    void SetResourceLoadedCallback(ResourceLoadedCallback resourceLoadedCallback);
 
 protected:
     std::string headerLibraryFilePath;
@@ -89,5 +93,6 @@ protected:
     std::vector<std::shared_ptr<Resource>> references;
     std::vector<std::shared_ptr<Resource>> backReferences;
     const std::vector<HeaderLibrary>* headerLibraries;
-    bool isResourceInfoLoaded;
+    bool isResourceLoaded;
+    ResourceLoadedCallback resourceLoadedCallback;
 };
