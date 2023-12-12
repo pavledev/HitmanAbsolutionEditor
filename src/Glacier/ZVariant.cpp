@@ -437,10 +437,6 @@ void ZVariant::SerializeToMemory(ZBinarySerializer& binarySerializer, const unsi
 				{
 					static_cast<TArray<ECameraState>*>(m_pData)->SerializeToMemory(binarySerializer, dataOffset2);
 				}
-				else
-				{
-					std::string s = "s";
-				}
 
 				binarySerializer.SetDataOffset(this, dataOffset2);
 			}
