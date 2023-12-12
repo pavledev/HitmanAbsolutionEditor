@@ -30,9 +30,9 @@
 #include "UI/Panels/SceneHierarchyPanel2.h"
 #include "Editor.h"
 
-ResourceViewerPanel::ResourceViewerPanel(const char* name, const char* icon) : BasePanel(name, icon)
+ResourceViewerPanel::ResourceViewerPanel(const char* name, const char* icon, std::shared_ptr<Resource> resource) : BasePanel(name, icon)
 {
-    resource = nullptr;
+    this->resource = resource;
     textureView = nullptr;
     texture = nullptr;
 
@@ -125,11 +125,6 @@ void ResourceViewerPanel::Render()
     End();
 }
 
-void ResourceViewerPanel::SetResource(std::shared_ptr<Resource> resource)
-{
-    this->resource = resource;
-}
-
 void ResourceViewerPanel::DisplayTexture()
 {
     if (!textureView)
@@ -138,10 +133,10 @@ void ResourceViewerPanel::DisplayTexture()
         unsigned short width;
         unsigned short height;
         DirectX::Blob blob;
-        Texture texture;
+        std::shared_ptr<Texture> texture = std::static_pointer_cast<Texture>(resource);
 
-        texture.Deserialize(resource->GetResourceData(), resource->GetResourceDataSize());
-        texture.ConvertTextureToDDS(blob, width, height);
+        texture->Deserialize();
+        texture->ConvertTextureToDDS(blob, width, height);
         DirectX::CreateDDSTextureFromMemory(Editor::GetInstance().GetDirectXRenderer()->GetD3D11Device(), static_cast<unsigned char*>(blob.GetBufferPointer()), blob.GetBufferSize(), &d3d11Texture, &textureView);
 
         this->textureWidth = static_cast<float>(width);
