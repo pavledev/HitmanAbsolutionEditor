@@ -48,3 +48,16 @@ std::shared_ptr<Texture> TextureDocument::GetTexture() const
 {
     return texture;
 }
+
+void TextureDocument::RenderMenuBar()
+{
+    if (!ImGui::BeginMenuBar())
+        return;
+
+    if (ImGui::BeginMenu("View"))
+    {
+        ImGui::EndMenu();
+    }
+
+    ImGui::EndMenuBar();
+}
