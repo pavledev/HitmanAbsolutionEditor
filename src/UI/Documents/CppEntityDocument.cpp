@@ -27,18 +27,13 @@ CppEntityDocument::CppEntityDocument(const char* name, const char* icon, const T
 void CppEntityDocument::CreateLayout(const ImGuiID dockspaceID, const ImVec2 dockspaceSize)
 {
     ImGuiID mainDockID = dockspaceID;
-    ImGuiID leftDockID = ImGui::DockBuilderSplitNode(mainDockID, ImGuiDir_Left, 0.4f, nullptr, &mainDockID);
-    ImGuiID leftDownDockID = ImGui::DockBuilderSplitNode(leftDockID, ImGuiDir_Down, 0.4f, nullptr, &leftDockID);
-    ImGuiID rightDockID = ImGui::DockBuilderSplitNode(mainDockID, ImGuiDir_Right, 0.4f, nullptr, &mainDockID);
+    ImGuiID rightDockID = ImGui::DockBuilderSplitNode(mainDockID, ImGuiDir_Right, 0.5f, nullptr, &mainDockID);
 
-    ImGui::DockBuilderDockWindow(CalculatePanelID(0, currentDockspaceID).c_str(), leftDockID);
-    //ImGui::DockBuilderDockWindow(CalculatePanelID(1, currentDockspaceID).c_str(), rightDockID);
-    /*ImGui::DockBuilderDockWindow(CalculatePanelID(1, currentDockspaceID).c_str(), leftDockID);
-    ImGui::DockBuilderDockWindow(CalculatePanelID(2, currentDockspaceID).c_str(), leftDownDockID);
-    ImGui::DockBuilderDockWindow(CalculatePanelID(3, currentDockspaceID).c_str(), mainDockID);
+    ImGui::DockBuilderDockWindow(CalculatePanelID(0, currentDockspaceID).c_str(), mainDockID);
+    ImGui::DockBuilderDockWindow(CalculatePanelID(1, currentDockspaceID).c_str(), mainDockID);
+    ImGui::DockBuilderDockWindow(CalculatePanelID(2, currentDockspaceID).c_str(), rightDockID);
+    ImGui::DockBuilderDockWindow(CalculatePanelID(3, currentDockspaceID).c_str(), rightDockID);
     ImGui::DockBuilderDockWindow(CalculatePanelID(4, currentDockspaceID).c_str(), rightDockID);
-    ImGui::DockBuilderDockWindow(CalculatePanelID(5, currentDockspaceID).c_str(), rightDockID);
-    ImGui::DockBuilderDockWindow(CalculatePanelID(6, currentDockspaceID).c_str(), rightDockID);*/
     ImGui::DockBuilderFinish(dockspaceID);
 }
 
