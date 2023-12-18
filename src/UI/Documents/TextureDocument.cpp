@@ -5,7 +5,7 @@
 #include <UI/Panels/ResourceInfoPanel.h>
 #include <UI/Panels/HexViewerPanel.h>
 
-TextureDocument::TextureDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, true, dockID)
+TextureDocument::TextureDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
     texture = std::make_shared<Texture>();
 
