@@ -26,7 +26,7 @@ public:
         RenderPrimitive
     };
 
-    Document(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID = -1, const bool open = true, const ImGuiID dockID = 0);
+    Document(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID = -1, const bool hasToolBar = false, const ImGuiID dockID = 0);
     virtual ~Document() = default;
     const char* GetName() const;
     const Type GetType() const;
@@ -55,13 +55,18 @@ public:
     void LayoutCopy(ImGuiID srcDockspaceID, ImGuiID dstDockspaceID);
     std::string CalculatePanelID(const int index, const ImGuiID dockspaceID) const;
     void AddPanel(std::shared_ptr<BasePanel> panel);
+    const bool HasToolBar() const;
+
     virtual void CreateLayout(const ImGuiID dockspaceID, const ImVec2 dockspaceSize)
     {
     }
 
     virtual void RenderMenuBar()
     {
+    }
 
+    virtual void RenderToolBar()
+    {
     }
 
 protected:
@@ -71,6 +76,7 @@ protected:
     ImGuiID id;
     ImGuiID dockID;
     bool open;
+    bool hasToolBar;
 
     ImGuiID currentDockID;
     ImGuiID currentLocationID; // Current Dock node we are docked into _OR_ window ID if floating window

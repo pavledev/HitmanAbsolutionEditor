@@ -5,7 +5,7 @@
 #include "UI/Documents/Document.h"
 #include "Utility/StringUtility.h"
 
-Document::Document(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool open, ImGuiID dockID) : icon(icon), type(type), open(open), dockID(dockID)
+Document::Document(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, ImGuiID dockID) : icon(icon), type(type), hasToolBar(hasToolBar), dockID(dockID)
 {
     this->name = std::format(" {} {}\t\t", icon, name);
 
@@ -18,6 +18,8 @@ Document::Document(const char* name, const char* icon, const Type type, const un
         id = ImHashStr(name, 0);
     }
 
+    open = true;
+    this->hasToolBar = hasToolBar;
     currentDockID = 0;
     currentLocationID = 0;
     previousLocationID = 0;
@@ -261,4 +263,9 @@ void Document::AddPanel(std::shared_ptr<BasePanel> panel)
 {
     panels.push_back(panel);
     panelStates.push_back(true);
+}
+
+const bool Document::HasToolBar() const
+{
+    return hasToolBar;
 }
