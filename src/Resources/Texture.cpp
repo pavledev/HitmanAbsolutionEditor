@@ -105,6 +105,11 @@ ZTextureMap::SMipLevel Texture::GetMipLevel(unsigned int level)
     return mipLevel;
 }
 
+DXGI_FORMAT Texture::GetDXGIFormat()
+{
+    return texMetadata.format;
+}
+
 DXGI_FORMAT Texture::GetDXGIFormat(const ERenderFormat renderFormat)
 {
     DXGI_FORMAT result;

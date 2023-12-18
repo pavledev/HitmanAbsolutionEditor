@@ -17,6 +17,7 @@ public:
     ~Texture() override;
     void Deserialize();
     ZTextureMap::SMipLevel GetMipLevel(unsigned int level);
+    DXGI_FORMAT GetDXGIFormat();
     static DXGI_FORMAT GetDXGIFormat(const ERenderFormat renderFormat);
     static ERenderFormat GetRenderFormat(const DXGI_FORMAT dxgiFormat);
     static DirectX::TEX_DIMENSION GetTexDimension(const ZTextureMap::EDimensions dimension);
