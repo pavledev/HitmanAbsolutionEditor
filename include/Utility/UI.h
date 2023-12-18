@@ -214,6 +214,9 @@ public:
 		ImGui::PopID();
 	}
 
+	static bool BeginToolbar(const char* id, ImVec2 screenPosition, ImVec2 size);
+	static void EndToolbar();
+
 private:
 	inline static const char* tableName;
 	inline static unsigned int propertyCounter = 0;

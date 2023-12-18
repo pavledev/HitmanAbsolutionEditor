@@ -522,3 +522,31 @@ bool UI::Splitter(bool split_vertically, float thickness, float* size1, float* s
 
 	return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
 }
+
+bool UI::BeginToolbar(const char* id, ImVec2 screenPosition, ImVec2 size)
+{
+	static constexpr ImGuiWindowFlags flags =
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoSavedSettings;
+
+	if (size.x == 0)
+	{
+		size.x = ImGui::GetContentRegionAvail().x;
+	}
+
+	ImGui::SetNextWindowPos(screenPosition);
+	ImGui::SetNextWindowSize(size);
+
+	return ImGui::BeginChild(id, size, false, flags);
+}
+
+void UI::EndToolbar()
+{
+	ImVec2 position = ImGui::GetWindowPos();
+	ImVec2 size = ImGui::GetWindowSize();
+
+	ImGui::EndChild();
+}
