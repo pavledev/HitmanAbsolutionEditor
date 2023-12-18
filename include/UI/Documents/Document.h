@@ -57,7 +57,6 @@ public:
     void AddPanel(std::shared_ptr<BasePanel> panel);
     virtual void CreateLayout(const ImGuiID dockspaceID, const ImVec2 dockspaceSize)
     {
-
     }
 
     virtual void RenderMenuBar()
