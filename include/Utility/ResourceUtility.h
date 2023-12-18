@@ -37,4 +37,5 @@ public:
 	}
 
 	static std::shared_ptr<Resource> CreateResource(const std::string& type);
+	static void LoadResource(std::shared_ptr<Resource> resource);
 };

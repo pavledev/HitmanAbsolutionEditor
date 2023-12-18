@@ -4,6 +4,7 @@
 #include "Resources/CppEntityBlueprint.h"
 #include "Resources/TemplateEntity.h"
 #include "Resources/TemplateEntityBlueprint.h"
+#include "Registry/ResourceInfoRegistry.h"
 
 std::string ResourceUtility::ConvertResourceIDToFilePath(const std::string& resourceID)
 {
@@ -188,4 +189,18 @@ std::shared_ptr<Resource> ResourceUtility::CreateResource(const std::string& typ
     }
 
     return resource;
+}
+
+void ResourceUtility::LoadResource(std::shared_ptr<Resource> resource)
+{
+    const ResourceInfoRegistry::ResourceInfo& resourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(resource->GetHash());
+
+    if (resourceInfo.headerLibraries.size() > 0)
+    {
+        resource->LoadResource(0, resourceInfo.headerLibraries[0].chunkIndex, resourceInfo.headerLibraries[0].indexInLibrary, true, true, true);
+    }
+    else
+    {
+        resource->LoadResource(0, -1, -1, false, false, true);
+    }
 }
