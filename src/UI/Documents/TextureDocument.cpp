@@ -9,12 +9,12 @@ TextureDocument::TextureDocument(const char* name, const char* icon, const Type 
 {
     texture = std::make_shared<Texture>();
 
-    std::shared_ptr<ResourceViewerPanel> resourceViewerPanel = std::make_shared<ResourceViewerPanel>("Resource Viewer", ICON_MDI_IMAGE, texture);
+    std::shared_ptr<TextureViewerPanel> textureViewerPanel = std::make_shared<TextureViewerPanel>("Texture Viewer", ICON_MDI_IMAGE, texture, &sliderValue);
     std::shared_ptr<ResourceInfoPanel> resourceInfoPanel = std::make_shared<ResourceInfoPanel>("Resource Info", ICON_MDI_INFORMATION, texture);
     std::shared_ptr<HexViewerPanel> headerLibraryHexViewerPanel = std::make_shared<HexViewerPanel>("Header Library Hex Viewer", ICON_MDI_MEMORY, false, texture);
     std::shared_ptr<HexViewerPanel> resourceLibraryhexViewerPanel = std::make_shared<HexViewerPanel>("Resource Library Hex Viewer", ICON_MDI_MEMORY, true, texture);
 
-    AddPanel(resourceViewerPanel);
+    AddPanel(textureViewerPanel);
     AddPanel(resourceInfoPanel);
     AddPanel(headerLibraryHexViewerPanel);
     AddPanel(resourceLibraryhexViewerPanel);
