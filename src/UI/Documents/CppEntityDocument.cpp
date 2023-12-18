@@ -3,7 +3,7 @@
 #include <UI/Documents/CppEntityDocument.h>
 #include <UI/Panels/CppEntityPropertiesPanel.h>
 
-CppEntityDocument::CppEntityDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, true, dockID)
+CppEntityDocument::CppEntityDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
     cppEntity = std::make_shared<CppEntity>();
 
