@@ -64,3 +64,28 @@ void CppEntityDocument::RenderMenuBar()
 
     ImGui::EndMenuBar();
 }
+
+void CppEntityDocument::OnResourceLoaded()
+{
+    std::vector<std::shared_ptr<Resource>>& cpptReferences = cppEntity->GetReferences();
+    std::shared_ptr<CppEntityBlueprint> cppEntityBlueprint = std::static_pointer_cast<CppEntityBlueprint>(cpptReferences[cpptReferences.size() - 1]);
+
+    std::shared_ptr<CppEntityBlueprintSubsetsPanel> cppEntityBlueprintSubsetsPanel = std::static_pointer_cast<CppEntityBlueprintSubsetsPanel>(panels[1]);
+    std::weak_ptr<CppEntityBlueprintSubsetsPanel> cppEntityBlueprintSubsetsPanel2 = cppEntityBlueprintSubsetsPanel;
+
+    cppEntityBlueprintSubsetsPanel->SetResource(cppEntityBlueprint);
+
+    cppEntityBlueprint->SetResourceLoadedCallback([cppEntityBlueprintSubsetsPanel2]()
+    {
+        std::shared_ptr<CppEntityBlueprintSubsetsPanel> cppEntityBlueprintSubsetsPanel3 = cppEntityBlueprintSubsetsPanel2.lock();
+
+        if (cppEntityBlueprintSubsetsPanel3)
+        {
+            cppEntityBlueprintSubsetsPanel3->OnResourceLoaded();
+        }
+    });
+
+    std::thread thread(&ResourceUtility::LoadResource, cppEntityBlueprint);
+
+    thread.detach();
+}

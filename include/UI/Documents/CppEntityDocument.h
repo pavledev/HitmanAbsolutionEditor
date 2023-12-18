@@ -10,6 +10,7 @@ public:
 	void CreateLayout(const ImGuiID dockspaceID, const ImVec2 dockspaceSize) override;
 	std::shared_ptr<CppEntity> GetCppEntity() const;
 	void RenderMenuBar() override;
+	void OnResourceLoaded();
 
 private:
 	std::shared_ptr<CppEntity> cppEntity;
