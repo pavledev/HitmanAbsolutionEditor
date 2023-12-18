@@ -33,7 +33,6 @@ public:
     const ImGuiID GetID() const;
     const ImGuiID GetDockID() const;
     bool* GetOpen();
-    const bool GetWasOpened() const;
     const ImGuiID GetCurrentDockID() const;
     const ImGuiID GetCurrentLocationID() const;
     const ImGuiID GetPreviousLocationID() const;
@@ -73,7 +72,6 @@ protected:
     ImGuiID id;
     ImGuiID dockID;
     bool open;
-    bool wasOpened;
 
     ImGuiID currentDockID;
     ImGuiID currentLocationID; // Current Dock node we are docked into _OR_ window ID if floating window

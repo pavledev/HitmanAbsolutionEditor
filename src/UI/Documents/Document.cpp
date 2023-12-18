@@ -18,7 +18,6 @@ Document::Document(const char* name, const char* icon, const Type type, const un
         id = ImHashStr(name, 0);
     }
 
-    wasOpened = open;
     currentDockID = 0;
     currentLocationID = 0;
     previousLocationID = 0;
@@ -51,11 +50,6 @@ const ImGuiID Document::GetDockID() const
 bool* Document::GetOpen()
 {
     return &open;
-}
-
-const bool Document::GetWasOpened() const
-{
-    return wasOpened;
 }
 
 const ImGuiID Document::GetCurrentDockID() const
@@ -101,7 +95,6 @@ const std::vector<std::shared_ptr<BasePanel>>& Document::GetPanels() const
 void Document::SetOpen(const bool open)
 {
     this->open = open;
-    wasOpened = true;
 }
 
 void Document::SetDockID(const ImGuiID dockID)

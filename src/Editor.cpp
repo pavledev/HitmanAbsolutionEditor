@@ -223,17 +223,14 @@ void Editor::RenderContent()
 
         if (!*document->GetOpen())
         {
-            if (document->GetWasOpened())
+            if (lastActiveDocument == document)
             {
-                if (lastActiveDocument == document)
-                {
-                    lastActiveDocument = nullptr;
-                }
-
-                documents.erase(documents.begin() + i);
-
-                i--;
+                lastActiveDocument = nullptr;
             }
+
+            documents.erase(documents.begin() + i);
+
+            i--;
         }
         else
         {
