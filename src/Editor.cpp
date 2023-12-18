@@ -465,7 +465,14 @@ void Editor::UpdateDocumentContents(std::shared_ptr<Document> document)
     }
 
     const ImGuiID dockspaceID = document->GetCurrentDockspaceID();
-    const ImVec2 dockspaceSize = ImGui::GetContentRegionAvail();
+    ImVec2 dockspaceSize = ImGui::GetContentRegionAvail();
+
+    if (document->HasToolBar())
+    {
+        const float toolbarHeight = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().FramePadding.y * 2;
+
+        dockspaceSize.y -= toolbarHeight + 1.f;
+    }
 
     // Fork settings when extracting to a new location, or Overwrite settings when docking back into an existing location
     if (document->GetPreviousLocationID() != 0 && document->GetPreviousLocationID() != document->GetCurrentLocationID())
