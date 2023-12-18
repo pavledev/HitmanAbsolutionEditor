@@ -2,25 +2,49 @@
 
 #include <UI/Documents/CppEntityDocument.h>
 #include <UI/Panels/CppEntityPropertiesPanel.h>
+#include <UI/Panels/CppEntityBlueprintSubsetsPanel.h>
+#include <UI/Panels/ResourceInfoPanel.h>
+#include <UI/Panels/HexViewerPanel.h>
+#include <Resources/CppEntityBlueprint.h>
+#include <Utility/ResourceUtility.h>
 
 CppEntityDocument::CppEntityDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
     cppEntity = std::make_shared<CppEntity>();
 
     std::shared_ptr<CppEntityPropertiesPanel> cppEntityPropertiesPanel = std::make_shared<CppEntityPropertiesPanel>("Entity Properties", ICON_MDI_WRENCH, cppEntity);
+    std::shared_ptr<CppEntityBlueprintSubsetsPanel> cppEntityBlueprintSubsetsPanel = std::make_shared<CppEntityBlueprintSubsetsPanel>("Subsets", ICON_MDI_WRENCH, nullptr);
+    std::shared_ptr<ResourceInfoPanel> resourceInfoPanel = std::make_shared<ResourceInfoPanel>("Resource Info", ICON_MDI_INFORMATION, cppEntity);
+    std::shared_ptr<HexViewerPanel> headerLibraryHexViewerPanel = std::make_shared<HexViewerPanel>("Header Library Hex Viewer", ICON_MDI_MEMORY, false, cppEntity);
+    std::shared_ptr<HexViewerPanel> resourceLibraryhexViewerPanel = std::make_shared<HexViewerPanel>("Resource Library Hex Viewer", ICON_MDI_MEMORY, true, cppEntity);
+
+    cppEntityBlueprintSubsetsPanel->SetOpen(false);
 
     AddPanel(cppEntityPropertiesPanel);
+    AddPanel(cppEntityBlueprintSubsetsPanel);
+    AddPanel(resourceInfoPanel);
+    AddPanel(headerLibraryHexViewerPanel);
+    AddPanel(resourceLibraryhexViewerPanel);
 
     std::weak_ptr<CppEntityPropertiesPanel> cppEntityPropertiesPanel2 = cppEntityPropertiesPanel;
+    std::weak_ptr<ResourceInfoPanel> resourceInfoPanel2 = resourceInfoPanel;
 
-    cppEntity->SetResourceLoadedCallback([cppEntityPropertiesPanel2]()
+    cppEntity->SetResourceLoadedCallback([cppEntityPropertiesPanel2, resourceInfoPanel2, this]()
     {
         std::shared_ptr<CppEntityPropertiesPanel> cppEntityPropertiesPanel3 = cppEntityPropertiesPanel2.lock();
+        std::shared_ptr<ResourceInfoPanel> resourceInfoPanel3 = resourceInfoPanel2.lock();
 
         if (cppEntityPropertiesPanel3)
         {
             cppEntityPropertiesPanel3->OnResourceLoaded();
         }
+
+        if (resourceInfoPanel3)
+        {
+            resourceInfoPanel3->OnResourceLoaded();
+        }
+
+        OnResourceLoaded();
     });
 }
 
