@@ -1,5 +1,7 @@
 #include "Utility/ResourceUtility.h"
 #include "Settings.h"
+#include "Resources/CppEntity.h"
+#include "Resources/CppEntityBlueprint.h"
 #include "Resources/TemplateEntity.h"
 #include "Resources/TemplateEntityBlueprint.h"
 
