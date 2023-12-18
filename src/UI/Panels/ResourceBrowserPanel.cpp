@@ -410,21 +410,21 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
     if (resourceInfo.type == "CPPT")
     {
-        std::shared_ptr<CppEntityDocument> templateEntityDocument = std::make_shared<CppEntityDocument>(resourceName.c_str(), ICON_MDI_LANGUAGE_CPP, Document::Type::CppEntity, resourceInfo.hash, defaultDockID);
+        std::shared_ptr<CppEntityDocument> templateEntityDocument = std::make_shared<CppEntityDocument>(resourceName.c_str(), ICON_MDI_LANGUAGE_CPP, Document::Type::CppEntity, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(templateEntityDocument->GetCppEntity());
         resourceDocument = std::static_pointer_cast<Document>(templateEntityDocument);
     }
     else if (resourceInfo.type == "TEMP")
     {
-        std::shared_ptr<TemplateEntityDocument> templateEntityDocument = std::make_shared<TemplateEntityDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::TemplateEntity, resourceInfo.hash, defaultDockID);
-        
+        std::shared_ptr<TemplateEntityDocument> templateEntityDocument = std::make_shared<TemplateEntityDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::TemplateEntity, resourceInfo.hash, false, defaultDockID);
+
         resource = std::static_pointer_cast<Resource>(templateEntityDocument->GetTemplateEntity());
         resourceDocument = std::static_pointer_cast<Document>(templateEntityDocument);
     }
     else if (resourceInfo.type == "TEXT")
     {
-        std::shared_ptr<TextureDocument> textureDocument = std::make_shared<TextureDocument>(resourceName.c_str(), ICON_MDI_IMAGE, Document::Type::Texture, resourceInfo.hash, defaultDockID);
+        std::shared_ptr<TextureDocument> textureDocument = std::make_shared<TextureDocument>(resourceName.c_str(), ICON_MDI_IMAGE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(textureDocument->GetTexture());
         resourceDocument = std::static_pointer_cast<Document>(textureDocument);
