@@ -164,7 +164,15 @@ std::shared_ptr<Resource> ResourceUtility::CreateResource(const std::string& typ
 {
     std::shared_ptr<Resource> resource;
 
-    if (type == "TEMP")
+    if (type == "CPPT")
+    {
+        resource = std::make_shared<CppEntity>();
+    }
+    else if (type == "CBLU")
+    {
+        resource = std::make_shared<CppEntityBlueprint>();
+    }
+    else if (type == "TEMP")
     {
         resource = std::make_shared<TemplateEntity>();
     }
