@@ -4,7 +4,7 @@
 #include <UI/Panels/SceneHierarchyPanel.h>
 #include <UI/Panels/TemplateEntityPropertiesPanel.h>
 
-TemplateEntityDocument::TemplateEntityDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, true, dockID)
+TemplateEntityDocument::TemplateEntityDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
     templateEntity = std::make_shared<TemplateEntity>();
 
