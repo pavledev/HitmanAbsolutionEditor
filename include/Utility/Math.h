@@ -146,6 +146,97 @@ public:
 		return log(x);
 	}
 
+	// Divides two integers and rounds to nearest
+	template <typename T>
+	static constexpr T DivideAndRoundNearest(T Dividend, T Divisor)
+	{
+		return (Dividend >= 0)
+			? (Dividend + Divisor / 2) / Divisor
+			: (Dividend - Divisor / 2 + 1) / Divisor;
+	}
+
+	static constexpr int TruncToInt32(float F)
+	{
+		return (int)F;
+	}
+
+	static constexpr int TruncToInt32(double F)
+	{
+		return (int)F;
+	}
+
+	static constexpr long long TruncToInt64(double F)
+	{
+		return (long long)F;
+	}
+
+	static constexpr int TruncToInt(float F)
+	{
+		return TruncToInt32(F);
+	}
+
+	static constexpr long long TruncToInt(double F)
+	{
+		return TruncToInt64(F);
+	}
+
+	static int FloorToInt32(float F)
+	{
+		int I = TruncToInt32(F);
+		I -= ((float)I > F);
+
+		return I;
+	}
+	static int FloorToInt32(double F)
+	{
+		int I = TruncToInt32(F);
+		I -= ((double)I > F);
+
+		return I;
+	}
+	static long long FloorToInt64(double F)
+	{
+		long long I = TruncToInt64(F);
+		I -= ((double)I > F);
+
+		return I;
+	}
+
+	static int FloorToInt(float F)
+	{
+		return FloorToInt32(F);
+	}
+
+	static long long FloorToInt(double F)
+	{
+		return FloorToInt64(F);
+	}
+
+	static int RoundToInt32(float F)
+	{
+		return FloorToInt32(F + 0.5f);
+	}
+
+	static int RoundToInt32(double F)
+	{
+		return FloorToInt32(F + 0.5);
+	}
+
+	static long long RoundToInt64(double F)
+	{
+		return FloorToInt64(F + 0.5);
+	}
+
+	static int RoundToInt(float F)
+	{
+		return RoundToInt32(F);
+	}
+
+	static long long RoundToInt(double F)
+	{
+		return RoundToInt64(F);
+	}
+
 	static SVector3 NormalizeVector(const SVector4& vector);
 
 	static Vector3 ConvertDegressToRadians(const Vector3& degrees);
