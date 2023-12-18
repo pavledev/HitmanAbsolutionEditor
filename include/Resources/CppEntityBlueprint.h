@@ -1,22 +1,16 @@
 #pragma once
 
-#include <string>
+#include <Glacier/Entity/SCppEntityBlueprint.h>
 
-#include "Glacier/Entity/SCppEntityBlueprint.h"
+#include "Resource.h"
 
-#include "IO/BinaryReader.h"
-
-class CppEntityBlueprint
+class CppEntityBlueprint : public Resource
 {
 public:
-	~CppEntityBlueprint();
-	SCppEntityBlueprint* GetCppEntityBlueprint();
-	bool Deserialize(const std::string& filePath);
-	bool Deserialize(void* data, const unsigned int dataSize);
-	bool Deserialize(BinaryReader& binaryReader);
-	void SerializeToJson(const std::string& outputFilePath);
+	void Deserialize();
+	void Parse(void* cppEntityBlueprint);
+	std::shared_ptr<SCppEntityBlueprint> GetCppEntityBlueprint();
 
 private:
-	SCppEntityBlueprint* cppEntityBlueprint;
-	unsigned char alignment;
+	std::shared_ptr<SCppEntityBlueprint> cppEntityBlueprint;
 };
