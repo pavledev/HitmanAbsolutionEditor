@@ -418,6 +418,7 @@ void Resource::LoadReferences(const BinaryReader& headerDataBinaryReader)
 		resourceReference->resourceReferenceFlags = flags;
 		resourceReference->resourceID = referenceResourceID;
 		resourceReference->hash = referenceHash;
+		resourceReference->headerLibraries = &resourceInfo.headerLibraries;
 
 		references.push_back(resourceReference);
 	}
@@ -502,6 +503,7 @@ void Resource::LoadBackReferences(BinaryReader& headerLibraryBinaryReader, const
 				backReference->resourceReferenceFlags = flags;
 				backReference->resourceID = backReferenceResourceID;
 				backReference->hash = backReferenceHash;
+				backReference->headerLibraries = &resourceInfo.headerLibraries;
 
 				backReferences.push_back(backReference);
 
@@ -540,6 +542,7 @@ void Resource::AddReference(const ZRuntimeResourceID& runtimeResourceID, const E
 	resourceReference->resourceReferenceFlags = resourceReferenceFlags;
 	resourceReference->resourceID = referenceResourceID;
 	resourceReference->hash = referenceHash;
+	resourceReference->headerLibraries = &resourceInfo.headerLibraries;
 
 	references.push_back(resourceReference);
 }
