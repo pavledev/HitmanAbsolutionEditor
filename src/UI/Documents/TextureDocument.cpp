@@ -271,7 +271,7 @@ void TextureDocument::RenderRGBAChannelButtons() const
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
     }
 
-    bool hasAlpha = DirectX::HasAlpha(texture->GetDXGIFormat());
+    const bool hasAlpha = DirectX::HasAlpha(texture->GetDXGIFormat());
 
     ImGui::BeginDisabled(!hasAlpha);
 
