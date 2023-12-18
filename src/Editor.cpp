@@ -573,9 +573,6 @@ void Editor::UpdateDocumentContents(std::shared_ptr<Document> document)
         return;
     }
 
-    // Submit the menu bar
-    //TopLevelMenuBar(document, dockspaceID, dockspaceSize);
-    //document->RenderMenuBar();
 
     // Submit the dockspace node
     ImGui::DockSpace(dockspaceID, dockspaceSize, ImGuiDockNodeFlags_None, document->GetToolWindowsClass());
