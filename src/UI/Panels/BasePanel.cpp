@@ -35,7 +35,7 @@ bool BasePanel::Begin(ImGuiWindowFlags windowFlags)
 		return false;
 	}
 
-	ImGui::SetNextWindowSize(ImVec2(480, 640), ImGuiCond_FirstUseEver);
+	//ImGui::SetNextWindowSize(ImVec2(480, 640), ImGuiCond_FirstUseEver);
 
 	ImGui::Begin(id.c_str(), &open, windowFlags | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing);
 
