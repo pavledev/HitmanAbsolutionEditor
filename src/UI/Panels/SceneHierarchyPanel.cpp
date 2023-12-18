@@ -594,7 +594,6 @@ void SceneHierarchyPanel::AddChildrenFromReferencedASET(std::shared_ptr<EntityTr
     {
         const ResourceInfoRegistry::ResourceInfo& asetResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(asetReference->GetHash());
 
-        asetReference->SetHeaderLibraries(&asetResourceInfo.headerLibraries);
         asetReference->LoadResource(0, asetResourceInfo.headerLibraries[0].chunkIndex, asetResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
     }
 
@@ -602,7 +601,6 @@ void SceneHierarchyPanel::AddChildrenFromReferencedASET(std::shared_ptr<EntityTr
     {
         const ResourceInfoRegistry::ResourceInfo& asebResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(asebReference->GetHash());
 
-        asebReference->SetHeaderLibraries(&asebResourceInfo.headerLibraries);
         asebReference->LoadResource(0, asebResourceInfo.headerLibraries[0].chunkIndex, asebResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
     }
 
@@ -848,7 +846,6 @@ void SceneHierarchyPanel::LoadAndDeserializeTEMP(std::shared_ptr<TemplateEntity>
 {
     const ResourceInfoRegistry::ResourceInfo& tempResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(tempResource->GetHash());
 
-    tempResource->SetHeaderLibraries(&tempResourceInfo.headerLibraries);
     tempResource->LoadResource(0, tempResourceInfo.headerLibraries[0].chunkIndex, tempResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
     tempResource->Deserialize();
     tempResource->DeleteResourceData();
@@ -858,7 +855,6 @@ void SceneHierarchyPanel::LoadAndDeserializeTBLU(std::shared_ptr<TemplateEntityB
 {
     const ResourceInfoRegistry::ResourceInfo& tbluResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(tbluResource->GetHash());
 
-    tbluResource->SetHeaderLibraries(&tbluResourceInfo.headerLibraries);
     tbluResource->LoadResource(0, tbluResourceInfo.headerLibraries[0].chunkIndex, tbluResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
     tbluResource->Deserialize();
     tbluResource->DeleteResourceData();
