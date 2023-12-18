@@ -21,6 +21,7 @@ public:
         SearchHeaderLibraries,
         SearchHashMap,
         CppEntity,
+        CppEntityBlueprint,
         TemplateEntity,
         Texture,
         RenderPrimitive
