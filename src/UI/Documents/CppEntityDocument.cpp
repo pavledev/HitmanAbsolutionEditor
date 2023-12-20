@@ -1,3 +1,5 @@
+#include <thread>
+
 #include <IconsMaterialDesignIcons.h>
 
 #include <UI/Documents/CppEntityDocument.h>
