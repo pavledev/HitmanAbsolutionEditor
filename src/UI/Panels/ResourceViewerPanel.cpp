@@ -304,10 +304,11 @@ void ResourceViewerPanel::DisplayCppEntityBlueprint()
 {
     if (!cppEntityBlueprint->GetCppEntityBlueprint())
     {
-        cppEntityBlueprint->Deserialize(resource->GetResourceData(), resource->GetResourceDataSize());
+        cppEntityBlueprint->Deserialize();
     }
 
-    SCppEntityBlueprint* cppEntityBlueprint2 = cppEntityBlueprint->GetCppEntityBlueprint();
+    //SCppEntityBlueprint* cppEntityBlueprint2 = cppEntityBlueprint->GetCppEntityBlueprint();
+    SCppEntityBlueprint* cppEntityBlueprint2;
     static ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet;
 
     if (ImGui::BeginTable("cppEntityBlueprint", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable))
