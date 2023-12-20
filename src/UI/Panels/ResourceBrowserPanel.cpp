@@ -18,6 +18,9 @@
 #include "UI/Documents/TemplateEntityDocument.h"
 #include "UI/Documents/TextureDocument.h"
 #include "UI/Documents/CppEntityDocument.h"
+#include "UI/Documents/CppEntityBlueprintDocument.h"
+#include "UI/Documents/TextListDocument.h"
+#include "UI/Documents/LocalizationDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -415,6 +418,13 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
         resource = std::static_pointer_cast<Resource>(templateEntityDocument->GetCppEntity());
         resourceDocument = std::static_pointer_cast<Document>(templateEntityDocument);
     }
+    else if (resourceInfo.type == "CBLU")
+    {
+        std::shared_ptr<CppEntityBlueprintDocument> cppEntityBlueprintDocument = std::make_shared<CppEntityBlueprintDocument>(resourceName.c_str(), ICON_MDI_LANGUAGE_CPP, Document::Type::CppEntityBlueprint, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(cppEntityBlueprintDocument->GetCppEntityBlueprint());
+        resourceDocument = std::static_pointer_cast<Document>(cppEntityBlueprintDocument);
+    }
     else if (resourceInfo.type == "TEMP")
     {
         std::shared_ptr<TemplateEntityDocument> templateEntityDocument = std::make_shared<TemplateEntityDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::TemplateEntity, resourceInfo.hash, false, defaultDockID);
@@ -428,6 +438,20 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(textureDocument->GetTexture());
         resourceDocument = std::static_pointer_cast<Document>(textureDocument);
+    }
+    else if (resourceInfo.type == "TELI")
+    {
+        std::shared_ptr<TextListDocument> textureDocument = std::make_shared<TextListDocument>(resourceName.c_str(), ICON_MDI_TEXT_BOX, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(textureDocument->GetTextList());
+        resourceDocument = std::static_pointer_cast<Document>(textureDocument);
+    }
+    else if (resourceInfo.type == "LOCR")
+    {
+        std::shared_ptr<LocalizationDocument> localizationDocument = std::make_shared<LocalizationDocument>(resourceName.c_str(), ICON_MDI_TRANSLATE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(localizationDocument->GetLocalization());
+        resourceDocument = std::static_pointer_cast<Document>(localizationDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
