@@ -146,7 +146,6 @@ void SceneHierarchyPanel::RenderEntityTree()
         if (ImGui::Button("Generate Entity Tree"))
         {
             tempResource->Deserialize();
-            tempResource->DeleteResourceData();
 
             std::vector<std::shared_ptr<Resource>>& tempReferences = tempResource->GetReferences();
             std::shared_ptr<TemplateEntityBlueprint> tbluResource = std::static_pointer_cast<TemplateEntityBlueprint>(tempReferences[tempReferences.size() - 1]);

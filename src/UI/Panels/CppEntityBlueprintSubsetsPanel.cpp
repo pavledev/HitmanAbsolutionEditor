@@ -42,7 +42,6 @@ void CppEntityBlueprintSubsetsPanel::Render()
 void CppEntityBlueprintSubsetsPanel::OnResourceLoaded()
 {
 	cbluResource->Deserialize();
-	cbluResource->DeleteResourceData();
 }
 
 void CppEntityBlueprintSubsetsPanel::SetResource(std::shared_ptr<CppEntityBlueprint> cbluResource)

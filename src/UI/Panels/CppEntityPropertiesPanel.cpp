@@ -90,7 +90,6 @@ void CppEntityPropertiesPanel::Render()
 void CppEntityPropertiesPanel::OnResourceLoaded()
 {
 	cpptResource->Deserialize();
-	cpptResource->DeleteResourceData();
 }
 
 void CppEntityPropertiesPanel::RenderEntityProperties()
