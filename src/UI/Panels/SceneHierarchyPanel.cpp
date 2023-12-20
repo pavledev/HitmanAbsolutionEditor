@@ -777,6 +777,10 @@ std::shared_ptr<SceneHierarchyPanel::EntityTreeNode> SceneHierarchyPanel::Genera
     std::shared_ptr<EntityTreeNode> searchRoot = std::make_shared<EntityTreeNode>();
 
     searchRoot->entityName = "Scene";
+    searchRoot->templateResources = rootNode->templateResources;
+    searchRoot->blueprintResources = rootNode->blueprintResources;
+    searchRoot->templateResourceID = rootNode->templateResourceID;
+    searchRoot->blueprintResourceID = rootNode->blueprintResourceID;
 
     std::unordered_map<std::shared_ptr<EntityTreeNode>, std::shared_ptr<EntityTreeNode>> searchTreeMap;
 
@@ -792,6 +796,11 @@ std::shared_ptr<SceneHierarchyPanel::EntityTreeNode> SceneHierarchyPanel::Genera
             {
                 parentNodeInSearchTree = std::make_shared<EntityTreeNode>(parentInOriginalTree->entityIndex, parentInOriginalTree->entityName.c_str());
 
+                parentNodeInSearchTree->templateResources = parentInOriginalTree->templateResources;
+                parentNodeInSearchTree->blueprintResources = parentInOriginalTree->blueprintResources;
+                parentNodeInSearchTree->templateResourceID = parentInOriginalTree->templateResourceID;
+                parentNodeInSearchTree->blueprintResourceID = parentInOriginalTree->blueprintResourceID;
+
                 searchTreeMap[parentInOriginalTree] = parentNodeInSearchTree;
                 searchRoot->children.push_back(parentNodeInSearchTree);
             }
@@ -806,6 +815,11 @@ std::shared_ptr<SceneHierarchyPanel::EntityTreeNode> SceneHierarchyPanel::Genera
         }
 
         std::shared_ptr<EntityTreeNode> newNode = std::make_shared<EntityTreeNode>(currentNode->entityIndex, currentNode->entityName.c_str());
+
+        newNode->templateResources = currentNode->templateResources;
+        newNode->blueprintResources = currentNode->blueprintResources;
+        newNode->templateResourceID = currentNode->templateResourceID;
+        newNode->blueprintResourceID = currentNode->blueprintResourceID;
 
         parentNodeInSearchTree->children.push_back(newNode);
         searchTreeMap[currentNode] = newNode;
