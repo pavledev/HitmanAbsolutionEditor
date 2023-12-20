@@ -45,7 +45,7 @@ public:
 	static void EndProperty();
 	static void EndTreeNodeProperty(const bool isTreeNodeOpen);
 
-	static bool Property(const char* label, std::string& value, const char* tooltip = nullptr, const bool isDisabled = false);
+	static bool StringProperty(const char* label, std::string& string, const char* tooltip = nullptr, const bool isDisabled = false);
 	static bool Property(const char* label, char* stringBuffer, size_t stringBufferSize, const char* tooltip = nullptr, const bool isDisabled = false, std::function<void(char*)> onTextChangeCallback = nullptr);
 
 	template <std::integral T>

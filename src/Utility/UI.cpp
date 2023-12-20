@@ -171,7 +171,7 @@ void UI::EndTreeNodeProperty(const bool isTreeNodeOpen)
 	ImGui::PopID();
 }
 
-bool UI::Property(const char* label, std::string& value, const char* tooltip, const bool isDisabled)
+bool UI::StringProperty(const char* label, std::string& string, const char* tooltip, const bool isDisabled)
 {
 	BeginProperty(label, tooltip);
 	ImGui::BeginDisabled(isDisabled);
