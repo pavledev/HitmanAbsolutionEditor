@@ -127,6 +127,33 @@ void UI::BeginProperty(const char* label, const char* tooltip, bool rightAlignNe
 	++propertyCounter;
 }
 
+void UI::BeginProperty(std::string& label, const char* tooltip, bool rightAlignNextColumn)
+{
+	ImGui::TableNextRow();
+	ImGui::TableNextColumn();
+
+	const std::string id = std::format("{}_{}", tableName, propertyCounter);
+
+	ImGui::PushID(id.c_str());
+	ImGui::InputText("##", &label);
+
+	if (tooltip && ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay))
+	{
+		ImGui::BeginTooltip();
+		ImGui::TextUnformatted(tooltip);
+		ImGui::EndTooltip();
+	}
+
+	ImGui::TableNextColumn();
+
+	if (rightAlignNextColumn)
+	{
+		ImGui::SetNextItemWidth(-FLT_MIN);
+	}
+
+	++propertyCounter;
+}
+
 bool UI::BeginTreeNodeProperty(const char* label, const char* tooltip)
 {
 	const std::string id = std::format("{}_{}", tableName, propertyCounter);
@@ -183,6 +210,13 @@ bool UI::StringProperty(const char* label, std::string& string, const char* tool
 
 	return modified;
 }
+
+bool UI::StringProperty(std::string& label, std::string& string, const char* tooltip, const bool isDisabled)
+{
+	BeginProperty(label, tooltip);
+	ImGui::BeginDisabled(isDisabled);
+
+	const bool modified = ImGui::InputText(GetPropertyID(label.c_str()).c_str(), &string);
 
 	ImGui::EndDisabled();
 	EndProperty();

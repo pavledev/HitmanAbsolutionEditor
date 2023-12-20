@@ -41,11 +41,13 @@ public:
 	static bool BeginProperties(const char* tableName, const std::vector<TableColumn> tableColumns, const bool showHeaders = true, const ImGuiTableFlags tableFlags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_BordersInner | ImGuiTableFlags_BordersOuterH);
 	static void EndProperties();
 	static void BeginProperty(const char* label, const char* tooltip, bool rightAlignNextColumn = true);
+	static void BeginProperty(std::string& label, const char* tooltip, bool rightAlignNextColumn = true);
 	static bool BeginTreeNodeProperty(const char* label, const char* tooltip);
 	static void EndProperty();
 	static void EndTreeNodeProperty(const bool isTreeNodeOpen);
 
 	static bool StringProperty(const char* label, std::string& string, const char* tooltip = nullptr, const bool isDisabled = false);
+	static bool StringProperty(std::string& label, std::string& string, const char* tooltip = nullptr, const bool isDisabled = false);
 	static bool Property(const char* label, char* stringBuffer, size_t stringBufferSize, const char* tooltip = nullptr, const bool isDisabled = false, std::function<void(char*)> onTextChangeCallback = nullptr);
 
 	template <std::integral T>
