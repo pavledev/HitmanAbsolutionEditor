@@ -15,6 +15,7 @@
 #include "Registry/ResourceInfoRegistry.h"
 #include "Registry/PropertyRegistry.h"
 #include "Registry/EnumRegistry.h"
+#include "Registry/TextListHashRegistry.h"
 #include "Timer.h"
 #include "UI/Panels/ResourceViewerPanel.h"
 #include "UI/Panels/HeaderLibrariesSearchPanel.h"
@@ -342,12 +343,14 @@ void Editor::LoadRegistries()
     ResourceInfoRegistry& resourceInfoRegistry = ResourceInfoRegistry::GetInstance();
     PropertyRegistry& propertyRegistry = PropertyRegistry::GetInstance();
     EnumRegistry& enumRegistry = EnumRegistry::GetInstance();
+    TextListHashRegistry& textListHashRegistry = TextListHashRegistry::GetInstance();
 
     resourceIDRegistry.Load();
     typeRegistry.Load();
     resourceInfoRegistry.Load();
     propertyRegistry.Load();
     enumRegistry.Load();
+    textListHashRegistry.Load();
 }
 
 std::shared_ptr<DirectXRenderer> Editor::GetDirectXRenderer() const
