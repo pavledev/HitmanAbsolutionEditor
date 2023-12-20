@@ -441,14 +441,14 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
     }
     else if (resourceInfo.type == "TELI")
     {
-        std::shared_ptr<TextListDocument> textureDocument = std::make_shared<TextListDocument>(resourceName.c_str(), ICON_MDI_TEXT_BOX, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<TextListDocument> textureDocument = std::make_shared<TextListDocument>(resourceName.c_str(), ICON_MDI_TEXT_BOX, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(textureDocument->GetTextList());
         resourceDocument = std::static_pointer_cast<Document>(textureDocument);
     }
     else if (resourceInfo.type == "LOCR")
     {
-        std::shared_ptr<LocalizationDocument> localizationDocument = std::make_shared<LocalizationDocument>(resourceName.c_str(), ICON_MDI_TRANSLATE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<LocalizationDocument> localizationDocument = std::make_shared<LocalizationDocument>(resourceName.c_str(), ICON_MDI_TRANSLATE, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(localizationDocument->GetLocalization());
         resourceDocument = std::static_pointer_cast<Document>(localizationDocument);
