@@ -72,7 +72,7 @@ bool UI::BeginProperties(const char* tableName, const std::vector<TableColumn> t
 
 	constexpr ImGuiTableFlags tableFlags2 = ImGuiTableFlags_PadOuterX;
 
-	if (ImGui::BeginTable(tableName, 4, tableFlags2 | tableFlags))
+	if (ImGui::BeginTable(tableName, tableColumns.size(), tableFlags2 | tableFlags))
 	{
 		ImGui::TableSetupScrollFreeze(0, 1);
 
