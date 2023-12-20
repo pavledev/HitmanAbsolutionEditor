@@ -21,6 +21,7 @@
 #include "UI/Documents/CppEntityBlueprintDocument.h"
 #include "UI/Documents/TextListDocument.h"
 #include "UI/Documents/LocalizationDocument.h"
+#include "UI/Documents/MultiLanguageDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -452,6 +453,13 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(localizationDocument->GetLocalization());
         resourceDocument = std::static_pointer_cast<Document>(localizationDocument);
+    }
+    else if (resourceInfo.type == "LOCM")
+    {
+        std::shared_ptr<MultiLanguageDocument> multiLanguageDocument = std::make_shared<MultiLanguageDocument>(resourceName.c_str(), ICON_MDI_TRANSLATE, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(multiLanguageDocument->GetMultiLanguage());
+        resourceDocument = std::static_pointer_cast<Document>(multiLanguageDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
