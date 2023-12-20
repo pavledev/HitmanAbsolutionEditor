@@ -176,7 +176,13 @@ bool UI::StringProperty(const char* label, std::string& string, const char* tool
 	BeginProperty(label, tooltip);
 	ImGui::BeginDisabled(isDisabled);
 
-	const bool modified = ImGui::InputText(GetPropertyID(label).c_str(), &value);
+	const bool modified = ImGui::InputText(GetPropertyID(label).c_str(), &string);
+
+	ImGui::EndDisabled();
+	EndProperty();
+
+	return modified;
+}
 
 	ImGui::EndDisabled();
 	EndProperty();
