@@ -764,7 +764,7 @@ void RenderPrimitive::ConvertToOBJ(const std::string& objFilePath)
 				int a = 2;
 			}
 
-			renderMaterialInstance.Deserialize(matiReference->GetResourceData(), matiReference->GetResourceDataSize());
+			//renderMaterialInstance.Deserialize(matiReference->GetResourceData(), matiReference->GetResourceDataSize());
 			renderMaterialInstance.GetTextures(matiReference, textures);
 
 			std::string materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
@@ -961,7 +961,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 		matiReference->SetHeaderLibraries(&referenceInfo.headerLibraries);
 		matiReference->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
 
-		renderMaterialInstance.Deserialize(matiReference->GetResourceData(), matiReference->GetResourceDataSize());
+		//renderMaterialInstance.Deserialize(matiReference->GetResourceData(), matiReference->GetResourceDataSize());
 		renderMaterialInstance.GetTextures(matiReference, textures);
 
 		std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
