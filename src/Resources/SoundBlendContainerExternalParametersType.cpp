@@ -4,22 +4,10 @@
 #include "Resources/SoundBlendContainerExternalParametersType.h"
 #include "Utility/StringUtility.h"
 
-void SoundBlendContainerExternalParametersType::Deserialize(const std::string& filePath)
+void SoundBlendContainerExternalParametersType::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(filePath);
+	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
 
-	Deserialize(binaryReader);
-}
-
-void SoundBlendContainerExternalParametersType::Deserialize(void* buffer, const unsigned int dataSize)
-{
-	BinaryReader binaryReader = BinaryReader(buffer, dataSize);
-
-	Deserialize(binaryReader);
-}
-
-void SoundBlendContainerExternalParametersType::Deserialize(BinaryReader& binaryReader)
-{
 	while (binaryReader.GetPosition() < binaryReader.GetSize())
 	{
 		std::string line = binaryReader.ReadString('\n');
@@ -74,6 +62,16 @@ std::string SoundBlendContainerExternalParametersType::SerializeToJson()
 	writer.EndObject();
 
 	return stringBuffer.GetString();
+}
+
+unsigned int SoundBlendContainerExternalParametersType::GetNextID()
+{
+	return nextID;
+}
+
+std::vector<SoundBlendContainerExternalParametersType::SoundBlendContainerExternalParameter>& SoundBlendContainerExternalParametersType::GetSoundBlendContainerExternalParameters()
+{
+	return soundBlendContainerExternalParameters;
 }
 
 void SoundBlendContainerExternalParametersType::SoundBlendContainerExternalParameter::SerializeToJson(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
