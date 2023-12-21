@@ -5,17 +5,11 @@
 
 #include "Glacier/Sound/SSBCExternalParametersProperties.h"
 
-#include "IO/BinaryReader.h"
+#include "Resource.h"
 
-class SoundBlendContainerExternalParametersType
+class SoundBlendContainerExternalParametersType : public Resource
 {
 public:
-	void Deserialize(const std::string& filePath);
-	void Deserialize(void* buffer, const unsigned int dataSize);
-	void Deserialize(BinaryReader& binaryReader);
-	std::string SerializeToJson();
-
-private:
 	struct SoundBlendContainerExternalParameter
 	{
 		void SerializeToJson(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
@@ -25,6 +19,12 @@ private:
 		SSBCExternalParametersProperties properties;
 	};
 
+	void Deserialize();
+	std::string SerializeToJson();
+	unsigned int GetNextID();
+	std::vector<SoundBlendContainerExternalParameter>& GetSoundBlendContainerExternalParameters();
+
+private:
 	unsigned int nextID;
 	std::vector<SoundBlendContainerExternalParameter> soundBlendContainerExternalParameters;
 };
