@@ -12,7 +12,7 @@
 #include "IO/BinaryReader.h"
 #include "Resource.h"
 
-class RenderMaterialInstance
+class RenderMaterialInstance : public Resource
 {
 public:
 	struct Property
@@ -41,14 +41,14 @@ public:
 		std::string name;
 	};
 
-	void Deserialize(const std::string& filePath);
-	void Deserialize(void* buffer, const unsigned int dataSize);
-	void Deserialize(BinaryReader& binaryReader);
-	void ReadProperty(Property& property, BinaryReader& binaryReader, const unsigned int propertyOffset);
+	void Deserialize();
+	Property& GetInstanceProperty();
 	void GetTextures(std::shared_ptr<Resource> matiResource, std::vector<RenderMaterialInstance::Texture>& textures);
 	void GetTextures(const Property& property, std::shared_ptr<Resource> matiResource, std::vector<Texture>& textures, bool& foundNormalTexture, bool& foundDiffuseTexture, bool& foundSpecularTexture);
 
 private:
+	void ReadProperty(Property& property, BinaryReader& binaryReader, const unsigned int propertyOffset);
+
 	SRMaterialPropertyList materialPropertyList;
 	Property instanceProperty;
 };
