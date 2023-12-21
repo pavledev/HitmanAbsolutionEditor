@@ -30,6 +30,7 @@ public:
     const ZRuntimeResourceID& GetRuntimeResourceID() const;
     const unsigned long long GetHash() const;
     std::string GetResourceID() const;
+    std::string GetResourceID();
     std::string GetHeaderLibraryChunkResourceID() const;
     unsigned int GetIndexInLibrary() const;
     const EResourceReferenceFlags GetResourceReferenceFlags() const;
