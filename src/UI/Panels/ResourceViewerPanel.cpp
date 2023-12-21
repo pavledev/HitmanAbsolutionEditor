@@ -128,6 +128,11 @@ void ResourceViewerPanel::Render()
     End();
 }
 
+void ImageViewer(ImTextureID texture, const ImVec2& texture_size, float& zoom, const ImVec2& canvas_size, ImVec2 anchor_pos = ImGui::GetMousePos())
+{
+    
+}
+
 void ResourceViewerPanel::DisplayTexture()
 {
     if (!textureView)
@@ -146,8 +151,13 @@ void ResourceViewerPanel::DisplayTexture()
         this->textureHeight = static_cast<float>(height);
     }
 
-    ImGui::SetCursorPos(ImVec2((ImGui::GetWindowSize().x - textureWidth) / 2, (ImGui::GetWindowSize().y - textureHeight) / 2));
-    ImGui::Image(textureView, ImVec2(textureWidth, textureHeight));
+    //ImGui::SetCursorPos(ImVec2((ImGui::GetWindowSize().x - textureWidth) / 2, (ImGui::GetWindowSize().y - textureHeight) / 2));
+    //ImGui::Image(textureView, ImVec2(textureWidth, textureHeight));
+    ImVec2 canvas_size = ImGui::GetContentRegionAvail();
+    canvas_size.y -= ImGui::GetFrameHeightWithSpacing();
+    static float zoom = 1.0f;
+
+    ImageViewer(textureView, ImVec2((float)textureWidth, (float)textureHeight), zoom, canvas_size);
 }
 
 void ResourceViewerPanel::DisplayBehaviorTreeEntityBlueprint()
@@ -940,7 +950,7 @@ void ResourceViewerPanel::DisplaySoundBlendContainerExternalParametersType()
     {
         SoundBlendContainerExternalParametersType soundBlendContainerExternalParametersType;
 
-        soundBlendContainerExternalParametersType.Deserialize(resource->GetResourceData(), resource->GetResourceDataSize());
+        soundBlendContainerExternalParametersType.Deserialize();
         json = soundBlendContainerExternalParametersType.SerializeToJson();
 
         textEditor.SetText(json);
