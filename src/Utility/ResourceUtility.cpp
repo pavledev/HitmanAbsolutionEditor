@@ -4,6 +4,13 @@
 #include "Resources/CppEntityBlueprint.h"
 #include "Resources/TemplateEntity.h"
 #include "Resources/TemplateEntityBlueprint.h"
+#include "Resources/Texture.h"
+#include "Resources/TextList.h"
+#include "Resources/Localization.h"
+#include "Resources/MultiLanguage.h"
+#include "Resources/RenderMaterialEntityType.h"
+#include "Resources/RenderMaterialEntityBlueprint.h"
+#include "Resources/RenderMaterialInstance.h"
 #include "Registry/ResourceInfoRegistry.h"
 
 std::string ResourceUtility::ConvertResourceIDToFilePath(const std::string& resourceID)
@@ -182,6 +189,34 @@ std::shared_ptr<Resource> ResourceUtility::CreateResource(const std::string& typ
     else if (type == "TBLU")
     {
         resource = std::make_shared<TemplateEntityBlueprint>();
+    }
+    else if (type == "TEXT")
+    {
+        resource = std::make_shared<Texture>();
+    }
+    else if (type == "TELI")
+    {
+        resource = std::make_shared<TextList>();
+    }
+    else if (type == "LOCR")
+    {
+        resource = std::make_shared<Localization>();
+    }
+    else if (type == "LOCM")
+    {
+        resource = std::make_shared<MultiLanguage>();
+    }
+    else if (type == "MATT")
+    {
+        resource = std::make_shared<RenderMaterialEntityType>();
+    }
+    else if (type == "MATB")
+    {
+        resource = std::make_shared<RenderMaterialEntityBlueprint>();
+    }
+    else if (type == "MATI")
+    {
+        resource = std::make_shared<RenderMaterialInstance>();
     }
     else
     {
