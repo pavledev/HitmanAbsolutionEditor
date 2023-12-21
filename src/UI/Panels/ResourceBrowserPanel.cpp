@@ -24,6 +24,8 @@
 #include "UI/Documents/MultiLanguageDocument.h"
 #include "UI/Documents/RenderMaterialEntityTypeDocument.h"
 #include "UI/Documents/RenderMaterialInstanceDocument.h"
+#include "UI/Documents/SoundBlendContainerExternalParametersTypeDocument.h"
+#include "UI/Documents/SoundBlendContainerExternalParametersBlueprintDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -476,6 +478,20 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(renderMaterialInstanceDocument->GetRenderMaterialInstance());
         resourceDocument = std::static_pointer_cast<Document>(renderMaterialInstanceDocument);
+    }
+    else if (resourceInfo.type == "SBPD")
+    {
+        std::shared_ptr<SoundBlendContainerExternalParametersTypeDocument> soundBlendContainerExternalParametersTypeDocument = std::make_shared<SoundBlendContainerExternalParametersTypeDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(soundBlendContainerExternalParametersTypeDocument->GetSoundBlendContainerExternalParametersType());
+        resourceDocument = std::static_pointer_cast<Document>(soundBlendContainerExternalParametersTypeDocument);
+    }
+    else if (resourceInfo.type == "SBPB")
+    {
+        std::shared_ptr<SoundBlendContainerExternalParametersBlueprintDocument> soundBlendContainerExternalParametersBlueprintDocument = std::make_shared<SoundBlendContainerExternalParametersBlueprintDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(soundBlendContainerExternalParametersBlueprintDocument->GetSoundBlendContainerExternalParametersBlueprint());
+        resourceDocument = std::static_pointer_cast<Document>(soundBlendContainerExternalParametersBlueprintDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
