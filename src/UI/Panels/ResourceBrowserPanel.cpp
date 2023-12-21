@@ -22,6 +22,8 @@
 #include "UI/Documents/TextListDocument.h"
 #include "UI/Documents/LocalizationDocument.h"
 #include "UI/Documents/MultiLanguageDocument.h"
+#include "UI/Documents/RenderMaterialEntityTypeDocument.h"
+#include "UI/Documents/RenderMaterialInstanceDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -460,6 +462,20 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(multiLanguageDocument->GetMultiLanguage());
         resourceDocument = std::static_pointer_cast<Document>(multiLanguageDocument);
+    }
+    else if (resourceInfo.type == "MATT")
+    {
+        std::shared_ptr<RenderMaterialEntityTypeDocument> renderMaterialEntityTypeDocument = std::make_shared<RenderMaterialEntityTypeDocument>(resourceName.c_str(), ICON_MDI_PALETTE, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(renderMaterialEntityTypeDocument->GetRenderMaterialEntityType());
+        resourceDocument = std::static_pointer_cast<Document>(renderMaterialEntityTypeDocument);
+    }
+    else if (resourceInfo.type == "MATI")
+    {
+        std::shared_ptr<RenderMaterialInstanceDocument> renderMaterialInstanceDocument = std::make_shared<RenderMaterialInstanceDocument>(resourceName.c_str(), ICON_MDI_PALETTE, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(renderMaterialInstanceDocument->GetRenderMaterialInstance());
+        resourceDocument = std::static_pointer_cast<Document>(renderMaterialInstanceDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
