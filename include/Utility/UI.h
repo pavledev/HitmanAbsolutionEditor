@@ -115,6 +115,71 @@ public:
 		return modified;
 	}
 
+	template <std::integral T>
+	static bool Property(std::string& label, T& value, T min = 0, T max = 0, const char* tooltip = nullptr, const bool isDisabled = false)
+	{
+		BeginProperty(label, tooltip);
+
+		bool modified;
+		int dataType = ImGuiDataType_S32;
+
+		if constexpr (std::is_signed_v<T>)
+		{
+			if constexpr (sizeof(T) == 1)
+			{
+				dataType = ImGuiDataType_S8;
+			}
+			else if constexpr (sizeof(T) == 2)
+			{
+				dataType = ImGuiDataType_S16;
+			}
+			else if constexpr (sizeof(T) == 4)
+			{
+				dataType = ImGuiDataType_S32;
+			}
+			else if constexpr (sizeof(T) == 8)
+			{
+				dataType = ImGuiDataType_S64;
+			}
+		}
+		else
+		{
+			if constexpr (sizeof(T) == 1)
+			{
+				dataType = ImGuiDataType_U8;
+			}
+			else if constexpr (sizeof(T) == 2)
+			{
+				dataType = ImGuiDataType_U16;
+			}
+			else if constexpr (sizeof(T) == 4)
+			{
+				dataType = ImGuiDataType_U32;
+			}
+			else if constexpr (sizeof(T) == 8)
+			{
+				dataType = ImGuiDataType_U64;
+			}
+		}
+
+		ImGui::BeginDisabled(isDisabled);
+
+		if (max > min)
+		{
+			modified = ImGui::SliderScalar(GetPropertyID(label.c_str()).c_str(), dataType, &value, &min, &max);
+		}
+		else
+		{
+			modified = ImGui::DragScalar(GetPropertyID(label.c_str()).c_str(), dataType, &value);
+		}
+
+		ImGui::EndDisabled();
+
+		EndProperty();
+
+		return modified;
+	}
+
 	template <std::floating_point T>
 	static bool Property(const char* label, T& value, T min = 0, T max = 0, const char* tooltip = nullptr, const bool isDisabled = false, float delta = 0.1f, const char* fmt = "%.3f")
 	{
@@ -137,6 +202,37 @@ public:
 		else
 		{
 			modified = ImGui::DragScalar(GetPropertyID(label).c_str(), dataType, &value, delta, nullptr, nullptr, fmt);
+		}
+
+		ImGui::EndDisabled();
+
+		EndProperty();
+
+		return modified;
+	}
+
+	template <std::floating_point T>
+	static bool Property(std::string& label, T& value, T min = 0, T max = 0, const char* tooltip = nullptr, const bool isDisabled = false, float delta = 0.1f, const char* fmt = "%.3f")
+	{
+		BeginProperty(label, tooltip);
+
+		bool modified;
+		int dataType = ImGuiDataType_Float;
+
+		if constexpr (sizeof(T) == 8)
+		{
+			dataType = ImGuiDataType_Double;
+		}
+
+		ImGui::BeginDisabled(isDisabled);
+
+		if (max > min)
+		{
+			modified = ImGui::SliderScalar(GetPropertyID(label.c_str()).c_str(), dataType, &value, &min, &max, fmt);
+		}
+		else
+		{
+			modified = ImGui::DragScalar(GetPropertyID(label.c_str()).c_str(), dataType, &value, delta, nullptr, nullptr, fmt);
 		}
 
 		ImGui::EndDisabled();
