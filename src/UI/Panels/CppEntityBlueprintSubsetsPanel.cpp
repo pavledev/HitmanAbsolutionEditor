@@ -18,6 +18,8 @@ void CppEntityBlueprintSubsetsPanel::Render()
 
 	if (!cbluResource)
 	{
+		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
+		ImGui::Text("Loading cpp entity blueprint...");
 		End();
 
 		return;
@@ -25,6 +27,8 @@ void CppEntityBlueprintSubsetsPanel::Render()
 
 	if (!cbluResource->IsResourceLoaded())
 	{
+		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
+		ImGui::Text("Loading cpp entity blueprint...");
 		End();
 
 		return;
