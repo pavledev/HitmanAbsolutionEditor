@@ -198,7 +198,7 @@ void Mesh::CreateMaterial(const RenderPrimitive::Mesh* mesh, std::shared_ptr<Res
     matiResource->SetHeaderLibraries(&referenceInfo.headerLibraries);
     matiResource->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
 
-    renderMaterialInstance.Deserialize(matiResource->GetResourceData(), matiResource->GetResourceDataSize());
+    //renderMaterialInstance.Deserialize(matiResource->GetResourceData(), matiResource->GetResourceDataSize());
     renderMaterialInstance.GetTextures(matiResource, textures);
 
     std::string materialResourceName = ResourceUtility::GetResourceName(matiResource->GetResourceID());
