@@ -49,7 +49,7 @@ public:
 		return buffer;
 	}
 
-	template<typename T>
+	template <typename T>
 	T* Read(const size_t size) const
 	{
 		T* buffer = new T[size];
