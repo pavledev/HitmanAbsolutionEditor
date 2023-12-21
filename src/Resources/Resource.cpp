@@ -68,6 +68,11 @@ std::string Resource::GetResourceID() const
 	return resourceID;
 }
 
+std::string Resource::GetResourceID()
+{
+	return resourceID;
+}
+
 std::string Resource::GetHeaderLibraryChunkResourceID() const
 {
 	return headerLibraryChunkResourceID;
