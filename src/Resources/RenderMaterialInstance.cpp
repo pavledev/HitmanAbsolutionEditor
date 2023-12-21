@@ -3,26 +3,13 @@
 #include "Logger.h"
 #include "Resources/Texture.h"
 
-void RenderMaterialInstance::Deserialize(const std::string& filePath)
+void RenderMaterialInstance::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(filePath);
-
-	Deserialize(binaryReader);
-}
-
-void RenderMaterialInstance::Deserialize(void* buffer, const unsigned int dataSize)
-{
-	BinaryReader binaryReader = BinaryReader(buffer, dataSize);
-
-	Deserialize(binaryReader);
-}
-
-void RenderMaterialInstance::Deserialize(BinaryReader& binaryReader)
-{
-	unsigned int materialInfoOffset = binaryReader.Read<unsigned int>();
+	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	const unsigned int materialInfoOffset = binaryReader.Read<unsigned int>();
 
 	binaryReader.Seek(materialInfoOffset, SeekOrigin::Begin);
-	
+
 	materialPropertyList = binaryReader.Read<SRMaterialPropertyList>();
 
 	ReadProperty(instanceProperty, binaryReader, materialPropertyList.lPropertyList);
@@ -96,6 +83,11 @@ void RenderMaterialInstance::ReadProperty(Property& property, BinaryReader& bina
 			break;
 		}
 	}
+}
+
+RenderMaterialInstance::Property& RenderMaterialInstance::GetInstanceProperty()
+{
+	return instanceProperty;
 }
 
 void RenderMaterialInstance::GetTextures(std::shared_ptr<Resource> matiResource, std::vector<RenderMaterialInstance::Texture>& textures)
