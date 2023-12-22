@@ -315,6 +315,8 @@ public:
 	static bool BeginToolbar(const char* id, ImVec2 screenPosition, ImVec2 size);
 	static void EndToolbar();
 
+	static bool PlayerBar(const char* label, float* value, const float min, const float max, const ImVec2& size);
+
 private:
 	inline static const char* tableName;
 	inline static unsigned int propertyCounter = 0;

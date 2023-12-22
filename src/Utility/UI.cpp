@@ -590,3 +590,68 @@ void UI::EndToolbar()
 
 	ImGui::EndChild();
 }
+
+bool UI::PlayerBar(const char* label, float* value, const float min, const float max, const ImVec2& sizeArg)
+{
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+	if (window->SkipItems)
+	{
+		return false;
+	}
+
+	ImGuiContext& g = *GImGui;
+	const ImGuiStyle& style = g.Style;
+	const ImGuiID id = window->GetID(label);
+
+	ImVec2 pos = window->DC.CursorPos;
+	ImRect bb = ImRect(pos, pos + ImGui::CalcItemSize(sizeArg, ImGui::CalcItemWidth(), g.FontSize + style.FramePadding.y * 2.0f));
+
+	ImGui::ItemSize(bb, style.FramePadding.y);
+
+	if (!ImGui::ItemAdd(bb, id))
+	{
+		return false;
+	}
+
+	const ImGuiItemFlags itemFlags = g.LastItemData.InFlags;
+	const bool isItemHovered = ImGui::ItemHoverable(bb, id, itemFlags);
+
+	if (isItemHovered && g.IO.MouseClicked[0])
+	{
+		ImGui::SetActiveID(id, window);
+		ImGui::SetFocusID(id, window);
+	}
+
+	bool valueChanged = false;
+
+	if (g.ActiveId == id)
+	{
+		if (g.ActiveIdSource == ImGuiInputSource_Mouse)
+		{
+			if (!g.IO.MouseDown[0])
+			{
+				ImGui::ClearActiveID();
+			}
+			else
+			{
+				const float normalizedClickPosition = ImClamp((g.IO.MousePos.x - bb.Min.x) / bb.GetWidth(), 0.0f, 1.0f);
+				*value = ImLerp(min, max, normalizedClickPosition);
+				valueChanged = true;
+			}
+		}
+	}
+
+	if (valueChanged)
+	{
+		ImGui::MarkItemEdited(id);
+	}
+
+	float fraction = ImSaturate((*value - min) / (max - min));
+
+	ImGui::RenderFrame(bb.Min, bb.Max, ImGui::GetColorU32(ImGuiCol_FrameBg), true, style.FrameRounding);
+	bb.Expand(ImVec2(-style.FrameBorderSize, -style.FrameBorderSize));
+	ImGui::RenderRectFilledRangeH(window->DrawList, bb, ImGui::GetColorU32(ImGuiCol_PlotHistogram), 0.f, fraction, style.FrameRounding);
+
+	return valueChanged;
+}
