@@ -26,6 +26,7 @@
 #include "UI/Documents/RenderMaterialInstanceDocument.h"
 #include "UI/Documents/SoundBlendContainerExternalParametersTypeDocument.h"
 #include "UI/Documents/SoundBlendContainerExternalParametersBlueprintDocument.h"
+#include "UI/Documents/WaveBankFSBFDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -492,6 +493,13 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(soundBlendContainerExternalParametersBlueprintDocument->GetSoundBlendContainerExternalParametersBlueprint());
         resourceDocument = std::static_pointer_cast<Document>(soundBlendContainerExternalParametersBlueprintDocument);
+    }
+    else if (resourceInfo.type == "FSBF")
+    {
+        std::shared_ptr<WaveBankFSBFDocument> waveBankFSBFDocument = std::make_shared<WaveBankFSBFDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(waveBankFSBFDocument->GetWaveBankFSBF());
+        resourceDocument = std::static_pointer_cast<Document>(waveBankFSBFDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
