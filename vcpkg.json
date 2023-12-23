@@ -4,6 +4,7 @@
     "dependencies": [
         "directxtex",
         "directxtk",
-        "rapidjson"
+        "rapidjson",
+        "sfml"
     ]
 }
