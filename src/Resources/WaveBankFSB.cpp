@@ -12,6 +12,11 @@ const std::vector<std::shared_ptr<WaveBankFSB::AudioSample>>& WaveBankFSB::GetAu
 	return audioSamples;
 }
 
+std::vector<std::shared_ptr<WaveBankFSB::AudioSample>>& WaveBankFSB::GetAudioSamples()
+{
+	return audioSamples;
+}
+
 void WaveBankFSB::ConvertFSB5ToOGG()
 {
 	void* fsb5Data = nullptr;

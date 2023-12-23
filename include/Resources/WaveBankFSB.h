@@ -16,6 +16,7 @@ public:
 	};
 
 	const std::vector<std::shared_ptr<AudioSample>>& GetAudioSamples() const;
+	std::vector<std::shared_ptr<AudioSample>>& GetAudioSamples();
 	virtual FSB::Format GetFormat() = 0;
 	virtual void GetFSB5Data(void*& fsb5Data, unsigned int& fsb5Size) = 0;
 	void ConvertFSB5ToOGG();
