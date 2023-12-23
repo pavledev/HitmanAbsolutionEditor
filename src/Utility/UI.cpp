@@ -314,7 +314,7 @@ bool UI::Property(const char* label, int& value, const char** dropdownStrings, i
 		ImGui::EndCombo();
 	}
 
-	UI::EndProperty();
+	EndProperty();
 
 	return modified;
 }
