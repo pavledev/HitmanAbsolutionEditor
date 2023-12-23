@@ -29,7 +29,7 @@ void WaveBankFSB::ConvertFSB5ToOGG()
 
 	audioSamples.reserve(container.Samples().size());
 
-	for (FSB::Sample sample : container.Samples())
+	for (const FSB::Sample& sample : container.Samples())
 	{
 		void* data = operator new(sample.size);
 		BinaryWriter binaryWriter = BinaryWriter(data, sample.size);
@@ -58,7 +58,7 @@ void WaveBankFSB::ConvertFSB5ToWAV()
 
 	audioSamples.reserve(container.Samples().size());
 
-	for (auto& sample : container.Samples())
+	for (const FSB::Sample& sample : container.Samples())
 	{
 		void* data = operator new(sample.size);
 		BinaryWriter binaryWriter = BinaryWriter(data, sample.size);
