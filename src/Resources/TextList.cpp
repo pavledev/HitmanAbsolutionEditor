@@ -21,7 +21,7 @@ void TextList::Parse()
 
 		if (name.empty())
 		{
-			entry.name = StringUtility::ConvertValueToHexString(key).c_str();
+			entry.name = StringUtility::ConvertValueToHexString(key);
 		}
 		else
 		{
