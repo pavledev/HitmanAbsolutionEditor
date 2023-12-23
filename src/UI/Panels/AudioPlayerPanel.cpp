@@ -1,6 +1,7 @@
 #include <IconsMaterialDesignIcons.h>
 
 #include "UI/Panels/AudioPlayerPanel.h"
+#include "Resources/WaveBankFSBS.h"
 
 AudioPlayerPanel::AudioPlayerPanel(const char* name, const char* icon, std::shared_ptr<WaveBankFSB> waveBankFSBResource) : BasePanel(name, icon)
 {
@@ -153,7 +154,20 @@ void AudioPlayerPanel::OnResourceLoaded()
 		waveBankFSBResource->ConvertFSB5ToWAV();
 	}
 
-	const std::vector<std::shared_ptr<WaveBankFSB::AudioSample>>& audioSamples = waveBankFSBResource->GetAudioSamples();
+	std::vector<std::shared_ptr<WaveBankFSB::AudioSample>>& audioSamples = waveBankFSBResource->GetAudioSamples();
+
+	if (waveBankFSBResource->GetResourceHeaderHeader().m_type == 'FSBS')
+	{
+		std::shared_ptr<WaveBankFSBS> waveBankFSBS = std::static_pointer_cast<WaveBankFSBS>(waveBankFSBResource);
+		std::vector<std::string> filePaths;
+
+		waveBankFSBS->GetFilePaths(filePaths);
+
+		for (size_t i = 0; i < filePaths.size(); ++i)
+		{
+			audioSamples[i]->name = filePaths[i].substr(filePaths[i].find_last_of("\\") + 1);
+		}
+	}
 
 	soundBuffers.resize(audioSamples.size());
 
