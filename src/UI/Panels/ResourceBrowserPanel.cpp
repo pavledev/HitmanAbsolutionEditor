@@ -27,6 +27,10 @@
 #include "UI/Documents/SoundBlendContainerExternalParametersTypeDocument.h"
 #include "UI/Documents/SoundBlendContainerExternalParametersBlueprintDocument.h"
 #include "UI/Documents/WaveBankFSBFDocument.h"
+#include "UI/Documents/WaveBankFSBMDocument.h"
+#include "UI/Documents/WaveBankFSBSDocument.h"
+#include "UI/Documents/WaveBankDocument.h"
+#include "UI/Documents/WaveBankFXDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -501,6 +505,34 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
         resource = std::static_pointer_cast<Resource>(waveBankFSBFDocument->GetWaveBankFSBF());
         resourceDocument = std::static_pointer_cast<Document>(waveBankFSBFDocument);
     }
+    else if (resourceInfo.type == "FSBM")
+    {
+        std::shared_ptr<WaveBankFSBMDocument> waveBankFSBMDocument = std::make_shared<WaveBankFSBMDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(waveBankFSBMDocument->GetWaveBankFSBM());
+        resourceDocument = std::static_pointer_cast<Document>(waveBankFSBMDocument);
+    }
+    else if (resourceInfo.type == "FSBS")
+    {
+        std::shared_ptr<WaveBankFSBSDocument> waveBankFSBSDocument = std::make_shared<WaveBankFSBSDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(waveBankFSBSDocument->GetWaveBankFSBS());
+        resourceDocument = std::static_pointer_cast<Document>(waveBankFSBSDocument);
+    }
+    else if (resourceInfo.type == "WAVB")
+    {
+        std::shared_ptr<WaveBankDocument> waveBankDocument = std::make_shared<WaveBankDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(waveBankDocument->GetWaveBank());
+        resourceDocument = std::static_pointer_cast<Document>(waveBankDocument);
+    }
+    else if (resourceInfo.type == "WBFX")
+    {
+        std::shared_ptr<WaveBankFXDocument> waveBankFXDocument = std::make_shared<WaveBankFXDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(waveBankFXDocument->GetWaveBankFX());
+        resourceDocument = std::static_pointer_cast<Document>(waveBankFXDocument);
+        }
     else if (resourceInfo.type == "PRIM")
     {
         /*resource = std::make_shared<RenderPrimitive>();
