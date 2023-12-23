@@ -4,6 +4,7 @@
 #include "FSB/IO/Util.h"
 #include "FSB/Vorbis/Rebuilder.h"
 #include "FSB/IO/WAVWriter.h"
+#include "Logger.h"
 
 FSB::Container::Container(BinaryReader& binaryReader)
 {
@@ -246,7 +247,7 @@ FSB::Sample FSB::Container::ReadSampleHeader(IO::BufferView& view)
         }
         default:
         {
-            throw std::invalid_argument(std::format("Unexpected extra header type: {}", type));
+            Logger::GetInstance().Log(Logger::Level::Warning, "Unexpected extra header type: {}", type);
 
             view.Skip(extraLength);
         }
