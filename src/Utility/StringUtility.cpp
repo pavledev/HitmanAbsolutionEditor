@@ -160,3 +160,40 @@ std::string StringUtility::GetStringBetweenExpressions(const std::string& string
 
 	return string;
 }
+
+size_t StringUtility::FindString(const char* str, const char* stringToFind, size_t length, size_t position)
+{
+	static const size_t npos = -1;
+	size_t toReturn = npos;
+	size_t length2 = strlen(stringToFind);
+
+	if (position == npos)
+	{
+		position = length - 1;
+	}
+
+	for (; position <= length - length2; ++position)
+	{
+		if (str[position] == *stringToFind && CompareStrings(str, stringToFind, length2, position))
+		{
+			toReturn = position;
+
+			break;
+		}
+	}
+
+	return toReturn;
+}
+
+bool StringUtility::CompareStrings(const char* first, const char* second, size_t length, size_t position)
+{
+	for (size_t i = 1; i < length; ++i)
+	{
+		if (first[position + i] != second[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}

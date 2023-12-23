@@ -30,4 +30,7 @@ public:
 
 	static std::string GetStringAfterExpression(const std::string& string, const std::string& expression);
 	static std::string GetStringBetweenExpressions(const std::string& string, const std::string& expressionA, const std::string& expressionB);
+
+	static size_t FindString(const char* str, const char* stringToFind, size_t length, size_t position = 0);
+	static bool CompareStrings(const char* first, const char* second, size_t length, size_t position);
 };
