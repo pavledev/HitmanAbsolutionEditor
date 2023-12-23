@@ -5,7 +5,7 @@ FSB::Format WaveBankFSBM::GetFormat()
 	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
 	unsigned int offset = offsetof(FSB::Header, mode);
 
-	binaryReader.Seek(16 + offset);
+	binaryReader.Seek(24 + offset);
 
 	return static_cast<FSB::Format>(binaryReader.Read<unsigned int>());
 }
