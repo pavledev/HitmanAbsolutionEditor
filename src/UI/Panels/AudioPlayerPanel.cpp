@@ -7,6 +7,7 @@ AudioPlayerPanel::AudioPlayerPanel(const char* name, const char* icon, std::shar
 {
 	this->waveBankFSBResource = waveBankFSBResource;
 	volume = 30.f;
+	selectedAudioSampleIndex = 0;
 }
 
 AudioPlayerPanel::~AudioPlayerPanel()
@@ -34,7 +35,6 @@ void AudioPlayerPanel::Render()
 	}
 
 	const std::vector<std::shared_ptr<WaveBankFSB::AudioSample>>& audioSamples = waveBankFSBResource->GetAudioSamples();
-	static int currentAudioSampleIndex = 0;
 
 	ImGui::PushItemWidth(-1);
 
@@ -42,11 +42,11 @@ void AudioPlayerPanel::Render()
 	{
 		for (int i = 0; i < audioSamples.size();++i)
 		{
-			const bool isSelected = currentAudioSampleIndex == i;
+			const bool isSelected = selectedAudioSampleIndex == i;
 
 			if (ImGui::Selectable(audioSamples[i]->name.c_str(), isSelected))
 			{
-				currentAudioSampleIndex = i;
+				selectedAudioSampleIndex = i;
 
 				sound.setBuffer(soundBuffers[i]);
 			}
@@ -94,7 +94,7 @@ void AudioPlayerPanel::Render()
 	}
 
 	const float playingOffset = sound.getPlayingOffset().asSeconds();
-	const float duration = soundBuffers[currentAudioSampleIndex].getDuration().asSeconds();
+	const float duration = soundBuffers[selectedAudioSampleIndex].getDuration().asSeconds();
 	const int playingOffset2 = static_cast<int>(playingOffset);
 	const int duration2 = static_cast<int>(duration);
 
