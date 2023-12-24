@@ -100,6 +100,15 @@ bool Editor::Setup()
 
     thread.detach();
 
+    HRESULT result = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+    if (FAILED(result))
+    {
+        logger.Log(Logger::Level::Error, "Failed to initialize COM!");
+
+        return false;
+    }
+
     Logger::GetInstance().Log(Logger::Level::Info, "Editor successfully set up.");
 
     return true;
