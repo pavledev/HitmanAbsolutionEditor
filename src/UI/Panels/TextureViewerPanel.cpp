@@ -117,16 +117,19 @@ void TextureViewerPanel::OnResourceLoaded()
     pixelShader->Compile(Shader::Type::Pixel, "assets/shaders/ChannelControl_PS.hlsl");
     channelControlConstantBufferGpu->Create<ChannelControlConstantBuffer>(1);
 
-    unsigned short width;
-    unsigned short height;
-    DirectX::Blob blob;
+    if (textureResource)
+    {
+        unsigned short width;
+        unsigned short height;
+        DirectX::Blob blob;
 
-    textureResource->Deserialize();
-    textureResource->ConvertTextureToDDS(blob, width, height);
-    DirectX::CreateDDSTextureFromMemory(Editor::GetInstance().GetDirectXRenderer()->GetD3D11Device(), static_cast<unsigned char*>(blob.GetBufferPointer()), blob.GetBufferSize(), &texture, &textureView);
+        textureResource->Deserialize();
+        textureResource->ConvertTextureToDDS(blob, width, height);
+        DirectX::CreateDDSTextureFromMemory(Editor::GetInstance().GetDirectXRenderer()->GetD3D11Device(), static_cast<unsigned char*>(blob.GetBufferPointer()), blob.GetBufferSize(), &texture, &textureView);
 
-    textureWidth = static_cast<unsigned int>(width);
-    textureHeight = static_cast<unsigned int>(height);
+        textureWidth = static_cast<unsigned int>(width);
+        textureHeight = static_cast<unsigned int>(height);
+    }
 }
 
 void TextureViewerPanel::OnZoomSliderValueChange()
