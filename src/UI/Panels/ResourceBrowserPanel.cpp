@@ -532,7 +532,6 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(waveBankFXDocument->GetWaveBankFX());
         resourceDocument = std::static_pointer_cast<Document>(waveBankFXDocument);
-        }
     else if (resourceInfo.type == "PRIM")
     {
         /*resource = std::make_shared<RenderPrimitive>();
