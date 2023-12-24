@@ -92,6 +92,26 @@ void TextureViewerPanel::SetZoomMode(const ZoomMode zoomMode)
     this->zoomMode = zoomMode;
 }
 
+void TextureViewerPanel::SetTextureWidth(const unsigned int textureWidth)
+{
+    this->textureWidth = textureWidth;
+}
+
+void TextureViewerPanel::SetTextureHeight(const unsigned int textureHeight)
+{
+    this->textureHeight = textureHeight;
+}
+
+void TextureViewerPanel::SetTexture(ID3D11Resource* texture)
+{
+    this->texture = texture;
+}
+
+void TextureViewerPanel::SetTextureView(ID3D11ShaderResourceView* textureView)
+{
+    this->textureView = textureView;
+}
+
 void TextureViewerPanel::OnResourceLoaded()
 {
     pixelShader->Compile(Shader::Type::Pixel, "assets/shaders/ChannelControl_PS.hlsl");

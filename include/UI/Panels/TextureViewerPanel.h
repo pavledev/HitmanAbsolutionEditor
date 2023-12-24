@@ -20,6 +20,10 @@ public:
 	void Render() override;
 	const ZoomMode GetZoomMode() const;
 	void SetZoomMode(const ZoomMode zoomMode);
+	void SetTextureWidth(const unsigned int textureWidth);
+	void SetTextureHeight(const unsigned int textureWidth);
+	void SetTexture(ID3D11Resource* texture);
+	void SetTextureView(ID3D11ShaderResourceView* textureView);
 	void OnResourceLoaded();
 	void OnZoomSliderValueChange();
 	void SetIsRedChannelEnabled(const bool isRedChannelEnabled);
