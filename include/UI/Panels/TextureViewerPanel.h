@@ -32,6 +32,8 @@ public:
 	void SetIsAlphaChannelEnabled(const bool isAlphaChannelEnabled);
 	double CalculateDisplayedZoomLevel() const;
 
+	void OnSelectedDDSTexture(ID3D11ShaderResourceView* textureView, const unsigned int textureWidth, const unsigned int textureHeight);
+
 private:
 	struct ChannelControlConstantBuffer
 	{

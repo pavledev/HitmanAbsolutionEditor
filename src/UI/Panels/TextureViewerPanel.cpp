@@ -182,6 +182,12 @@ double TextureViewerPanel::CalculateDisplayedZoomLevel() const
     return 0;
 }
 
+void TextureViewerPanel::OnSelectedDDSTexture(ID3D11ShaderResourceView* textureView, const unsigned int textureWidth, const unsigned int textureHeight)
+{
+    this->textureView = textureView;
+    this->textureWidth = textureWidth;
+    this->textureHeight = textureHeight;
+}
 
 void TextureViewerPanel::RenderTexture()
 {
