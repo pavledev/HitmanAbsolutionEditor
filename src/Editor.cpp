@@ -585,7 +585,10 @@ void Editor::UpdateDocumentContents(std::shared_ptr<Document> document)
         return;
     }
 
-    document->RenderToolBar();
+    if (document->HasToolBar())
+    {
+        document->RenderToolBar();
+    }
 
     // Submit the dockspace node
     ImGui::DockSpace(dockspaceID, dockspaceSize, ImGuiDockNodeFlags_None, document->GetToolWindowsClass());
