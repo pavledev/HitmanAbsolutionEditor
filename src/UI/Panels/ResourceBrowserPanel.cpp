@@ -31,6 +31,8 @@
 #include "UI/Documents/WaveBankFSBSDocument.h"
 #include "UI/Documents/WaveBankDocument.h"
 #include "UI/Documents/WaveBankFXDocument.h"
+#include "UI/Documents/FlashMovieDocument.h"
+#include "UI/Documents/GFXMovieDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -532,6 +534,21 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(waveBankFXDocument->GetWaveBankFX());
         resourceDocument = std::static_pointer_cast<Document>(waveBankFXDocument);
+    }
+    else if (resourceInfo.type == "SWFF")
+    {
+        std::shared_ptr<FlashMovieDocument> flashMovieDocument = std::make_shared<FlashMovieDocument>(resourceName.c_str(), ICON_MDI_IMAGE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(flashMovieDocument->GetFlashMovie());
+        resourceDocument = std::static_pointer_cast<Document>(flashMovieDocument);
+    }
+    else if (resourceInfo.type == "GFXF")
+    {
+        std::shared_ptr<GFXMovieDocument> gfxMovieDocument = std::make_shared<GFXMovieDocument>(resourceName.c_str(), ICON_MDI_IMAGE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(gfxMovieDocument->GetGFXMovie());
+        resourceDocument = std::static_pointer_cast<Document>(gfxMovieDocument);
+    }
     else if (resourceInfo.type == "PRIM")
     {
         /*resource = std::make_shared<RenderPrimitive>();
