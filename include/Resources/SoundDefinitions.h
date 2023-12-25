@@ -6,10 +6,9 @@
 #include "Glacier/Sound/SActorSoundDefs.h"
 #include "Glacier/Sound/ESoundPlayParameters.h"
 
-#include "IO/BinaryReader.h"
-#include "Resources/Resource.h"
+#include "Resource.h"
 
-class SoundDefinitions
+class SoundDefinitions : public Resource
 {
 public:
     struct Entry
@@ -24,14 +23,12 @@ public:
         int groupNumber;
         ESoundPlayParameters selectionMode;
         int noRepeatsCount;
-        unsigned int numSubSoundRepeatCounts;
         std::vector<unsigned char> subSoundRepeatCounts;
     };
 
-    void Deserialize(const std::string& filePath);
-    void Deserialize(void* buffer, const unsigned int dataSize);
-    void Deserialize(BinaryReader& binaryReader);
+    void Deserialize();
     void SerializeToJson(const Resource* resource, std::string& jsonOutput);
+    std::vector<Entry>& GetEntries();
 
 private:
     std::vector<Entry> entries;
