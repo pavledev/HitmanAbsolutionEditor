@@ -935,7 +935,7 @@ void ResourceViewerPanel::DisplaySoundDefinitions()
     {
         SoundDefinitions soundDefinitions;
 
-        soundDefinitions.Deserialize(resource->GetResourceData(), resource->GetResourceDataSize());
+        //soundDefinitions.Deserialize(resource->GetResourceData(), resource->GetResourceDataSize());
         //soundDefinitions.SerializeToJson(resource, json);
 
         textEditor.SetText(json);
