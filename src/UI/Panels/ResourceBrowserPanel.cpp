@@ -33,6 +33,8 @@
 #include "UI/Documents/WaveBankFXDocument.h"
 #include "UI/Documents/FlashMovieDocument.h"
 #include "UI/Documents/GFXMovieDocument.h"
+#include "UI/Documents/AnimationDatabaseDocument.h"
+#include "UI/Documents/SoundDefinitionsDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -548,6 +550,20 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(gfxMovieDocument->GetGFXMovie());
         resourceDocument = std::static_pointer_cast<Document>(gfxMovieDocument);
+    }
+    else if (resourceInfo.type == "ChrT")
+    {
+        std::shared_ptr<AnimationDatabaseDocument> animationDatabaseDocument = std::make_shared<AnimationDatabaseDocument>(resourceName.c_str(), ICON_MDI_DATABASE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(animationDatabaseDocument->GetAnimationDatabase());
+        resourceDocument = std::static_pointer_cast<Document>(animationDatabaseDocument);
+    }
+    else if (resourceInfo.type == "SDEF")
+    {
+        std::shared_ptr<SoundDefinitionsDocument> soundDefinitionsDocument = std::make_shared<SoundDefinitionsDocument>(resourceName.c_str(), ICON_MDI_DATABASE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(soundDefinitionsDocument->GetSoundDefinitions());
+        resourceDocument = std::static_pointer_cast<Document>(soundDefinitionsDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
