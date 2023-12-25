@@ -642,23 +642,10 @@ std::string SoundDefinitions::Entry::ConvertSoundPlayParametersToString(const ES
 	}
 }
 
-void SoundDefinitions::Deserialize(const std::string& filePath)
+void SoundDefinitions::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(filePath);
-
-	Deserialize(binaryReader);
-}
-
-void SoundDefinitions::Deserialize(void* buffer, const unsigned int dataSize)
-{
-	BinaryReader binaryReader = BinaryReader(buffer, dataSize);
-
-	Deserialize(binaryReader);
-}
-
-void SoundDefinitions::Deserialize(BinaryReader& binaryReader)
-{
-	unsigned int entryCount = binaryReader.Read<unsigned int>();
+	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	const unsigned int entryCount = binaryReader.Read<unsigned int>();
 
 	entries.reserve(entryCount);
 
@@ -672,9 +659,10 @@ void SoundDefinitions::Deserialize(BinaryReader& binaryReader)
 		entry.groupNumber = binaryReader.Read<int>();
 		entry.selectionMode = static_cast<ESoundPlayParameters>(binaryReader.Read<unsigned int>());
 		entry.noRepeatsCount = binaryReader.Read<int>();
-		entry.numSubSoundRepeatCounts = binaryReader.Read<int>();
 
-		for (unsigned int j = 0; j < entry.numSubSoundRepeatCounts; ++j)
+		const int numSubSoundRepeatCounts = binaryReader.Read<int>();
+
+		for (unsigned int j = 0; j < numSubSoundRepeatCounts; ++j)
 		{
 			entry.subSoundRepeatCounts.push_back(binaryReader.Read<unsigned char>());
 		}
@@ -703,4 +691,9 @@ void SoundDefinitions::SerializeToJson(const Resource* resource, std::string& js
 	writer.EndObject();
 
 	jsonOutput = stringBuffer.GetString();
+}
+
+std::vector<SoundDefinitions::Entry>& SoundDefinitions::GetEntries()
+{
+	return entries;
 }
