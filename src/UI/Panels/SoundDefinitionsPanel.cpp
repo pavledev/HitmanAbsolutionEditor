@@ -33,6 +33,7 @@ void SoundDefinitionsPanel::Render()
 
 	std::vector<SoundDefinitions::Entry>& entries = soundDefinitionsResource->GetEntries();
 	const std::vector<std::shared_ptr<Resource>>& sdefReferences = soundDefinitionsResource->GetReferences();
+	const bool hasActorSoundDefinitions = entries.size() - 1 == static_cast<int>(SActorSoundDefs::EDefinition::_Last);
 
 	for (size_t i = 0; i < entries.size(); ++i)
 	{
@@ -48,7 +49,15 @@ void SoundDefinitionsPanel::Render()
 				waveBankResourceID = sdefReferences[entries[i].referenceIndex]->GetResourceID();
 			}
 
-			EnumProperty("definition", "SActorSoundDefs.EDefinition", entries[i].definition);
+			if (hasActorSoundDefinitions)
+			{
+				EnumProperty("definition", "SActorSoundDefs.EDefinition", entries[i].definition);
+			}
+			else
+			{
+				EnumProperty("definition", "SDoorSoundDefs.EDefinition", entries[i].definition);
+			}
+
 			UI::StringProperty("waveBank", waveBankResourceID);
 			UI::Property("attenuationOffset", entries[i].attenuationOffset);
 			UI::Property("groupNumber", entries[i].groupNumber);

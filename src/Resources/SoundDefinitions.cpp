@@ -3,12 +3,20 @@
 
 #include "Resources/SoundDefinitions.h"
 
-void SoundDefinitions::Entry::SerializeToJson(const std::vector<std::shared_ptr<Resource>>& references, rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+void SoundDefinitions::Entry::SerializeToJson(const std::vector<std::shared_ptr<Resource>>& references, rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, const bool hasActorSoundDefinitions)
 {
 	writer.StartObject();
 
 	writer.String("definition");
-	writer.String(ConvertSoundDefinitionToString(definition).c_str());
+
+	if (hasActorSoundDefinitions)
+	{
+		writer.String(ConvertActorSoundDefinitionToString(static_cast<SActorSoundDefs::EDefinition>(definition)).c_str());
+	}
+	else
+	{
+		writer.String(ConvertDoorSoundDefinitionToString(static_cast<SDoorSoundDefs::EDefinition>(definition)).c_str());
+	}
 
 	writer.String("waveBank");
 
@@ -54,7 +62,7 @@ void SoundDefinitions::Entry::SerializeToJson(const std::vector<std::shared_ptr<
 	writer.EndObject();
 }
 
-std::string SoundDefinitions::Entry::ConvertSoundDefinitionToString(const SActorSoundDefs::SActorSoundDefs::EDefinition definition)
+std::string SoundDefinitions::Entry::ConvertActorSoundDefinitionToString(const SActorSoundDefs::SActorSoundDefs::EDefinition definition)
 {
 	switch (definition)
 	{
@@ -627,6 +635,23 @@ std::string SoundDefinitions::Entry::ConvertSoundDefinitionToString(const SActor
 	};
 }
 
+std::string SoundDefinitions::Entry::ConvertDoorSoundDefinitionToString(const SDoorSoundDefs::EDefinition definition)
+{
+	switch (definition)
+	{
+		case SDoorSoundDefs::EDefinition::DoorOpen:
+			return "DoorOpen";
+		case SDoorSoundDefs::EDefinition::DoorClose:
+			return "DoorClose";
+		case SDoorSoundDefs::EDefinition::DoorSlam:
+			return "DoorSlam";
+		case SDoorSoundDefs::EDefinition::DoorOpenStop:
+			return "DoorOpenStop";
+		default:
+			return "";
+	}
+}
+
 std::string SoundDefinitions::Entry::ConvertSoundPlayParametersToString(const ESoundPlayParameters soundPlayParameters)
 {
 	switch (soundPlayParameters)
@@ -653,7 +678,7 @@ void SoundDefinitions::Deserialize()
 	{
 		Entry entry;
 
-		entry.definition = static_cast<SActorSoundDefs::SActorSoundDefs::EDefinition>(binaryReader.Read<unsigned int>());
+		entry.definition = binaryReader.Read<int>();
 		entry.referenceIndex = binaryReader.Read<unsigned int>();
 		entry.attenuationOffset = binaryReader.Read<int>();
 		entry.groupNumber = binaryReader.Read<int>();
@@ -673,6 +698,8 @@ void SoundDefinitions::Deserialize()
 
 void SoundDefinitions::SerializeToJson(const Resource* resource, std::string& jsonOutput)
 {
+	const bool hasActorSoundDefinitions = entries.size() - 1 == static_cast<int>(SActorSoundDefs::EDefinition::_Last);
+
 	rapidjson::StringBuffer stringBuffer;
 	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
 
@@ -683,7 +710,7 @@ void SoundDefinitions::SerializeToJson(const Resource* resource, std::string& js
 
 	for (size_t i = 0; i < entries.size(); ++i)
 	{
-		entries[i].SerializeToJson(resource->GetReferences(), writer);
+		entries[i].SerializeToJson(resource->GetReferences(), writer, hasActorSoundDefinitions);
 	}
 
 	writer.EndArray();
