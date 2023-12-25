@@ -24,6 +24,22 @@ public:
         CppEntityBlueprint,
         TemplateEntity,
         Texture,
+        TextList,
+        Localization,
+        MultiLanguage,
+        RenderMaterialEntityType,
+        RenderMaterialInstance,
+        SoundBlendContainerExternalParametersType,
+        SoundBlendContainerExternalParametersBlueprint,
+        WaveBankFSBF,
+        WaveBankFSBM,
+        WaveBankFSBS,
+        WaveBank,
+        WaveBankFX,
+        FlashMovie,
+        GFXMovie,
+        AnimationDatabase,
+        SoundDefinitions,
         RenderPrimitive
     };
 

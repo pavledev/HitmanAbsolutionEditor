@@ -455,112 +455,112 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
     }
     else if (resourceInfo.type == "TELI")
     {
-        std::shared_ptr<TextListDocument> textureDocument = std::make_shared<TextListDocument>(resourceName.c_str(), ICON_MDI_TEXT_BOX, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<TextListDocument> textureDocument = std::make_shared<TextListDocument>(resourceName.c_str(), ICON_MDI_TEXT_BOX, Document::Type::TextList, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(textureDocument->GetTextList());
         resourceDocument = std::static_pointer_cast<Document>(textureDocument);
     }
     else if (resourceInfo.type == "LOCR")
     {
-        std::shared_ptr<LocalizationDocument> localizationDocument = std::make_shared<LocalizationDocument>(resourceName.c_str(), ICON_MDI_TRANSLATE, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<LocalizationDocument> localizationDocument = std::make_shared<LocalizationDocument>(resourceName.c_str(), ICON_MDI_TRANSLATE, Document::Type::Localization, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(localizationDocument->GetLocalization());
         resourceDocument = std::static_pointer_cast<Document>(localizationDocument);
     }
     else if (resourceInfo.type == "LOCM")
     {
-        std::shared_ptr<MultiLanguageDocument> multiLanguageDocument = std::make_shared<MultiLanguageDocument>(resourceName.c_str(), ICON_MDI_TRANSLATE, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<MultiLanguageDocument> multiLanguageDocument = std::make_shared<MultiLanguageDocument>(resourceName.c_str(), ICON_MDI_TRANSLATE, Document::Type::MultiLanguage, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(multiLanguageDocument->GetMultiLanguage());
         resourceDocument = std::static_pointer_cast<Document>(multiLanguageDocument);
     }
     else if (resourceInfo.type == "MATT")
     {
-        std::shared_ptr<RenderMaterialEntityTypeDocument> renderMaterialEntityTypeDocument = std::make_shared<RenderMaterialEntityTypeDocument>(resourceName.c_str(), ICON_MDI_PALETTE, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<RenderMaterialEntityTypeDocument> renderMaterialEntityTypeDocument = std::make_shared<RenderMaterialEntityTypeDocument>(resourceName.c_str(), ICON_MDI_PALETTE, Document::Type::RenderMaterialEntityType, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(renderMaterialEntityTypeDocument->GetRenderMaterialEntityType());
         resourceDocument = std::static_pointer_cast<Document>(renderMaterialEntityTypeDocument);
     }
     else if (resourceInfo.type == "MATI")
     {
-        std::shared_ptr<RenderMaterialInstanceDocument> renderMaterialInstanceDocument = std::make_shared<RenderMaterialInstanceDocument>(resourceName.c_str(), ICON_MDI_PALETTE, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<RenderMaterialInstanceDocument> renderMaterialInstanceDocument = std::make_shared<RenderMaterialInstanceDocument>(resourceName.c_str(), ICON_MDI_PALETTE, Document::Type::RenderMaterialInstance, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(renderMaterialInstanceDocument->GetRenderMaterialInstance());
         resourceDocument = std::static_pointer_cast<Document>(renderMaterialInstanceDocument);
     }
     else if (resourceInfo.type == "SBPD")
     {
-        std::shared_ptr<SoundBlendContainerExternalParametersTypeDocument> soundBlendContainerExternalParametersTypeDocument = std::make_shared<SoundBlendContainerExternalParametersTypeDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<SoundBlendContainerExternalParametersTypeDocument> soundBlendContainerExternalParametersTypeDocument = std::make_shared<SoundBlendContainerExternalParametersTypeDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::SoundBlendContainerExternalParametersType, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(soundBlendContainerExternalParametersTypeDocument->GetSoundBlendContainerExternalParametersType());
         resourceDocument = std::static_pointer_cast<Document>(soundBlendContainerExternalParametersTypeDocument);
     }
     else if (resourceInfo.type == "SBPB")
     {
-        std::shared_ptr<SoundBlendContainerExternalParametersBlueprintDocument> soundBlendContainerExternalParametersBlueprintDocument = std::make_shared<SoundBlendContainerExternalParametersBlueprintDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<SoundBlendContainerExternalParametersBlueprintDocument> soundBlendContainerExternalParametersBlueprintDocument = std::make_shared<SoundBlendContainerExternalParametersBlueprintDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::SoundBlendContainerExternalParametersBlueprint, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(soundBlendContainerExternalParametersBlueprintDocument->GetSoundBlendContainerExternalParametersBlueprint());
         resourceDocument = std::static_pointer_cast<Document>(soundBlendContainerExternalParametersBlueprintDocument);
     }
     else if (resourceInfo.type == "FSBF")
     {
-        std::shared_ptr<WaveBankFSBFDocument> waveBankFSBFDocument = std::make_shared<WaveBankFSBFDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<WaveBankFSBFDocument> waveBankFSBFDocument = std::make_shared<WaveBankFSBFDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::WaveBankFSBF, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(waveBankFSBFDocument->GetWaveBankFSBF());
         resourceDocument = std::static_pointer_cast<Document>(waveBankFSBFDocument);
     }
     else if (resourceInfo.type == "FSBM")
     {
-        std::shared_ptr<WaveBankFSBMDocument> waveBankFSBMDocument = std::make_shared<WaveBankFSBMDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<WaveBankFSBMDocument> waveBankFSBMDocument = std::make_shared<WaveBankFSBMDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::WaveBankFSBM, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(waveBankFSBMDocument->GetWaveBankFSBM());
         resourceDocument = std::static_pointer_cast<Document>(waveBankFSBMDocument);
     }
     else if (resourceInfo.type == "FSBS")
     {
-        std::shared_ptr<WaveBankFSBSDocument> waveBankFSBSDocument = std::make_shared<WaveBankFSBSDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<WaveBankFSBSDocument> waveBankFSBSDocument = std::make_shared<WaveBankFSBSDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::WaveBankFSBS, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(waveBankFSBSDocument->GetWaveBankFSBS());
         resourceDocument = std::static_pointer_cast<Document>(waveBankFSBSDocument);
     }
     else if (resourceInfo.type == "WAVB")
     {
-        std::shared_ptr<WaveBankDocument> waveBankDocument = std::make_shared<WaveBankDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<WaveBankDocument> waveBankDocument = std::make_shared<WaveBankDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::WaveBank, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(waveBankDocument->GetWaveBank());
         resourceDocument = std::static_pointer_cast<Document>(waveBankDocument);
     }
     else if (resourceInfo.type == "WBFX")
     {
-        std::shared_ptr<WaveBankFXDocument> waveBankFXDocument = std::make_shared<WaveBankFXDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::Texture, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<WaveBankFXDocument> waveBankFXDocument = std::make_shared<WaveBankFXDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::WaveBankFX, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(waveBankFXDocument->GetWaveBankFX());
         resourceDocument = std::static_pointer_cast<Document>(waveBankFXDocument);
     }
     else if (resourceInfo.type == "SWFF")
     {
-        std::shared_ptr<FlashMovieDocument> flashMovieDocument = std::make_shared<FlashMovieDocument>(resourceName.c_str(), ICON_MDI_IMAGE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<FlashMovieDocument> flashMovieDocument = std::make_shared<FlashMovieDocument>(resourceName.c_str(), ICON_MDI_IMAGE, Document::Type::FlashMovie, resourceInfo.hash, true, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(flashMovieDocument->GetFlashMovie());
         resourceDocument = std::static_pointer_cast<Document>(flashMovieDocument);
     }
     else if (resourceInfo.type == "GFXF")
     {
-        std::shared_ptr<GFXMovieDocument> gfxMovieDocument = std::make_shared<GFXMovieDocument>(resourceName.c_str(), ICON_MDI_IMAGE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<GFXMovieDocument> gfxMovieDocument = std::make_shared<GFXMovieDocument>(resourceName.c_str(), ICON_MDI_IMAGE, Document::Type::GFXMovie, resourceInfo.hash, true, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(gfxMovieDocument->GetGFXMovie());
         resourceDocument = std::static_pointer_cast<Document>(gfxMovieDocument);
     }
     else if (resourceInfo.type == "ChrT")
     {
-        std::shared_ptr<AnimationDatabaseDocument> animationDatabaseDocument = std::make_shared<AnimationDatabaseDocument>(resourceName.c_str(), ICON_MDI_DATABASE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<AnimationDatabaseDocument> animationDatabaseDocument = std::make_shared<AnimationDatabaseDocument>(resourceName.c_str(), ICON_MDI_DATABASE, Document::Type::AnimationDatabase, resourceInfo.hash, true, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(animationDatabaseDocument->GetAnimationDatabase());
         resourceDocument = std::static_pointer_cast<Document>(animationDatabaseDocument);
     }
     else if (resourceInfo.type == "SDEF")
     {
-        std::shared_ptr<SoundDefinitionsDocument> soundDefinitionsDocument = std::make_shared<SoundDefinitionsDocument>(resourceName.c_str(), ICON_MDI_DATABASE, Document::Type::Texture, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<SoundDefinitionsDocument> soundDefinitionsDocument = std::make_shared<SoundDefinitionsDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(soundDefinitionsDocument->GetSoundDefinitions());
         resourceDocument = std::static_pointer_cast<Document>(soundDefinitionsDocument);
