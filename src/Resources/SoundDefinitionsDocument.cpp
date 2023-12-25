@@ -10,7 +10,7 @@ SoundDefinitionsDocument::SoundDefinitionsDocument(const char* name, const char*
 {
     soundDefinitions = std::make_shared<SoundDefinitions>();
 
-    std::shared_ptr<SoundDefinitionsPanel> soundDefinitionsPanel = std::make_shared<SoundDefinitionsPanel>("Text List", ICON_MDI_TEXT_BOX, soundDefinitions);
+    std::shared_ptr<SoundDefinitionsPanel> soundDefinitionsPanel = std::make_shared<SoundDefinitionsPanel>("Sound Definitions", ICON_MDI_VOLUME_HIGH, soundDefinitions);
     std::shared_ptr<ResourceInfoPanel> resourceInfoPanel = std::make_shared<ResourceInfoPanel>("Resource Info", ICON_MDI_INFORMATION, soundDefinitions);
     std::shared_ptr<HexViewerPanel> headerLibraryHexViewerPanel = std::make_shared<HexViewerPanel>("Header Library Hex Viewer", ICON_MDI_MEMORY, false, soundDefinitions);
     std::shared_ptr<HexViewerPanel> resourceLibraryhexViewerPanel = std::make_shared<HexViewerPanel>("Resource Library Hex Viewer", ICON_MDI_MEMORY, true, soundDefinitions);
