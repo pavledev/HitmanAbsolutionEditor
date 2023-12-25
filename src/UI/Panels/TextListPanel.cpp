@@ -45,5 +45,5 @@ void TextListPanel::Render()
 
 void TextListPanel::OnResourceLoaded()
 {
-	textListResource->Parse();
+	textListResource->Deserialize();
 }
