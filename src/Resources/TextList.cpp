@@ -2,7 +2,7 @@
 #include "Utility/StringUtility.h"
 #include "Registry/TextListHashRegistry.h"
 
-void TextList::Parse()
+void TextList::Deserialize()
 {
 	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
 	const unsigned int entryCount = binaryReader.Read<unsigned int>();

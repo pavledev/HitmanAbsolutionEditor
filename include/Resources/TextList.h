@@ -12,7 +12,7 @@ public:
 		std::string text;
 	};
 
-	void Parse();
+	void Deserialize();
 	std::vector<Entry>& GetEntries();
 
 private:
