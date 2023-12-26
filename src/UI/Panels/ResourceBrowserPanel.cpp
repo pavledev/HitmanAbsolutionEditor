@@ -24,6 +24,7 @@
 #include "UI/Documents/MultiLanguageDocument.h"
 #include "UI/Documents/RenderMaterialEntityTypeDocument.h"
 #include "UI/Documents/RenderMaterialInstanceDocument.h"
+#include "UI/Documents/RenderMaterialEffectDocument.h"
 #include "UI/Documents/SoundBlendContainerExternalParametersTypeDocument.h"
 #include "UI/Documents/SoundBlendContainerExternalParametersBlueprintDocument.h"
 #include "UI/Documents/WaveBankFSBFDocument.h"
@@ -487,6 +488,13 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(renderMaterialInstanceDocument->GetRenderMaterialInstance());
         resourceDocument = std::static_pointer_cast<Document>(renderMaterialInstanceDocument);
+    }
+    else if (resourceInfo.type == "MATE")
+    {
+        std::shared_ptr<RenderMaterialEffectDocument> renderMaterialEffectDocument = std::make_shared<RenderMaterialEffectDocument>(resourceName.c_str(), ICON_MDI_PALETTE, Document::Type::RenderMaterialEffect, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(renderMaterialEffectDocument->GetRenderMaterialEffect());
+        resourceDocument = std::static_pointer_cast<Document>(renderMaterialEffectDocument);
     }
     else if (resourceInfo.type == "SBPD")
     {
