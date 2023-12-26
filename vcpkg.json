@@ -5,6 +5,7 @@
         "directxtex",
         "directxtk",
         "rapidjson",
-        "sfml"
+        "sfml",
+        "effects11"
     ]
 }
