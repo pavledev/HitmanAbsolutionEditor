@@ -29,6 +29,7 @@ public:
         MultiLanguage,
         RenderMaterialEntityType,
         RenderMaterialInstance,
+        RenderMaterialEffect,
         SoundBlendContainerExternalParametersType,
         SoundBlendContainerExternalParametersBlueprint,
         WaveBankFSBF,
