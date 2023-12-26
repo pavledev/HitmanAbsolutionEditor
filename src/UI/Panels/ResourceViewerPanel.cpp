@@ -36,7 +36,7 @@ ResourceViewerPanel::ResourceViewerPanel(const char* name, const char* icon, std
     textureView = nullptr;
     texture = nullptr;
 
-    textEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::JSON());
+    //textEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::JSON());
 
     viewportWidth = 0;
     viewportHeight = 0;
@@ -535,10 +535,10 @@ void ResourceViewerPanel::DisplayMorphemeRuntimeNetwork()
         morphemeRuntimeNetwork.Deserialize(resource->GetResourceData());
         morphemeRuntimeNetwork.SerializeToJson(json);
 
-        textEditor.SetText(json);
+        //textEditor.SetText(json);
     }
 
-    textEditor.Render();
+    //textEditor.Render();
 }
 
 void ResourceViewerPanel::DisplayMorphemeRuntimeRig()
@@ -553,7 +553,7 @@ void ResourceViewerPanel::DisplayMorphemeRuntimeRig()
         textEditor.SetText(json);
     }
 
-    textEditor.Render();
+    //textEditor.Render();
 }
 
 void ResourceViewerPanel::DisplayMorphemeRuntimeEventTrack()
@@ -568,7 +568,7 @@ void ResourceViewerPanel::DisplayMorphemeRuntimeEventTrack()
         textEditor.SetText(json);
     }
 
-    textEditor.Render();
+    //textEditor.Render();
 }
 
 void ResourceViewerPanel::DisplayModel()
@@ -895,7 +895,7 @@ void ResourceViewerPanel::DisplayFabricResourceEntity()
         textEditor.SetText(json);
     }
 
-    textEditor.Render();
+    //textEditor.Render();
 }
 
 void ResourceViewerPanel::DisplayFabricResourceEntityBlueprint()
@@ -911,7 +911,7 @@ void ResourceViewerPanel::DisplayFabricResourceEntityBlueprint()
         textEditor.SetText(json);
     }
 
-    textEditor.Render();
+    //textEditor.Render();
 }
 
 void ResourceViewerPanel::DisplayCloth()
@@ -926,7 +926,7 @@ void ResourceViewerPanel::DisplayCloth()
         textEditor.SetText(json);
     }
 
-    textEditor.Render();
+    //textEditor.Render();
 }
 
 void ResourceViewerPanel::DisplaySoundDefinitions()
@@ -941,7 +941,7 @@ void ResourceViewerPanel::DisplaySoundDefinitions()
         textEditor.SetText(json);
     }
 
-    textEditor.Render();
+    //textEditor.Render();
 }
 
 void ResourceViewerPanel::DisplaySoundBlendContainerExternalParametersType()
@@ -956,7 +956,7 @@ void ResourceViewerPanel::DisplaySoundBlendContainerExternalParametersType()
         textEditor.SetText(json);
     }
 
-    textEditor.Render();
+    //textEditor.Render();
 }
 
 SceneRenderer& ResourceViewerPanel::GetSceneRenderer()
