@@ -8,6 +8,8 @@ set(VCPKG_BUILD_ROOT "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
 add_subdirectory(External/imgui-docking-layout)
 add_subdirectory(External/imguizmo)
 add_subdirectory(External/GLTFSDK)
+add_subdirectory(External/HLSLDecompiler)
+add_subdirectory(External/ImGuiColorTextEdit)
 
 find_package(directxtex CONFIG REQUIRED)
 find_package(directxtk CONFIG REQUIRED)
@@ -61,6 +63,8 @@ target_link_libraries(HitmanAbsolutionEditor PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/PhysXLoader64.lib
 	sfml-audio
 	Microsoft::Effects11
+	hlsl-decompiler
+	imgui-color-text-edit
 )
 
 install(TARGETS HitmanAbsolutionEditor
