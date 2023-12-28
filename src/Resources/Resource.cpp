@@ -18,6 +18,7 @@ Resource::Resource()
 	resourceData = nullptr;
 	resourceDataSize = 0;
 	isResourceLoaded = false;
+	isResourceDeserialized = false;
 }
 
 Resource::~Resource()
@@ -555,4 +556,9 @@ void Resource::AddReference(const ZRuntimeResourceID& runtimeResourceID, const E
 void Resource::SetResourceLoadedCallback(ResourceLoadedCallback resourceLoadedCallback)
 {
 	this->resourceLoadedCallback = resourceLoadedCallback;
+}
+
+const bool Resource::IsResourceDeserialized() const
+{
+	return isResourceDeserialized;
 }

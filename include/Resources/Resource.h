@@ -72,6 +72,12 @@ public:
     void SetHeaderLibraries(const std::vector<HeaderLibrary>* headerLibraries);
     void AddReference(const ZRuntimeResourceID& runtimeResourceID, const EResourceReferenceFlags resourceReferenceFlags);
     void SetResourceLoadedCallback(ResourceLoadedCallback resourceLoadedCallback);
+    const bool IsResourceDeserialized() const;
+
+    virtual void Deserialize()
+    {
+        isResourceDeserialized = false;
+    }
 
 protected:
     std::string headerLibraryFilePath;
@@ -95,5 +101,6 @@ protected:
     std::vector<std::shared_ptr<Resource>> backReferences;
     const std::vector<HeaderLibrary>* headerLibraries;
     bool isResourceLoaded;
+    bool isResourceDeserialized;
     ResourceLoadedCallback resourceLoadedCallback;
 };
