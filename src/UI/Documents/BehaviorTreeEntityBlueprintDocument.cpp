@@ -10,7 +10,7 @@ BehaviorTreeEntityBlueprintDocument::BehaviorTreeEntityBlueprintDocument(const c
 {
     behaviorTreeEntityBlueprint = std::make_shared<BehaviorTreeEntityBlueprint>();
 
-    std::shared_ptr<BehaviorTreeEntityBlueprintPanel> behaviorTreeEntityBlueprintPanel = std::make_shared<BehaviorTreeEntityBlueprintPanel>("Behavior Tree Entity Blueprint", ICON_MDI_FILE_TREE, behaviorTreeEntityBlueprint);
+    std::shared_ptr<BehaviorTreeEntityBlueprintPanel> behaviorTreeEntityBlueprintPanel = std::make_shared<BehaviorTreeEntityBlueprintPanel>("Behavior Tree Entity Blueprint", ICON_MDI_VIEW_LIST, behaviorTreeEntityBlueprint);
     std::shared_ptr<ResourceInfoPanel> resourceInfoPanel = std::make_shared<ResourceInfoPanel>("Resource Info", ICON_MDI_INFORMATION, behaviorTreeEntityBlueprint);
     std::shared_ptr<HexViewerPanel> headerLibraryHexViewerPanel = std::make_shared<HexViewerPanel>("Header Library Hex Viewer", ICON_MDI_MEMORY, false, behaviorTreeEntityBlueprint);
     std::shared_ptr<HexViewerPanel> resourceLibraryhexViewerPanel = std::make_shared<HexViewerPanel>("Resource Library Hex Viewer", ICON_MDI_MEMORY, true, behaviorTreeEntityBlueprint);
