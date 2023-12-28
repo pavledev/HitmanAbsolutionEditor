@@ -154,13 +154,17 @@ void UI::BeginProperty(std::string& label, const char* tooltip, bool rightAlignN
 	++propertyCounter;
 }
 
-bool UI::BeginTreeNodeProperty(const char* label, const char* tooltip)
+bool UI::BeginTreeNodeProperty(const char* label, const char* tooltip, bool shouldNodeBeOpenedByDefault)
 {
 	const std::string id = std::format("{}_{}", tableName, propertyCounter);
-	static constexpr ImGuiTreeNodeFlags treeNodeFlags =
-		ImGuiTreeNodeFlags_DefaultOpen |
+	static ImGuiTreeNodeFlags treeNodeFlags =
 		ImGuiTreeNodeFlags_SpanAvailWidth |
 		ImGuiTreeNodeFlags_FramePadding;
+
+	if (shouldNodeBeOpenedByDefault)
+	{
+		treeNodeFlags |= ImGuiTreeNodeFlags_DefaultOpen;
+	}
 
 	ImGui::TableNextRow();
 	ImGui::TableNextColumn();

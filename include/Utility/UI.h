@@ -42,7 +42,7 @@ public:
 	static void EndProperties();
 	static void BeginProperty(const char* label, const char* tooltip, bool rightAlignNextColumn = true);
 	static void BeginProperty(std::string& label, const char* tooltip, bool rightAlignNextColumn = true);
-	static bool BeginTreeNodeProperty(const char* label, const char* tooltip);
+	static bool BeginTreeNodeProperty(const char* label, const char* tooltip, bool shouldNodeBeOpenedByDefault = false);
 	static void EndProperty();
 	static void EndTreeNodeProperty(const bool isTreeNodeOpen);
 
