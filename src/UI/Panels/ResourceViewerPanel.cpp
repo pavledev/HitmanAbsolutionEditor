@@ -166,10 +166,11 @@ void ResourceViewerPanel::DisplayBehaviorTreeEntityBlueprint()
     {
         behaviorTreeEntityBlueprint = std::make_shared<BehaviorTreeEntityBlueprint>();
 
-        behaviorTreeEntityBlueprint->Deserialize(resource->GetResourceData(), resource->GetResourceDataSize());
+        //behaviorTreeEntityBlueprint->Deserialize(resource->GetResourceData(), resource->GetResourceDataSize());
     }
 
-    SBehaviorTreeInfo* behaviorTreeInfo = behaviorTreeEntityBlueprint->GetBehaviorTreeInfo();
+    //SBehaviorTreeInfo* behaviorTreeInfo = behaviorTreeEntityBlueprint->GetBehaviorTreeInfo();
+    SBehaviorTreeInfo* behaviorTreeInfo = nullptr;
     static ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
     if (ImGui::BeginTable("behaviorTreeEntityBlueprint", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable))
@@ -427,10 +428,11 @@ void ResourceViewerPanel::DisplayGlobalIndex()
 {
     if (!globalResourceIndex->GetResourceIndex())
     {
-        globalResourceIndex->Deserialize(resource->GetResourceData(), resource->GetResourceDataSize());
+        //globalResourceIndex->Deserialize(resource->GetResourceData(), resource->GetResourceDataSize());
     }
 
-    SResourceIndex* resourceIndex = globalResourceIndex->GetResourceIndex();
+    //SResourceIndex* resourceIndex = globalResourceIndex->GetResourceIndex();
+    SResourceIndex* resourceIndex = nullptr;
     static ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Bullet;
 
     if (ImGui::BeginTable("globalResourceIndex", 2, ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable))
