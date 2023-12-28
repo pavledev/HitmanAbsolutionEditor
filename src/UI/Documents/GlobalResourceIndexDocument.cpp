@@ -10,7 +10,7 @@ GlobalResourceIndexDocument::GlobalResourceIndexDocument(const char* name, const
 {
     globalResourceIndex = std::make_shared<GlobalResourceIndex>();
 
-    std::shared_ptr<GlobalResourceIndexPanel> globalResourceIndexPanel = std::make_shared<GlobalResourceIndexPanel>("Global Resource Index", ICON_MDI_FILE_DOCUMENT, globalResourceIndex);
+    std::shared_ptr<GlobalResourceIndexPanel> globalResourceIndexPanel = std::make_shared<GlobalResourceIndexPanel>("Global Resource Index", ICON_MDI_VIEW_LIST, globalResourceIndex);
     std::shared_ptr<ResourceInfoPanel> resourceInfoPanel = std::make_shared<ResourceInfoPanel>("Resource Info", ICON_MDI_INFORMATION, globalResourceIndex);
     std::shared_ptr<HexViewerPanel> headerLibraryHexViewerPanel = std::make_shared<HexViewerPanel>("Header Library Hex Viewer", ICON_MDI_MEMORY, false, globalResourceIndex);
     std::shared_ptr<HexViewerPanel> resourceLibraryhexViewerPanel = std::make_shared<HexViewerPanel>("Resource Library Hex Viewer", ICON_MDI_MEMORY, true, globalResourceIndex);
