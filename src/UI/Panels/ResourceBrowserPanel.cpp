@@ -584,7 +584,7 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
     }
     else if (resourceInfo.type == "AIBB")
     {
-        std::shared_ptr<BehaviorTreeEntityBlueprintDocument> behaviorTreeEntityBlueprintDocument = std::make_shared<BehaviorTreeEntityBlueprintDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<BehaviorTreeEntityBlueprintDocument> behaviorTreeEntityBlueprintDocument = std::make_shared<BehaviorTreeEntityBlueprintDocument>(resourceName.c_str(), ICON_MDI_VIEW_LIST, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(behaviorTreeEntityBlueprintDocument->GetBehaviorTreeEntityBlueprint());
         resourceDocument = std::static_pointer_cast<Document>(behaviorTreeEntityBlueprintDocument);
