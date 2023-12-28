@@ -1,6 +1,6 @@
 #include "Resources/Localization.h"
 
-void Localization::Parse()
+void Localization::Deserialize()
 {
 	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
 	localizationCategory = binaryReader.Read<char>();
