@@ -36,6 +36,8 @@
 #include "UI/Documents/GFXMovieDocument.h"
 #include "UI/Documents/AnimationDatabaseDocument.h"
 #include "UI/Documents/SoundDefinitionsDocument.h"
+#include "UI/Documents/GlobalResourceIndexDocument.h"
+#include "UI/Documents/BehaviorTreeEntityBlueprintDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -572,6 +574,20 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(soundDefinitionsDocument->GetSoundDefinitions());
         resourceDocument = std::static_pointer_cast<Document>(soundDefinitionsDocument);
+    }
+    else if (resourceInfo.type == "GIDX")
+    {
+        std::shared_ptr<GlobalResourceIndexDocument> globalResourceIndexDocument = std::make_shared<GlobalResourceIndexDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(globalResourceIndexDocument->GetGlobalResourceIndex());
+        resourceDocument = std::static_pointer_cast<Document>(globalResourceIndexDocument);
+    }
+    else if (resourceInfo.type == "AIBB")
+    {
+        std::shared_ptr<BehaviorTreeEntityBlueprintDocument> behaviorTreeEntityBlueprintDocument = std::make_shared<BehaviorTreeEntityBlueprintDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(behaviorTreeEntityBlueprintDocument->GetBehaviorTreeEntityBlueprint());
+        resourceDocument = std::static_pointer_cast<Document>(behaviorTreeEntityBlueprintDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
