@@ -11,7 +11,7 @@ public:
 		std::string resourceID;
 	};
 
-	void Deserialize();
+	void Deserialize() override;
 	std::vector<Entry>& GetEntries();
 
 private:

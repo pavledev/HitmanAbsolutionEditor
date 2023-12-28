@@ -7,7 +7,7 @@
 class CppEntity : public Resource
 {
 public:
-	void Deserialize();
+	void Deserialize() override;
 	void Parse(void* cppEntity);
 	void ParseProperties(void* cppEntity, const unsigned int propertyValuesStartAddress, const unsigned int propertyValuesEndAddress, TArray<SEntityTemplateProperty>& properties);
 	std::shared_ptr<SCppEntity> GetCppEntity();

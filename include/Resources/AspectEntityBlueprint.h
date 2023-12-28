@@ -7,7 +7,7 @@
 class AspectEntityBlueprint : public Resource
 {
 public:
-	void Deserialize();
+	void Deserialize() override;
 
 private:
 	std::vector<unsigned int> referenceIndices;

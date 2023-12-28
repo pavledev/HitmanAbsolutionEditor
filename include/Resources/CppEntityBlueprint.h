@@ -7,7 +7,7 @@
 class CppEntityBlueprint : public Resource
 {
 public:
-	void Deserialize();
+	void Deserialize() override;
 	void Parse(void* cppEntityBlueprint);
 	std::shared_ptr<SCppEntityBlueprint> GetCppEntityBlueprint();
 

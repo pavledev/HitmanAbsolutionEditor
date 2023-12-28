@@ -5,7 +5,7 @@
 class Localization : public Resource
 {
 public:
-	void Parse();
+	void Deserialize() override;
 	char GetLocalizationCategory();
 	std::vector<int>& GetIndices();
 	std::vector<std::string>& GetLocales();
