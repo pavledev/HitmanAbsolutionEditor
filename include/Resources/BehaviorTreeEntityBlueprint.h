@@ -1,22 +1,17 @@
 #pragma once
 
-#include <string>
-
 #include "Glacier/BehaviorTree/SBehaviorTreeInfo.h"
 
-#include "IO/BinaryReader.h"
+#include "Resource.h"
 
-class BehaviorTreeEntityBlueprint
+class BehaviorTreeEntityBlueprint : public Resource
 {
 public:
-	~BehaviorTreeEntityBlueprint();
-	SBehaviorTreeInfo* GetBehaviorTreeInfo();
-	bool Deserialize(const std::string& filePath);
-	bool Deserialize(void* data, const unsigned int dataSize);
-	bool Deserialize(BinaryReader& binaryReader);
+	void Deserialize() override;
+	void Parse(void* behaviorTreeInfo);
+	std::shared_ptr<SBehaviorTreeInfo> GetBehaviorTreeInfo();
 	void SerializeToJson(const std::string& outputFilePath);
 
 private:
-	SBehaviorTreeInfo* behaviorTreeInfo;
-	unsigned char alignment;
+	std::shared_ptr<SBehaviorTreeInfo> behaviorTreeInfo;
 };
