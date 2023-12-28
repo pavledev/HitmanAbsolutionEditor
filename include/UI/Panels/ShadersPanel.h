@@ -12,7 +12,6 @@ class ShadersPanel : public BasePanel
 public:
 	ShadersPanel(const char* name, const char* icon, std::shared_ptr<RenderMaterialEffect> renderMaterialEffectResource);
 	void Render() override;
-	void OnResourceLoaded();
 
 private:
 	std::shared_ptr<RenderMaterialEffect> renderMaterialEffectResource;
