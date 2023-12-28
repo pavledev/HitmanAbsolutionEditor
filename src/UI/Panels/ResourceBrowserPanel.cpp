@@ -577,7 +577,7 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
     }
     else if (resourceInfo.type == "GIDX")
     {
-        std::shared_ptr<GlobalResourceIndexDocument> globalResourceIndexDocument = std::make_shared<GlobalResourceIndexDocument>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<GlobalResourceIndexDocument> globalResourceIndexDocument = std::make_shared<GlobalResourceIndexDocument>(resourceName.c_str(), ICON_MDI_VIEW_LIST, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(globalResourceIndexDocument->GetGlobalResourceIndex());
         resourceDocument = std::static_pointer_cast<Document>(globalResourceIndexDocument);
