@@ -72,5 +72,5 @@ void LocalizationPanel::Render()
 
 void LocalizationPanel::OnResourceLoaded()
 {
-	localizationResource->Parse();
+	localizationResource->Deserialize();
 }
