@@ -1,22 +1,17 @@
 #pragma once
 
-#include <string>
-
 #include "Glacier/GlobalResourceIndex/SResourceIndex.h"
 
-#include "IO/BinaryReader.h"
+#include "Resource.h"
 
-class GlobalResourceIndex
+class GlobalResourceIndex : public Resource
 {
 public:
-	~GlobalResourceIndex();
-	SResourceIndex* GetResourceIndex();
-	bool Deserialize(const std::string& filePath);
-	bool Deserialize(void* data, const unsigned int dataSize);
-	bool Deserialize(BinaryReader& binaryReader);
+	void Deserialize() override;
+	void Parse(void* resourceIndex);
+	std::shared_ptr<SResourceIndex> GetResourceIndex();
 	void SerializeToJson(const std::string& outputFilePath);
 
 private:
-	SResourceIndex* resourceIndex;
-	unsigned char alignment;
+	std::shared_ptr<SResourceIndex> resourceIndex;
 };
