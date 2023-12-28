@@ -38,6 +38,7 @@
 #include "UI/Documents/SoundDefinitionsDocument.h"
 #include "UI/Documents/GlobalResourceIndexDocument.h"
 #include "UI/Documents/BehaviorTreeEntityBlueprintDocument.h"
+#include "UI/Documents/CompositionBlueprintDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -588,6 +589,13 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(behaviorTreeEntityBlueprintDocument->GetBehaviorTreeEntityBlueprint());
         resourceDocument = std::static_pointer_cast<Document>(behaviorTreeEntityBlueprintDocument);
+    }
+    else if (resourceInfo.type == "MUCB")
+    {
+        std::shared_ptr<CompositionBlueprintDocument> compositionBlueprintDocument = std::make_shared<CompositionBlueprintDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(compositionBlueprintDocument->GetCompositionBlueprint());
+        resourceDocument = std::static_pointer_cast<Document>(compositionBlueprintDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
