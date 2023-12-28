@@ -72,5 +72,5 @@ void MultiLanguagePanel::Render()
 
 void MultiLanguagePanel::OnResourceLoaded()
 {
-	multiLanguageResource->Parse();
+	multiLanguageResource->Deserialize();
 }
