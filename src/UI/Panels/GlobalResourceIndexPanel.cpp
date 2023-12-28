@@ -32,6 +32,7 @@ void GlobalResourceIndexPanel::Render()
 	}
 
 	std::shared_ptr<SResourceIndex> resourceIndex = globalResourceIndexResource->GetResourceIndex();
+	const std::vector<std::shared_ptr<Resource>>& gidxReferences = globalResourceIndexResource->GetReferences();
 	const bool isFoldersTreeNodeOpen = UI::BeginTreeNodeProperty("folders", nullptr);
 
 	if (isFoldersTreeNodeOpen)
@@ -49,8 +50,16 @@ void GlobalResourceIndexPanel::Render()
 				for (size_t j = 0; j < resourceIndex->folders[i].resourceIndices.Size(); ++j)
 				{
 					std::string index = std::to_string(j);
+					std::string resourceID;
 
-					UI::Property(index.c_str(), resourceIndex->folders[i].resourceIndices[j]);
+					if (resourceIndex->folders[i].resourceIndices[j] != -1)
+					{
+						const int referenceIndex = resourceIndex->folders[i].resourceIndices[j];
+
+						resourceID = gidxReferences[referenceIndex]->GetResourceID();
+					}
+
+					UI::StringProperty(index.c_str(), resourceID);
 				}
 			}
 
