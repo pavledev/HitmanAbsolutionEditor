@@ -1,7 +1,6 @@
 #include <IconsMaterialDesignIcons.h>
 
 #include <UI/Documents/TextureDocument.h>
-#include <UI/Panels/ResourceViewerPanel.h>
 #include <UI/Panels/TextureViewerPanel.h>
 #include <UI/Panels/ResourceInfoPanel.h>
 #include <UI/Panels/HexViewerPanel.h>
