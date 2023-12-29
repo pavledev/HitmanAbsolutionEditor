@@ -2,19 +2,21 @@
 
 #include <vector>
 
-#include "IO/BinaryReader.h"
+#include "Resource.h"
 
-class FabricResourceEntityBlueprint
+class FabricResourceEntityBlueprint : public Resource
 {
 public:
-	void Deserialize(const std::string& filePath);
-	void Deserialize(void* buffer, const unsigned int dataSize);
-	void Deserialize(BinaryReader& binaryReader);
+	void Deserialize() override;
 	std::string SerializeToJson();
 	const std::vector<std::string>& GetClothPieceNames() const;
 	const std::vector<std::string>& GetClothPieceExtendedNames() const;
 	const std::vector<std::string>& GetTransformNames() const;
 	const std::vector<std::string>& GetStrandsNames() const;
+	std::vector<std::string>& GetClothPieceNames();
+	std::vector<std::string>& GetClothPieceExtendedNames();
+	std::vector<std::string>& GetTransformNames();
+	std::vector<std::string>& GetStrandsNames();
 
 private:
 	enum class PropertyType
