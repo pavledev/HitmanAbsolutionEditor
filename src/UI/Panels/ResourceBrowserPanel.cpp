@@ -40,6 +40,7 @@
 #include "UI/Documents/CompositionBlueprintDocument.h"
 #include "UI/Documents/PackageListDocument.h"
 #include "UI/Documents/ScatterDataDocument.h"
+#include "UI/Documents/FabricResourceEntityDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -611,6 +612,13 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(scatterDataDocument->GetScatterData());
         resourceDocument = std::static_pointer_cast<Document>(scatterDataDocument);
+    }
+    else if (resourceInfo.type == "CLOT")
+    {
+        std::shared_ptr<FabricResourceEntityDocument> fabricResourceEntityDocument = std::make_shared<FabricResourceEntityDocument>(resourceName.c_str(), ICON_MDI_TSHIRT_CREW, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(fabricResourceEntityDocument->GetFabricResourceEntity());
+        resourceDocument = std::static_pointer_cast<Document>(fabricResourceEntityDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
