@@ -15,6 +15,8 @@ void Localization::Deserialize()
 		indices.push_back(index);
 		locales.push_back(locale);
 	}
+
+	isResourceDeserialized = true;
 }
 
 char Localization::GetLocalizationCategory()
