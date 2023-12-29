@@ -27,6 +27,8 @@ void AnimationDatabase::Deserialize()
 	{
 		entries[i].animationName = binaryReader.ReadString();
 	}
+
+	isResourceDeserialized = true;
 }
 
 std::vector<AnimationDatabase::Entry>& AnimationDatabase::GetEntries()
