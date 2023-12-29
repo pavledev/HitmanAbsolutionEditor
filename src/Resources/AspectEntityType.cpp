@@ -8,4 +8,6 @@ void AspectEntityType::Deserialize()
 	{
 		referenceIndices.push_back(binaryReader.Read<unsigned int>());
 	}
+
+	isResourceDeserialized = true;
 }
