@@ -39,6 +39,8 @@
 #include "UI/Documents/GlobalResourceIndexDocument.h"
 #include "UI/Documents/BehaviorTreeEntityBlueprintDocument.h"
 #include "UI/Documents/CompositionBlueprintDocument.h"
+#include "UI/Documents/PackageListDocument.h"
+#include "UI/Documents/ScatterDataDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -596,6 +598,20 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(compositionBlueprintDocument->GetCompositionBlueprint());
         resourceDocument = std::static_pointer_cast<Document>(compositionBlueprintDocument);
+    }
+    else if (resourceInfo.type == "PKGL")
+    {
+        std::shared_ptr<PackageListDocument> packageListDocument = std::make_shared<PackageListDocument>(resourceName.c_str(), ICON_MDI_VIEW_LIST, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(packageListDocument->GetPackageList());
+        resourceDocument = std::static_pointer_cast<Document>(packageListDocument);
+    }
+    else if (resourceInfo.type == "SCDA")
+    {
+        std::shared_ptr<ScatterDataDocument> scatterDataDocument = std::make_shared<ScatterDataDocument>(resourceName.c_str(), ICON_MDI_GRASS, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(scatterDataDocument->GetScatterData());
+        resourceDocument = std::static_pointer_cast<Document>(scatterDataDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
