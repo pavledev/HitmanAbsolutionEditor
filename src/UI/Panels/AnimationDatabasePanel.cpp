@@ -15,7 +15,7 @@ void AnimationDatabasePanel::Render()
 		return;
 	}
 
-	if (!animationDatabaseResource->IsResourceLoaded())
+	if (!animationDatabaseResource->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading animation database...");

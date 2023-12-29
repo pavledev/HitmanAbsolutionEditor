@@ -20,7 +20,7 @@ void ShadersPanel::Render()
 
 	ImGui::PushFont(Editor::GetInstance().GetImGuiRenderer()->GetMiddleFont());
 
-	if (!renderMaterialEffectResource->IsResourceLoaded())
+	if (!renderMaterialEffectResource->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading render material effect...");

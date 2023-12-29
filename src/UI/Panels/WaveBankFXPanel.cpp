@@ -15,7 +15,7 @@ void WaveBankFXPanel::Render()
 		return;
 	}
 
-	if (!waveBankFXResource->IsResourceLoaded())
+	if (!waveBankFXResource->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading wave bank fx...");

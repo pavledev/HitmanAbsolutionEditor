@@ -71,7 +71,7 @@ void CppEntityPropertiesPanel::Render()
 		return;
 	}
 
-	if (!cpptResource->IsResourceLoaded())
+	if (!cpptResource->IsResourceDeserialized())
 	{
 		End();
 

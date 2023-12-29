@@ -15,7 +15,7 @@ void SoundDefinitionsPanel::Render()
 		return;
 	}
 
-	if (!soundDefinitionsResource->IsResourceLoaded())
+	if (!soundDefinitionsResource->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading text list...");

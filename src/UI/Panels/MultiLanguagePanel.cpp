@@ -15,7 +15,7 @@ void MultiLanguagePanel::Render()
 		return;
 	}
 
-	if (!multiLanguageResource->IsResourceLoaded())
+	if (!multiLanguageResource->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading multi language resource...");

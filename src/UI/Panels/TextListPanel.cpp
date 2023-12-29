@@ -15,7 +15,7 @@ void TextListPanel::Render()
 		return;
 	}
 
-	if (!textListResource->IsResourceLoaded())
+	if (!textListResource->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading text list...");

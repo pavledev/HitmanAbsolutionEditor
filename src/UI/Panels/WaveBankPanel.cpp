@@ -15,7 +15,7 @@ void WaveBankPanel::Render()
 		return;
 	}
 
-	if (!waveBankResource->IsResourceLoaded())
+	if (!waveBankResource->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading wave bank...");

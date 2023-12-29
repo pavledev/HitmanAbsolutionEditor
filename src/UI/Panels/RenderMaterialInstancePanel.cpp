@@ -68,7 +68,7 @@ void RenderMaterialInstancePanel::Render()
 		return;
 	}
 
-	if (!renderMaterialInstance->IsResourceLoaded())
+	if (!renderMaterialInstance->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading material instance...");

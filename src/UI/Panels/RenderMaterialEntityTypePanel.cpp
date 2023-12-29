@@ -24,7 +24,7 @@ void RenderMaterialEntityTypePanel::Render()
 		return;
 	}
 
-	if (!renderMaterialEntityTypeResource->IsResourceLoaded())
+	if (!renderMaterialEntityTypeResource->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading material entity type...");
@@ -33,7 +33,7 @@ void RenderMaterialEntityTypePanel::Render()
 		return;
 	}
 
-	if (!renderMaterialEntityBlueprint || renderMaterialEntityBlueprint && !renderMaterialEntityBlueprint->IsResourceLoaded())
+	if (!renderMaterialEntityBlueprint || renderMaterialEntityBlueprint && !renderMaterialEntityBlueprint->IsResourceDeserialized())
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading material entity blueprint...");
