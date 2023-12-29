@@ -694,6 +694,8 @@ void SoundDefinitions::Deserialize()
 
 		entries.push_back(entry);
 	}
+
+	isResourceDeserialized = true;
 }
 
 void SoundDefinitions::SerializeToJson(const Resource* resource, std::string& jsonOutput)
