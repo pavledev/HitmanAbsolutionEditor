@@ -27,6 +27,8 @@ void RenderMaterialEffect::Deserialize()
     GetConstantBufferNames(compiledEffect, effectDesc);
     GetGlobalVariableNames(compiledEffect, effectDesc);
     GetTechniques(compiledEffect, effectDesc);
+
+    isResourceDeserialized = true;
 }
 
 void RenderMaterialEffect::GetConstantBufferNames(ID3DX11Effect* compiledEffect, D3DX11_EFFECT_DESC& effectDesc)
