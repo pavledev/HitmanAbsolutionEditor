@@ -4,17 +4,19 @@
 
 #include "Glacier/Cloth/ZFabricResourceEntity.h"
 
-#include "IO/BinaryReader.h"
+#include "Resource.h"
 #include "Resources/FabricResourceEntityBlueprint.h"
 
-class FabricResourceEntity
+class FabricResourceEntity : public Resource
 {
 public:
-	void Deserialize(const std::string& filePath);
-	void Deserialize(void* buffer, const unsigned int dataSize);
-	void Deserialize(BinaryReader& binaryReader);
+	void Deserialize() override;
 	std::string SerializeToJson();
 	std::string SerializeToJson(const FabricResourceEntityBlueprint& fabricResourceEntityBlueprint);
+	std::vector<ZFabricResourceEntity::SAddedPropertyValues::SClothPiecePropertySet>& GetClothPiecePropertySets();
+	std::vector<ZFabricResourceEntity::SAddedPropertyValues::SClothPieceExtendedPropertySet>& GetClothPieceExtendedPropertySets();
+	std::vector<ZFabricResourceEntity::SAddedPropertyValues::STransformPropertySet>& GetTransformPropertySets();
+	std::vector<ZFabricResourceEntity::SAddedPropertyValues::SStrandsPropertySet>& GetStrandsPropertySets();
 
 private:
 	enum class PropertyType
