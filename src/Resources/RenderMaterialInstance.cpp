@@ -13,6 +13,8 @@ void RenderMaterialInstance::Deserialize()
 	materialPropertyList = binaryReader.Read<SRMaterialPropertyList>();
 
 	ReadProperty(instanceProperty, binaryReader, materialPropertyList.lPropertyList);
+
+	isResourceDeserialized = true;
 }
 
 void RenderMaterialInstance::ReadProperty(Property& property, BinaryReader& binaryReader, const unsigned int propertyOffset)
