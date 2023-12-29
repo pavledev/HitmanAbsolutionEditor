@@ -12,6 +12,8 @@ void CppEntityBlueprint::Deserialize()
 	Parse(cppEntityBlueprint);
 
 	operator delete(cppEntityBlueprint, std::align_val_t(binaryDeserializer.GetAlignment()));
+
+	isResourceDeserialized = true;
 }
 
 void CppEntityBlueprint::Parse(void* cppEntityBlueprint)
