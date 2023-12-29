@@ -32,6 +32,8 @@ void TextList::Deserialize()
 
 		entries.push_back(entry);
 	}
+
+	isResourceDeserialized = true;
 }
 
 std::vector<TextList::Entry>& TextList::GetEntries()
