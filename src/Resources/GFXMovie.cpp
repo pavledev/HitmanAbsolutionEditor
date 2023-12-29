@@ -16,6 +16,8 @@ void GFXMovie::Deserialize()
 	Parse(gfxResource);
 
 	operator delete(gfxResource, std::align_val_t(binaryDeserializer.GetAlignment()));
+
+	isResourceDeserialized = true;
 }
 
 void GFXMovie::Parse(void* gfxResource)
