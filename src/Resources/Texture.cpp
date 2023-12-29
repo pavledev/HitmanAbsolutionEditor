@@ -51,6 +51,8 @@ void Texture::Deserialize()
     scratchImage.Initialize(texMetadata);
 
     memcpy(scratchImage.GetPixels(), data, scratchImage.GetPixelsSize());
+
+    isResourceDeserialized = true;
 }
 
 ZTextureMap::SMipLevel Texture::GetMipLevel(unsigned int level)
