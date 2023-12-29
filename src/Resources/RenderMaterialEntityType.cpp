@@ -52,6 +52,8 @@ void RenderMaterialEntityType::Deserialize()
 
 		modifiers.push_back(modifier);
 	}
+
+	isResourceDeserialized = true;
 }
 
 std::vector<std::shared_ptr<RenderMaterialEntityType::Modifier>>& RenderMaterialEntityType::GetModifiers()
