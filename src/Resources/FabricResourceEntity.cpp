@@ -1,21 +1,9 @@
 #include "Resources/FabricResourceEntity.h"
 
-void FabricResourceEntity::Deserialize(const std::string& filePath)
+void FabricResourceEntity::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(filePath);
+	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
 
-	Deserialize(binaryReader);
-}
-
-void FabricResourceEntity::Deserialize(void* buffer, const unsigned int dataSize)
-{
-	BinaryReader binaryReader = BinaryReader(buffer, dataSize);
-
-	Deserialize(binaryReader);
-}
-
-void FabricResourceEntity::Deserialize(BinaryReader& binaryReader)
-{
 	while (binaryReader.GetPosition() < binaryReader.GetSize())
 	{
 		PropertyType propertyType = static_cast<PropertyType>(binaryReader.Read<unsigned char>());
@@ -47,6 +35,8 @@ void FabricResourceEntity::Deserialize(BinaryReader& binaryReader)
 				break;
 		}
 	}
+
+	isResourceDeserialized = true;
 }
 
 std::string FabricResourceEntity::SerializeToJson()
@@ -200,4 +190,24 @@ std::string FabricResourceEntity::SerializeToJson(const FabricResourceEntityBlue
 	writer.EndObject();
 
 	return stringBuffer.GetString();
+}
+
+std::vector<ZFabricResourceEntity::SAddedPropertyValues::SClothPiecePropertySet>& FabricResourceEntity::GetClothPiecePropertySets()
+{
+	return clothPiecePropertySets;
+}
+
+std::vector<ZFabricResourceEntity::SAddedPropertyValues::SClothPieceExtendedPropertySet>& FabricResourceEntity::GetClothPieceExtendedPropertySets()
+{
+	return clothPieceExtendedPropertySets;
+}
+
+std::vector<ZFabricResourceEntity::SAddedPropertyValues::STransformPropertySet>& FabricResourceEntity::GetTransformPropertySets()
+{
+	return transformPropertySets;
+}
+
+std::vector<ZFabricResourceEntity::SAddedPropertyValues::SStrandsPropertySet>& FabricResourceEntity::GetStrandsPropertySets()
+{
+	return strandsPropertySets;
 }
