@@ -11,6 +11,25 @@
 #include "Resources/RenderMaterialEntityType.h"
 #include "Resources/RenderMaterialEntityBlueprint.h"
 #include "Resources/RenderMaterialInstance.h"
+#include "Resources/RenderMaterialEffect.h"
+#include "Resources/SoundBlendContainerExternalParametersType.h"
+#include "Resources/SoundBlendContainerExternalParametersBlueprint.h"
+#include "Resources/WaveBankFSBF.h"
+#include "Resources/WaveBankFSBM.h"
+#include "Resources/WaveBankFSBS.h"
+#include "Resources/WaveBank.h"
+#include "Resources/WaveBankFX.h"
+#include "Resources/FlashMovie.h"
+#include "Resources/GFXMovie.h"
+#include "Resources/AnimationDatabase.h"
+#include "Resources/SoundDefinitions.h"
+#include "Resources/GlobalResourceIndex.h"
+#include "Resources/BehaviorTreeEntityBlueprint.h"
+#include "Resources/CompositionBlueprint.h"
+#include "Resources/PackageList.h"
+#include "Resources/ScatterData.h"
+#include "Resources/FabricResourceEntity.h"
+#include "Resources/FabricResourceEntityBlueprint.h"
 #include "Registry/ResourceInfoRegistry.h"
 
 std::string ResourceUtility::ConvertResourceIDToFilePath(const std::string& resourceID)
@@ -217,6 +236,82 @@ std::shared_ptr<Resource> ResourceUtility::CreateResource(const std::string& typ
     else if (type == "MATI")
     {
         resource = std::make_shared<RenderMaterialInstance>();
+    }
+    else if (type == "MATE")
+    {
+        resource = std::make_shared<RenderMaterialEffect>();
+    }
+    else if (type == "SBPD")
+    {
+        resource = std::make_shared<SoundBlendContainerExternalParametersType>();
+    }
+    else if (type == "SBPB")
+    {
+        resource = std::make_shared<SoundBlendContainerExternalParametersBlueprint>();
+    }
+    else if (type == "FSBF")
+    {
+        resource = std::make_shared<WaveBankFSBF>();
+    }
+    else if (type == "FSBM")
+    {
+        resource = std::make_shared<WaveBankFSBM>();
+    }
+    else if (type == "FSBS")
+    {
+        resource = std::make_shared<WaveBankFSBS>();
+    }
+    else if (type == "WAVB")
+    {
+        resource = std::make_shared<WaveBank>();
+    }
+    else if (type == "WBFX")
+    {
+        resource = std::make_shared<WaveBankFX>();
+    }
+    else if (type == "SWFF")
+    {
+        resource = std::make_shared<FlashMovie>();
+    }
+    else if (type == "GFXF")
+    {
+        resource = std::make_shared<GFXMovie>();
+    }
+    else if (type == "ChrT")
+    {
+        resource = std::make_shared<AnimationDatabase>();
+    }
+    else if (type == "SDEF")
+    {
+        resource = std::make_shared<SoundDefinitions>();
+    }
+    else if (type == "GIDX")
+    {
+        resource = std::make_shared<GlobalResourceIndex>();
+    }
+    else if (type == "AIBB")
+    {
+        resource = std::make_shared<BehaviorTreeEntityBlueprint>();
+    }
+    else if (type == "MUCB")
+    {
+        resource = std::make_shared<CompositionBlueprint>();
+    }
+    else if (type == "PKGL")
+    {
+        resource = std::make_shared<PackageList>();
+    }
+    else if (type == "SCDA")
+    {
+        resource = std::make_shared<ScatterData>();
+    }
+    else if (type == "CLOT")
+    {
+        resource = std::make_shared<FabricResourceEntity>();
+    }
+    else if (type == "CLOB")
+    {
+        resource = std::make_shared<FabricResourceEntityBlueprint>();
     }
     else
     {
