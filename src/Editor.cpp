@@ -17,7 +17,6 @@
 #include "Registry/EnumRegistry.h"
 #include "Registry/TextListHashRegistry.h"
 #include "Timer.h"
-#include "UI/Panels/ResourceViewerPanel.h"
 #include "UI/Panels/HeaderLibrariesSearchPanel.h"
 #include "UI/Panels/HashMapSearchPanel.h"
 #include "UI/Documents/SceneDocument.h"
