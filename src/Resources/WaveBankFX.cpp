@@ -49,6 +49,8 @@ void WaveBankFX::Deserialize()
 
 		subtitleReferences.push_back(subtitleReference);
 	}
+
+	isResourceDeserialized = true;
 }
 
 std::vector<WaveBankFX::FaceFXAnimationReference>& WaveBankFX::GetFaceFXAnimationReferences()
