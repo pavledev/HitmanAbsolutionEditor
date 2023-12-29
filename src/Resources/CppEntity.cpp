@@ -20,6 +20,8 @@ void CppEntity::Deserialize()
 	Parse(cppEntity);
 
 	operator delete(cppEntity, std::align_val_t(binaryDeserializer.GetAlignment()));
+
+	isResourceDeserialized = true;
 }
 
 void CppEntity::Parse(void* cppEntity)
