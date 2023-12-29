@@ -12,6 +12,8 @@ void TemplateEntityBlueprint::Deserialize()
 	Parse(templateEntityBlueprint);
 
 	operator delete(templateEntityBlueprint, std::align_val_t(binaryDeserializer.GetAlignment()));
+
+	isResourceDeserialized = true;
 }
 
 void TemplateEntityBlueprint::Parse(void* templateEntityBlueprint)
