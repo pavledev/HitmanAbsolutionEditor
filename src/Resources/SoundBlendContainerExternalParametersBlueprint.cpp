@@ -37,6 +37,8 @@ void SoundBlendContainerExternalParametersBlueprint::Deserialize()
 			soundBlendContainerExternalParameters.push_back(soundBlendContainerExternalParameter);
 		}
 	}
+
+	isResourceDeserialized = true;
 }
 
 std::string SoundBlendContainerExternalParametersBlueprint::SerializeToJson()
