@@ -2,22 +2,10 @@
 
 #include "Resources/FabricResourceEntityBlueprint.h"
 
-void FabricResourceEntityBlueprint::Deserialize(const std::string& filePath)
+void FabricResourceEntityBlueprint::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(filePath);
+	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
 
-	Deserialize(binaryReader);
-}
-
-void FabricResourceEntityBlueprint::Deserialize(void* buffer, const unsigned int dataSize)
-{
-	BinaryReader binaryReader = BinaryReader(buffer, dataSize);
-
-	Deserialize(binaryReader);
-}
-
-void FabricResourceEntityBlueprint::Deserialize(BinaryReader& binaryReader)
-{
 	while (binaryReader.GetPosition() < binaryReader.GetSize())
 	{
 		PropertyType propertyType = static_cast<PropertyType>(binaryReader.Read<unsigned char>());
@@ -42,6 +30,8 @@ void FabricResourceEntityBlueprint::Deserialize(BinaryReader& binaryReader)
 				break;
 		}
 	}
+
+	isResourceDeserialized = true;
 }
 
 std::string FabricResourceEntityBlueprint::SerializeToJson()
@@ -112,6 +102,26 @@ const std::vector<std::string>& FabricResourceEntityBlueprint::GetTransformNames
 }
 
 const std::vector<std::string>& FabricResourceEntityBlueprint::GetStrandsNames() const
+{
+	return strandsNames;
+}
+
+std::vector<std::string>& FabricResourceEntityBlueprint::GetClothPieceNames()
+{
+	return clothPieceNames;
+}
+
+std::vector<std::string>& FabricResourceEntityBlueprint::GetClothPieceExtendedNames()
+{
+	return clothPieceExtendedNames;
+}
+
+std::vector<std::string>& FabricResourceEntityBlueprint::GetTransformNames()
+{
+	return transformNames;
+}
+
+std::vector<std::string>& FabricResourceEntityBlueprint::GetStrandsNames()
 {
 	return strandsNames;
 }
