@@ -10,7 +10,6 @@
 #include "Utility/UI.h"
 #include "UI/Panels/HexViewerPanel.h"
 #include "UI/Panels/ResourceInfoPanel.h"
-#include "UI/Panels/ResourceViewerPanel.h"
 #include "UI/Panels/SceneHierarchyPanel2.h"
 #include "UI/Panels/ComponentPropertiesPanel.h"
 #include "UI/Panels/BoneHierarchyPanel.h"
