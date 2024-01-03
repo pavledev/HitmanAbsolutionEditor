@@ -25,10 +25,11 @@ public:
 	~ResourceBrowserPanel();
 	void Render() override;
 	void RenderTree(ResourceNode& parentNode, std::string parentPath);
+	void RenderContextMenu(ResourceNode& resourceNode);
 	void AddChildren(ResourceNode& parentNode, const std::string& parentPath);
 	void AddRootResourceNodes();
 	void LoadResourceTypes();
-	void LoadResource(std::shared_ptr<Resource> resource, const ResourceNode& resourceNode);
+	void LoadResource(std::shared_ptr<Resource> resource, const ResourceNode& resourceNode, const bool loadBackReferences = true);
 	void CreateResourceDocument(const ResourceNode& resourceNode);
 
 private:
@@ -39,4 +40,6 @@ private:
 	bool isInputTextActive;
 	unsigned int nodeIndex;
 	unsigned int selectedNodeIndex;
+	bool showResourceExportPopup;
+	std::shared_ptr<Resource> resource;
 };

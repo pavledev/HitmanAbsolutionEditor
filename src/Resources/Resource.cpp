@@ -7,6 +7,7 @@
 #include "Utility/ResourceUtility.h"
 #include "Logger.h"
 #include "Registry/ResourceInfoRegistry.h"
+#include "IO/BinaryWriter.h"
 
 Resource::Resource()
 {
@@ -551,4 +552,11 @@ void Resource::SetResourceLoadedCallback(ResourceLoadedCallback resourceLoadedCa
 const bool Resource::IsResourceDeserialized() const
 {
 	return isResourceDeserialized;
+}
+
+void Resource::ExportRawData(const std::string& outputFilePath)
+{
+	BinaryWriter binaryWriter = BinaryWriter(outputFilePath);
+
+	binaryWriter.Write(resourceData, resourceDataSize);
 }

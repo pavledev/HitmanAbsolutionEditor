@@ -22,7 +22,7 @@ public:
 		std::string name;
 	};
 
-	void Deserialize();
+	void Deserialize() override;
 	std::vector<std::shared_ptr<Modifier>>& GetModifiers();
 
 private:

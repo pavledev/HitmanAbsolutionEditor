@@ -1,6 +1,8 @@
+#include <fstream>
+
 #include "Glacier/Sound/SWaveBankResourceData.h"
 
-std::string SWaveBankResourceData::SerializeToJson()
+void SWaveBankResourceData::SerializeToJson(const std::string& outputFilePath)
 {
     rapidjson::StringBuffer stringBuffer;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
@@ -33,7 +35,11 @@ std::string SWaveBankResourceData::SerializeToJson()
 
     writer.EndObject();
 
-    return stringBuffer.GetString();
+    std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+    outputFileStream << stringBuffer.GetString();
+
+    outputFileStream.close();
 }
 
 SWaveBankResourceData* SWaveBankResourceData::DeserializeFromJson(const rapidjson::Document& document)

@@ -4,6 +4,26 @@
 #include "Resources/FlashMovie.h"
 #include "Editor.h"
 
+void FlashMovie::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		void* textureData = nullptr;
+		unsigned int textureDataSize;
+		bool isDDSTexture;
+
+		GetTextureData(textureData, textureDataSize, isDDSTexture);
+
+		BinaryWriter binaryWriter = BinaryWriter(outputPath);
+
+		binaryWriter.Write(textureData, textureDataSize);
+	}
+}
+
 void FlashMovie::GetTextureData(void*& textureData, unsigned int& textureDataSize, bool& isDDSTexture)
 {
 	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
@@ -51,6 +71,23 @@ void FlashMovie::CreateTextureFromMemory()
 	textureHeight = textureDesc.Height;
 
 	texture2D->Release();
+}
+
+const FlashMovie::Format FlashMovie::GetFormat() const
+{
+	const unsigned char type = *static_cast<unsigned char*>(resourceData);
+
+	switch (type)
+	{
+		case 'd':
+			return Format::DDS;
+		case 'p':
+			return Format::PNG;
+		case 's':
+			return Format::SWF;
+		default:
+			return Format::None;
+	}
 }
 
 const unsigned int FlashMovie::GetTextureWidth() const

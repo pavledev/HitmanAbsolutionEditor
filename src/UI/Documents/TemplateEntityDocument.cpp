@@ -3,6 +3,7 @@
 #include <UI/Documents/TemplateEntityDocument.h>
 #include <UI/Panels/SceneHierarchyPanel.h>
 #include <UI/Panels/TemplateEntityPropertiesPanel.h>
+#include <Utility/ResourceUtility.h>
 
 TemplateEntityDocument::TemplateEntityDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
@@ -64,7 +65,9 @@ std::shared_ptr<TemplateEntity> TemplateEntityDocument::GetTemplateEntity() cons
 void TemplateEntityDocument::RenderMenuBar()
 {
     if (!ImGui::BeginMenuBar())
+    {
         return;
+    }
 
     if (ImGui::BeginMenu("View"))
     {
@@ -75,6 +78,21 @@ void TemplateEntityDocument::RenderMenuBar()
 
         ImGui::EndMenu();
     }
+
+    static std::string exportResourceLabel = std::format("{} Export Resource", ICON_MDI_EXPORT);
+    static bool showResourceExportPopup = false;
+
+    if (ImGui::BeginMenu("Export"))
+    {
+        if (ImGui::MenuItem(exportResourceLabel.c_str()))
+        {
+            showResourceExportPopup = true;
+        }
+
+        ImGui::EndMenu();
+    }
+
+    UI::ResourceExportPopup(showResourceExportPopup, templateEntity);
 
     ImGui::EndMenuBar();
 }

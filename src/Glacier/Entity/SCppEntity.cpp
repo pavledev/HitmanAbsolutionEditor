@@ -1,6 +1,6 @@
 #include "Glacier/Entity/SCppEntity.h"
 
-std::string SCppEntity::SerializeToJson()
+void SCppEntity::SerializeToJson(const std::string& outputFilePath)
 {
     rapidjson::StringBuffer stringBuffer;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
@@ -15,7 +15,11 @@ std::string SCppEntity::SerializeToJson()
 
     writer.EndObject();
 
-    return stringBuffer.GetString();
+    std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+    outputFileStream << stringBuffer.GetString();
+
+    outputFileStream.close();
 }
 
 void SCppEntity::SerializeToMemory(ZBinarySerializer& binarySerializer)

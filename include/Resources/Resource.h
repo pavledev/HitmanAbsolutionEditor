@@ -71,10 +71,15 @@ public:
     void AddReference(const ZRuntimeResourceID& runtimeResourceID, const EResourceReferenceFlags resourceReferenceFlags);
     void SetResourceLoadedCallback(ResourceLoadedCallback resourceLoadedCallback);
     const bool IsResourceDeserialized() const;
+    void ExportRawData(const std::string& outputFilePath);
 
     virtual void Deserialize()
     {
         isResourceDeserialized = false;
+    }
+
+    virtual void Export(const std::string& outputPath, const std::string& exportOption)
+    {
     }
 
 protected:
@@ -88,7 +93,6 @@ protected:
     std::string headerLibraryChunkResourceID;
     unsigned int indexInLibrary;
     EResourceReferenceFlags resourceReferenceFlags;
-    std::string fileFormat;
     unsigned int offsetInHeaderLibrary;
     unsigned int offsetInResourceLibrary;
     void* headerData;

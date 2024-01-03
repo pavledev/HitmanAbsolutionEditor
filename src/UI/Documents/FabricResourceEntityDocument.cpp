@@ -64,7 +64,9 @@ std::shared_ptr<FabricResourceEntity> FabricResourceEntityDocument::GetFabricRes
 void FabricResourceEntityDocument::RenderMenuBar()
 {
     if (!ImGui::BeginMenuBar())
+    {
         return;
+    }
 
     if (ImGui::BeginMenu("View"))
     {
@@ -75,6 +77,21 @@ void FabricResourceEntityDocument::RenderMenuBar()
 
         ImGui::EndMenu();
     }
+
+    static std::string exportResourceLabel = std::format("{} Export Resource", ICON_MDI_EXPORT);
+    static bool showResourceExportPopup = false;
+
+    if (ImGui::BeginMenu("Export"))
+    {
+        if (ImGui::MenuItem(exportResourceLabel.c_str()))
+        {
+            showResourceExportPopup = true;
+        }
+
+        ImGui::EndMenu();
+    }
+
+    UI::ResourceExportPopup(showResourceExportPopup, fabricResourceEntity);
 
     ImGui::EndMenuBar();
 }

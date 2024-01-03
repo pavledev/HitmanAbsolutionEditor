@@ -31,6 +31,7 @@ private:
 		//RenderRemoveModifierButton(index);
 	}
 
+	void RenderMaterialInfo();
 	void RenderProperties();
 	void RenderProperties(RenderMaterialInstance::Property& property);
 
@@ -38,5 +39,4 @@ private:
 
 	std::shared_ptr<RenderMaterialInstance> renderMaterialInstance;
 	std::vector<UI::TableColumn> tableColumns;
-	inline static std::unordered_map<unsigned int, std::string> materialPropertyNames;
 };

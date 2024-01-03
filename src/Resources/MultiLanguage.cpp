@@ -19,6 +19,18 @@ void MultiLanguage::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void MultiLanguage::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
 char MultiLanguage::GetLocalizationCategory()
 {
 	return localizationCategory;
@@ -32,4 +44,43 @@ std::vector<int>& MultiLanguage::GetIndices()
 std::vector<std::string>& MultiLanguage::GetLocales()
 {
 	return locales;
+}
+
+void MultiLanguage::SerializeToJson(const std::string& outputFilePath)
+{
+	rapidjson::StringBuffer stringBuffer;
+	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+
+	writer.StartObject();
+
+	writer.String("localizationCategory");
+	writer.Uint(localizationCategory);
+
+	writer.String("locales");
+	writer.StartArray();
+
+	for (size_t i = 0; i < locales.size(); ++i)
+	{
+		writer.String(locales[i].c_str());
+	}
+
+	writer.EndArray();
+
+	writer.String("indices");
+	writer.StartArray();
+
+	for (size_t i = 0; i < indices.size(); ++i)
+	{
+		writer.Int(indices[i]);
+	}
+
+	writer.EndArray();
+
+	writer.EndObject();
+
+	std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+	outputFileStream << stringBuffer.GetString();
+
+	outputFileStream.close();
 }

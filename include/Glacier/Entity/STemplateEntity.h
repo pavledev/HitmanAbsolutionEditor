@@ -11,7 +11,7 @@
 
 struct STemplateEntity
 {
-	std::string SerializeToJson();
+	void SerializeToJson(const std::string& outputFilePath);
 	void SerializeToMemory(ZBinarySerializer& binarySerializer);
 	static STemplateEntity* DeserializeFromJson(const rapidjson::Document& document);
 

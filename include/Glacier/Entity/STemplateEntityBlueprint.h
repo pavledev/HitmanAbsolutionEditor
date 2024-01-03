@@ -12,7 +12,7 @@
 
 struct STemplateEntityBlueprint
 {
-	std::string SerializeToJson();
+	void SerializeToJson(const std::string& outputFilePath);
 	void SerializeToMemory(ZBinarySerializer& binarySerializer);
 	static STemplateEntityBlueprint* DeserializeFromJson(const rapidjson::Document& document);
 

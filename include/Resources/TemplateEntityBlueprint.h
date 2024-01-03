@@ -7,7 +7,8 @@
 class TemplateEntityBlueprint : public Resource
 {
 public:
-	void Deserialize();
+	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	void Parse(void* templateEntityBlueprint);
 	void ParsePropertyAliases(void* templateEntityBlueprint, STemplateSubEntityBlueprint* entityTemplate, TArray<SEntityTemplatePropertyAlias>& propertyAliases);
 	void ParseExposedEntities(void* templateEntityBlueprint, STemplateSubEntityBlueprint* entityTemplate, TArray<TPair<ZString, SEntityTemplateReference>>& exposedEntities);

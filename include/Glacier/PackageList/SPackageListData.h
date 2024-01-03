@@ -4,7 +4,7 @@
 
 struct SPackageListData
 {
-	std::string SerializeToJson();
+	void SerializeToJson(const std::string& outputFilePath);
 
 	TArray<SPackageListDataFolder> folders;
 };

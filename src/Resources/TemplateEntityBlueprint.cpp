@@ -16,6 +16,18 @@ void TemplateEntityBlueprint::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void TemplateEntityBlueprint::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		templateEntityBlueprint->SerializeToJson(outputPath);
+	}
+}
+
 void TemplateEntityBlueprint::Parse(void* templateEntityBlueprint)
 {
 	this->templateEntityBlueprint = std::make_shared<STemplateEntityBlueprint>();

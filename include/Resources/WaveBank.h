@@ -7,7 +7,8 @@
 class WaveBank : public Resource
 {
 public:
-	void Deserialize();
+	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	SWaveBankResourceData& GetWaveBankResourceData();
 
 private:

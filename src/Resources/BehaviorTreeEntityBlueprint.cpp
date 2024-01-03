@@ -15,6 +15,18 @@ void BehaviorTreeEntityBlueprint::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void BehaviorTreeEntityBlueprint::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		behaviorTreeInfo->SerializeToJson(outputPath);
+	}
+}
+
 void BehaviorTreeEntityBlueprint::Parse(void* behaviorTreeInfo)
 {
 	this->behaviorTreeInfo = std::make_shared<SBehaviorTreeInfo>();
@@ -59,9 +71,4 @@ void BehaviorTreeEntityBlueprint::Parse(void* behaviorTreeInfo)
 std::shared_ptr<SBehaviorTreeInfo> BehaviorTreeEntityBlueprint::GetBehaviorTreeInfo()
 {
 	return behaviorTreeInfo;
-}
-
-void BehaviorTreeEntityBlueprint::SerializeToJson(const std::string& outputFilePath)
-{
-	behaviorTreeInfo->SerializeToJson(outputFilePath);
 }

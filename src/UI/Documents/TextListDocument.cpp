@@ -5,6 +5,7 @@
 #include <UI/Panels/ResourceInfoPanel.h>
 #include <UI/Panels/HexViewerPanel.h>
 #include <Editor.h>
+#include <Utility/ResourceUtility.h>
 
 TextListDocument::TextListDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
@@ -60,7 +61,9 @@ std::shared_ptr<TextList> TextListDocument::GetTextList() const
 void TextListDocument::RenderMenuBar()
 {
     if (!ImGui::BeginMenuBar())
+    {
         return;
+    }
 
     if (ImGui::BeginMenu("View"))
     {
@@ -71,6 +74,21 @@ void TextListDocument::RenderMenuBar()
 
         ImGui::EndMenu();
     }
+
+    static std::string exportResourceLabel = std::format("{} Export Resource", ICON_MDI_EXPORT);
+    static bool showResourceExportPopup = false;
+
+    if (ImGui::BeginMenu("Export"))
+    {
+        if (ImGui::MenuItem(exportResourceLabel.c_str()))
+        {
+            showResourceExportPopup = true;
+        }
+
+        ImGui::EndMenu();
+    }
+
+    UI::ResourceExportPopup(showResourceExportPopup, textList);
 
     ImGui::EndMenuBar();
 }

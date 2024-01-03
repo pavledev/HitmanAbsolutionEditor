@@ -24,6 +24,18 @@ void CppEntity::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void CppEntity::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		cppEntity->SerializeToJson(outputPath);
+	}
+}
+
 void CppEntity::Parse(void* cppEntity)
 {
 	this->cppEntity = std::make_shared<SCppEntity>();

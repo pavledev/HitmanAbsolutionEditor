@@ -28,8 +28,9 @@ public:
         std::vector<unsigned char> subSoundRepeatCounts;
     };
 
-    void Deserialize();
-    void SerializeToJson(const Resource* resource, std::string& jsonOutput);
+    void Deserialize() override;
+    void Export(const std::string& outputPath, const std::string& exportOption) override;
+    void SerializeToJson(const std::string& outputFilePath);
     std::vector<Entry>& GetEntries();
 
 private:

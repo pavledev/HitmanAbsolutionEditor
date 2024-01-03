@@ -41,7 +41,19 @@ void SoundBlendContainerExternalParametersBlueprint::Deserialize()
 	isResourceDeserialized = true;
 }
 
-std::string SoundBlendContainerExternalParametersBlueprint::SerializeToJson()
+void SoundBlendContainerExternalParametersBlueprint::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
+void SoundBlendContainerExternalParametersBlueprint::SerializeToJson(const std::string& outputFilePath)
 {
 	rapidjson::StringBuffer stringBuffer;
 	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
@@ -63,7 +75,11 @@ std::string SoundBlendContainerExternalParametersBlueprint::SerializeToJson()
 
 	writer.EndObject();
 
-	return stringBuffer.GetString();
+	std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+	outputFileStream << stringBuffer.GetString();
+
+	outputFileStream.close();
 }
 
 unsigned int SoundBlendContainerExternalParametersBlueprint::GetNextID()

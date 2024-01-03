@@ -15,6 +15,18 @@ void PackageList::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void PackageList::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		packageListData->SerializeToJson(outputPath);
+	}
+}
+
 void PackageList::Parse(void* packageListData)
 {
 	this->packageListData = std::make_shared<SPackageListData>();
@@ -86,9 +98,4 @@ void PackageList::Parse(void* packageListData)
 std::shared_ptr<SPackageListData> PackageList::GetPackageListData()
 {
 	return packageListData;
-}
-
-void PackageList::SerializeToJson()
-{
-	packageListData->SerializeToJson();
 }

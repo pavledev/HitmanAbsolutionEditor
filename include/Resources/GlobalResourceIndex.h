@@ -8,9 +8,9 @@ class GlobalResourceIndex : public Resource
 {
 public:
 	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	void Parse(void* resourceIndex);
 	std::shared_ptr<SResourceIndex> GetResourceIndex();
-	void SerializeToJson(const std::string& outputFilePath);
 
 private:
 	std::shared_ptr<SResourceIndex> resourceIndex;

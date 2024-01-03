@@ -11,7 +11,7 @@
 
 struct SWaveBankResourceData
 {
-	std::string SerializeToJson();
+	void SerializeToJson(const std::string& outputFilePath);
 	static SWaveBankResourceData* DeserializeFromJson(const rapidjson::Document& document);
 
 	int m_nTracks;

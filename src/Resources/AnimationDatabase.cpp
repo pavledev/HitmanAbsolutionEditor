@@ -31,7 +31,53 @@ void AnimationDatabase::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void AnimationDatabase::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
 std::vector<AnimationDatabase::Entry>& AnimationDatabase::GetEntries()
 {
 	return entries;
+}
+
+void AnimationDatabase::SerializeToJson(const std::string& outputFilePath)
+{
+	rapidjson::StringBuffer stringBuffer;
+	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+
+	writer.StartObject();
+
+	writer.String("entries");
+	writer.StartArray();
+
+	for (size_t i = 0; i < entries.size(); ++i)
+	{
+		writer.StartObject();
+
+		writer.String("animationName");
+		writer.String(entries[i].animationName.c_str());
+
+		writer.String("resourceID");
+		writer.String(entries[i].resourceID.c_str());
+
+		writer.EndObject();
+	}
+
+	writer.EndArray();
+
+	writer.EndObject();
+
+	std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+	outputFileStream << stringBuffer.GetString();
+
+	outputFileStream.close();
 }

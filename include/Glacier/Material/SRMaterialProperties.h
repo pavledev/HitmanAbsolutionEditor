@@ -1,5 +1,14 @@
 #pragma once
 
+#include <string>
+#include <vector>
+#include <memory>
+
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/prettywriter.h"
+
+class Resource;
+
 struct SRMaterialProperties
 {
 	enum class MATERIAL_FLAGS
@@ -21,6 +30,8 @@ struct SRMaterialProperties
 		MF_USES_SIMPLE_SHADER = 16384
 	};
 
+	void SerializeToJson(const std::string& materialClassType, std::vector<std::shared_ptr<Resource>>& references, rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
+
 	unsigned int lMaterialClassType;
 	unsigned int lMaterialEffectIndex;
 	unsigned int lMaterialClassFlags;
@@ -29,3 +40,8 @@ struct SRMaterialProperties
 	unsigned int lImpactMaterial;
 	unsigned int lEffectResource;
 };
+
+inline SRMaterialProperties::MATERIAL_FLAGS operator&(SRMaterialProperties::MATERIAL_FLAGS lhs, SRMaterialProperties::MATERIAL_FLAGS rhs)
+{
+	return static_cast<SRMaterialProperties::MATERIAL_FLAGS>(static_cast<int>(lhs) & static_cast<int>(rhs));
+}

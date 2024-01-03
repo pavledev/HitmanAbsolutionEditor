@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include "DirectXTex.h"
 
@@ -17,6 +18,8 @@ class RenderMaterialInstance : public Resource
 public:
 	struct Property
 	{
+		void SerializeToJson(const std::vector<std::shared_ptr<Resource>>& references, rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
+
 		SProperty propertyInfo;
 		std::vector<Property> childProperties;
 		unsigned int uint32Value;
@@ -41,14 +44,22 @@ public:
 		std::string name;
 	};
 
-	void Deserialize();
+	RenderMaterialInstance();
+	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
+	void SerializeToJson(const std::string& outputFilePath);
+	SRMaterialPropertyList& GetMaterialPropertyList();
+	std::string& GetMaterialClassType();
 	Property& GetInstanceProperty();
 	void GetTextures(std::shared_ptr<Resource> matiResource, std::vector<RenderMaterialInstance::Texture>& textures);
 	void GetTextures(const Property& property, std::shared_ptr<Resource> matiResource, std::vector<Texture>& textures, bool& foundNormalTexture, bool& foundDiffuseTexture, bool& foundSpecularTexture);
+	static std::unordered_map<unsigned int, std::string>& GetMaterialPropertyNames();
 
 private:
 	void ReadProperty(Property& property, BinaryReader& binaryReader, const unsigned int propertyOffset);
 
 	SRMaterialPropertyList materialPropertyList;
+	std::string materialClassType;
 	Property instanceProperty;
+	inline static std::unordered_map<unsigned int, std::string> materialPropertyNames;
 };

@@ -8,7 +8,8 @@ class GFXMovie : public Resource
 {
 public:
 	~GFXMovie() override;
-	void Deserialize();
+	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	void Parse(void* gfxResource);
 	std::shared_ptr<SGfxResource> GetGfxResource();
 

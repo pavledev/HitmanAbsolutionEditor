@@ -698,7 +698,19 @@ void SoundDefinitions::Deserialize()
 	isResourceDeserialized = true;
 }
 
-void SoundDefinitions::SerializeToJson(const Resource* resource, std::string& jsonOutput)
+void SoundDefinitions::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
+void SoundDefinitions::SerializeToJson(const std::string& outputFilePath)
 {
 	const bool hasActorSoundDefinitions = entries.size() - 1 == static_cast<int>(SActorSoundDefs::EDefinition::_Last);
 
@@ -710,16 +722,22 @@ void SoundDefinitions::SerializeToJson(const Resource* resource, std::string& js
 	writer.String("entries");
 	writer.StartArray();
 
+	const std::vector<std::shared_ptr<Resource>>& references = GetReferences();
+
 	for (size_t i = 0; i < entries.size(); ++i)
 	{
-		entries[i].SerializeToJson(resource->GetReferences(), writer, hasActorSoundDefinitions);
+		entries[i].SerializeToJson(references, writer, hasActorSoundDefinitions);
 	}
 
 	writer.EndArray();
 
 	writer.EndObject();
 
-	jsonOutput = stringBuffer.GetString();
+	std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+	outputFileStream << stringBuffer.GetString();
+
+	outputFileStream.close();
 }
 
 std::vector<SoundDefinitions::Entry>& SoundDefinitions::GetEntries()

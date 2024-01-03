@@ -25,6 +25,18 @@ void TemplateEntity::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void TemplateEntity::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		templateEntity->SerializeToJson(outputPath);
+	}
+}
+
 void TemplateEntity::Parse(void* templateEntity)
 {
 	this->templateEntity = std::make_shared<STemplateEntity>();

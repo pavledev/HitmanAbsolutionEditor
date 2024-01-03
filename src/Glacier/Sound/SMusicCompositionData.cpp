@@ -1,6 +1,6 @@
 #include "Glacier/Sound/SMusicCompositionData.h"
 
-std::string SMusicCompositionData::SerializeToJson()
+void SMusicCompositionData::SerializeToJson(const std::string& outputFilePath)
 {
     rapidjson::StringBuffer stringBuffer;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
@@ -33,5 +33,9 @@ std::string SMusicCompositionData::SerializeToJson()
 
     writer.EndObject();
 
-    return stringBuffer.GetString();
+    std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+    outputFileStream << stringBuffer.GetString();
+
+    outputFileStream.close();
 }

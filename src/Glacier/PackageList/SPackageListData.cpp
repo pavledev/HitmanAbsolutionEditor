@@ -1,6 +1,6 @@
 #include "Glacier/PackageList/SPackageListData.h"
 
-std::string SPackageListData::SerializeToJson()
+void SPackageListData::SerializeToJson(const std::string& outputFilePath)
 {
     rapidjson::StringBuffer stringBuffer;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
@@ -12,5 +12,9 @@ std::string SPackageListData::SerializeToJson()
 
     writer.EndObject();
 
-    return stringBuffer.GetString();
+    std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+    outputFileStream << stringBuffer.GetString();
+
+    outputFileStream.close();
 }

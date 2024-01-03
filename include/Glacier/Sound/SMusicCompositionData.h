@@ -17,7 +17,7 @@
 
 struct SMusicCompositionData
 {
-	std::string SerializeToJson();
+	void SerializeToJson(const std::string& outputFilePath);
 
 	TArray<SMusicGameCueData> m_aGameCues;
 	TArray<SMusicPlaylistData> m_aPlaylists;

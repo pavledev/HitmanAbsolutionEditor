@@ -37,6 +37,47 @@ void ScatterData::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void ScatterData::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
+void ScatterData::SerializeToJson(const std::string& outputFilePath)
+{
+	rapidjson::StringBuffer stringBuffer;
+	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+
+	writer.StartObject();
+
+	writer.String("scatterDataHeader");
+	scatterDataHeader.SerializeToJson(writer);
+
+	writer.String("materialHeaders");
+	writer.StartArray();
+
+	for (size_t i = 0; i < materialHeaders.size(); ++i)
+	{
+		materialHeaders[i].SerializeToJson(instances[i], writer);
+	}
+
+	writer.EndArray();
+
+	writer.EndObject();
+
+	std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+	outputFileStream << stringBuffer.GetString();
+
+	outputFileStream.close();
+}
+
 SScatterDataHeader& ScatterData::GetScatterDataHeader()
 {
 	return scatterDataHeader;

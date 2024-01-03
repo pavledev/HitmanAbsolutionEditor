@@ -11,8 +11,8 @@ class FabricResourceEntity : public Resource
 {
 public:
 	void Deserialize() override;
-	std::string SerializeToJson();
-	std::string SerializeToJson(const FabricResourceEntityBlueprint& fabricResourceEntityBlueprint);
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
+	void SerializeToJson(const std::string& outputFilePath);
 	std::vector<ZFabricResourceEntity::SAddedPropertyValues::SClothPiecePropertySet>& GetClothPiecePropertySets();
 	std::vector<ZFabricResourceEntity::SAddedPropertyValues::SClothPieceExtendedPropertySet>& GetClothPieceExtendedPropertySets();
 	std::vector<ZFabricResourceEntity::SAddedPropertyValues::STransformPropertySet>& GetTransformPropertySets();

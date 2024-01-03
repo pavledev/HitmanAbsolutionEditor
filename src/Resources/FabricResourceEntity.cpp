@@ -1,4 +1,5 @@
 #include "Resources/FabricResourceEntity.h"
+#include "Registry/ResourceInfoRegistry.h"
 
 void FabricResourceEntity::Deserialize()
 {
@@ -39,80 +40,45 @@ void FabricResourceEntity::Deserialize()
 	isResourceDeserialized = true;
 }
 
-std::string FabricResourceEntity::SerializeToJson()
+void FabricResourceEntity::Export(const std::string& outputPath, const std::string& exportOption)
 {
-	rapidjson::StringBuffer stringBuffer;
-	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
-
-	writer.StartObject();
-
-	writer.String("clothPiecePropertySets");
-	writer.StartArray();
-
-	for (size_t i = 0; i < clothPiecePropertySets.size(); ++i)
+	if (exportOption.starts_with("Raw"))
 	{
-		writer.StartObject();
-
-		clothPiecePropertySets[i].SerializeToJson(writer);
-
-		writer.EndObject();
+		ExportRawData(outputPath);
 	}
-
-	writer.EndArray();
-
-	writer.String("clothPieceExtendedPropertySets");
-	writer.StartArray();
-
-	for (size_t i = 0; i < clothPieceExtendedPropertySets.size(); ++i)
+	else
 	{
-		writer.StartObject();
-
-		clothPieceExtendedPropertySets[i].SerializeToJson(writer);
-
-		writer.EndObject();
+		SerializeToJson(outputPath);
 	}
-
-	writer.EndArray();
-
-	writer.String("transformPropertySets");
-	writer.StartArray();
-
-	for (size_t i = 0; i < transformPropertySets.size(); ++i)
-	{
-		writer.StartObject();
-
-		transformPropertySets[i].SerializeToJson(writer);
-
-		writer.EndObject();
-	}
-
-	writer.EndArray();
-
-	writer.String("strandsPropertySets");
-	writer.StartArray();
-
-	for (size_t i = 0; i < strandsPropertySets.size(); ++i)
-	{
-		writer.StartObject();
-
-		strandsPropertySets[i].SerializeToJson(writer);
-
-		writer.EndObject();
-	}
-
-	writer.EndArray();
-
-	writer.EndObject();
-
-	return stringBuffer.GetString();
 }
 
-std::string FabricResourceEntity::SerializeToJson(const FabricResourceEntityBlueprint& fabricResourceEntityBlueprint)
+void FabricResourceEntity::SerializeToJson(const std::string& outputFilePath)
 {
-	std::vector<std::string> clothPieceNames = fabricResourceEntityBlueprint.GetClothPieceNames();
-	std::vector<std::string> clothPieceExtendedNames = fabricResourceEntityBlueprint.GetClothPieceExtendedNames();
-	std::vector<std::string> transformNames = fabricResourceEntityBlueprint.GetTransformNames();
-	std::vector<std::string> strandsNames = fabricResourceEntityBlueprint.GetStrandsNames();
+	std::shared_ptr<FabricResourceEntityBlueprint> fabricResourceEntityBlueprint;
+	std::vector<std::shared_ptr<Resource>>& clotReferences = GetReferences();
+
+	for (size_t i = 0; i < clotReferences.size(); ++i)
+	{
+		const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(clotReferences[i]->GetHash());
+
+		if (referenceInfo.type == "CLOB")
+		{
+			fabricResourceEntityBlueprint = std::static_pointer_cast<FabricResourceEntityBlueprint>(clotReferences[i]);
+
+			break;
+		}
+	}
+
+	const ResourceInfoRegistry::ResourceInfo& matbResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(fabricResourceEntityBlueprint->GetHash());
+
+	fabricResourceEntityBlueprint->LoadResource(0, matbResourceInfo.headerLibraries[0].chunkIndex, matbResourceInfo.headerLibraries[0].indexInLibrary, false, false, true);
+	fabricResourceEntityBlueprint->Deserialize();
+	fabricResourceEntityBlueprint->DeleteResourceData();
+
+	std::vector<std::string> clothPieceNames = fabricResourceEntityBlueprint->GetClothPieceNames();
+	std::vector<std::string> clothPieceExtendedNames = fabricResourceEntityBlueprint->GetClothPieceExtendedNames();
+	std::vector<std::string> transformNames = fabricResourceEntityBlueprint->GetTransformNames();
+	std::vector<std::string> strandsNames = fabricResourceEntityBlueprint->GetStrandsNames();
 
 	rapidjson::StringBuffer stringBuffer;
 	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
@@ -189,7 +155,11 @@ std::string FabricResourceEntity::SerializeToJson(const FabricResourceEntityBlue
 
 	writer.EndObject();
 
-	return stringBuffer.GetString();
+	std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+	outputFileStream << stringBuffer.GetString();
+
+	outputFileStream.close();
 }
 
 std::vector<ZFabricResourceEntity::SAddedPropertyValues::SClothPiecePropertySet>& FabricResourceEntity::GetClothPiecePropertySets()

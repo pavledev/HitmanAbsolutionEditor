@@ -8,6 +8,7 @@
 #include "Logger.h"
 #include "Utility/ResourceUtility.h"
 #include "Utility/UI.h"
+#include "Utility/FileDialog.h"
 #include "UI/Panels/HexViewerPanel.h"
 #include "UI/Panels/ResourceInfoPanel.h"
 #include "UI/Panels/SceneHierarchyPanel2.h"
@@ -47,6 +48,7 @@ ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) :
 {
     isInputTextActive = false;
     selectedNodeIndex = -1;
+    showResourceExportPopup = false;
 
     LoadResourceTypes();
     AddRootResourceNodes();
@@ -144,6 +146,7 @@ void ResourceBrowserPanel::Render()
         RenderTree(assemblyNode, assemblyNode.name);
         RenderTree(modulesNode, modulesNode.name);
 
+        UI::ResourceExportPopup(showResourceExportPopup, resource);
     }
 
     ImGui::PopFont();
@@ -205,7 +208,7 @@ void ResourceBrowserPanel::RenderTree(ResourceNode& parentNode, std::string pare
 
         ImGui::TreeNodeEx(label.c_str(), nodeFlags);
 
-        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+        if ((ImGui::IsItemClicked() || ImGui::IsItemClicked(ImGuiPopupFlags_MouseButtonRight)) && !ImGui::IsItemToggledOpen())
         {
             selectedNodeIndex = parentNode.index;
         }
@@ -214,9 +217,39 @@ void ResourceBrowserPanel::RenderTree(ResourceNode& parentNode, std::string pare
         {
             CreateResourceDocument(parentNode);
         }
+
+        if (ImGui::BeginPopupContextItem())
+        {
+            RenderContextMenu(parentNode);
+
+            ImGui::EndPopup();
+        }
     }
 
     ImGui::PopID();
+}
+
+void ResourceBrowserPanel::RenderContextMenu(ResourceNode& resourceNode)
+{
+    static std::string exportResourceLabel = std::format("{} Export Resource", ICON_MDI_EXPORT);
+
+    if (ImGui::MenuItem(exportResourceLabel.c_str()))
+    {
+        showResourceExportPopup = true;
+
+        const ResourceInfoRegistry::ResourceInfo& resourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(resourceNode.hash);
+        resource = ResourceUtility::CreateResource(resourceInfo.type);
+        std::string resourceName = ResourceUtility::GetResourceName(resourceInfo.resourceID);
+
+        resource->SetHash(resourceInfo.hash);
+        resource->SetResourceID(resourceInfo.resourceID);
+        resource->SetHeaderLibraries(&resourceInfo.headerLibraries);
+        resource->SetName(resourceName);
+
+        std::thread thread(&ResourceBrowserPanel::LoadResource, this, resource, resourceNode, true);
+
+        thread.detach();
+    }
 }
 
 void ResourceBrowserPanel::AddChildren(ResourceNode& parentNode, const std::string& parentPath)
@@ -393,17 +426,17 @@ void ResourceBrowserPanel::LoadResourceTypes()
     }
 }
 
-void ResourceBrowserPanel::LoadResource(std::shared_ptr<Resource> resource, const ResourceNode& resourceNode)
+void ResourceBrowserPanel::LoadResource(std::shared_ptr<Resource> resource, const ResourceNode& resourceNode, const bool loadBackReferences)
 {
     const ResourceInfoRegistry::ResourceInfo& resourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(resourceNode.hash);
 
     if (resourceInfo.headerLibraries.size() > 0)
     {
-        resource->LoadResource(0, resourceInfo.headerLibraries[0].chunkIndex, resourceInfo.headerLibraries[0].indexInLibrary, true, true, true);
+        resource->LoadResource(0, resourceInfo.headerLibraries[0].chunkIndex, resourceInfo.headerLibraries[0].indexInLibrary, true, true, loadBackReferences);
     }
     else
     {
-        resource->LoadResource(0, -1, -1, false, false, true);
+        resource->LoadResource(0, -1, -1, true, true, loadBackReferences);
     }
 }
 
@@ -624,7 +657,7 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
     Editor::GetInstance().GetDocuments().push_back(resourceDocument);
 
-    std::thread thread(&ResourceBrowserPanel::LoadResource, this, resource, resourceNode);
+    std::thread thread(&ResourceBrowserPanel::LoadResource, this, resource, resourceNode, true);
 
     thread.detach();
 }

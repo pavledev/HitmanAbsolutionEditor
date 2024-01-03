@@ -15,6 +15,18 @@ void GlobalResourceIndex::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void GlobalResourceIndex::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		resourceIndex->SerializeToJson(outputPath);
+	}
+}
+
 void GlobalResourceIndex::Parse(void* resourceIndex)
 {
 	this->resourceIndex = std::make_shared<SResourceIndex>();
@@ -54,9 +66,4 @@ void GlobalResourceIndex::Parse(void* resourceIndex)
 std::shared_ptr<SResourceIndex> GlobalResourceIndex::GetResourceIndex()
 {
 	return resourceIndex;
-}
-
-void GlobalResourceIndex::SerializeToJson(const std::string& outputFilePath)
-{
-	resourceIndex->SerializeToJson(outputFilePath);
 }

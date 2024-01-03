@@ -15,6 +15,7 @@ public:
 		unsigned int dataSize;
 	};
 
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	const std::vector<std::shared_ptr<AudioSample>>& GetAudioSamples() const;
 	std::vector<std::shared_ptr<AudioSample>>& GetAudioSamples();
 	virtual FSB::Format GetFormat() = 0;

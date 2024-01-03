@@ -15,7 +15,8 @@ class Texture : public Resource
 {
 public:
     ~Texture() override;
-    void Deserialize();
+    void Deserialize() override;
+    void Export(const std::string& outputPath, const std::string& exportOption) override;
     ZTextureMap::SMipLevel GetMipLevel(unsigned int level);
     DXGI_FORMAT GetDXGIFormat();
     static DXGI_FORMAT GetDXGIFormat(const ERenderFormat renderFormat);

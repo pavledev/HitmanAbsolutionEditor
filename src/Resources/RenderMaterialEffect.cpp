@@ -1,9 +1,13 @@
+#include <filesystem>
+
 #include "Resources/RenderMaterialEffect.h"
 #include "Editor.h"
+#include "HLSL/HLSLDecompiler.h"
+#include "Utility/D3D11Utility.h"
 
 RenderMaterialEffect::~RenderMaterialEffect()
 {
-    compiledEffect->Release();
+    D3D11Utility::Release(compiledEffect);
 }
 
 void RenderMaterialEffect::Deserialize()
@@ -29,6 +33,34 @@ void RenderMaterialEffect::Deserialize()
     GetTechniques(compiledEffect, effectDesc);
 
     isResourceDeserialized = true;
+}
+
+void RenderMaterialEffect::Export(const std::string& outputPath, const std::string& exportOption)
+{
+    if (exportOption.starts_with("Raw"))
+    {
+        ExportRawData(outputPath);
+    }
+    else
+    {
+        const std::string fileName = outputPath.substr(outputPath.find_last_of("\\") + 1);
+        const std::string jsonFilePath = std::format("{}\\{}.json", outputPath, fileName);
+
+        SerializeToJson(jsonFilePath);
+
+        for (size_t i = 0; i < shaders.size(); ++i)
+        {
+            std::string hlsl;
+            std::string model;
+
+            Decompile(shaders[i].byteCode, shaders[i].byteCodeLength, &hlsl, &model);
+
+            std::string hlslFilePath = std::format("{}\\{}_{}.hlsl", outputPath, shaders[i].name, i + 1);
+            BinaryWriter binaryWriter = BinaryWriter(hlslFilePath);
+
+            binaryWriter.WriteString(hlsl);
+        }
+    }
 }
 
 void RenderMaterialEffect::GetConstantBufferNames(ID3DX11Effect* compiledEffect, D3DX11_EFFECT_DESC& effectDesc)
@@ -180,4 +212,73 @@ void RenderMaterialEffect::AddShader(const D3DX11_PASS_SHADER_DESC& passShaderDe
 
         shaders.push_back(shader);
     }
+}
+
+void RenderMaterialEffect::SerializeToJson(const std::string& outputFilePath)
+{
+    rapidjson::StringBuffer stringBuffer;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+
+    writer.StartObject();
+
+    writer.String("constantBufferNames");
+    writer.StartArray();
+
+    for (size_t i = 0; i < constantBufferNames.size(); ++i)
+    {
+        writer.String(constantBufferNames[i].c_str());
+    }
+
+    writer.EndArray();
+
+    writer.String("globalVariables");
+    writer.StartArray();
+
+    for (size_t i = 0; i < globalVariables.size(); ++i)
+    {
+        writer.String(globalVariables[i].c_str());
+    }
+
+    writer.EndArray();
+
+    writer.String("techniques");
+    writer.StartArray();
+
+    for (size_t i = 0; i < techniques.size(); ++i)
+    {
+        writer.StartObject();
+
+        writer.String("name");
+        writer.String(techniques[i].name.c_str());
+
+        writer.String("passes");
+        writer.StartArray();
+
+        for (size_t j = 0; j < techniques[i].passes.size(); ++j)
+        {
+            writer.String(techniques[i].passes[j].c_str());
+        }
+
+        writer.EndArray();
+
+        writer.String("annotations");
+        writer.StartArray();
+
+        for (size_t j = 0; j < techniques[i].annotations.size(); ++j)
+        {
+            writer.String(techniques[i].annotations[j].c_str());
+        }
+
+        writer.EndArray();
+
+        writer.EndObject();
+    }
+
+    writer.EndArray();
+
+    std::ofstream ofstream = std::ofstream(outputFilePath);
+
+    ofstream << stringBuffer.GetString();
+
+    ofstream.close();
 }

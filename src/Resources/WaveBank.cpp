@@ -8,6 +8,18 @@ void WaveBank::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void WaveBank::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		waveBankResourceData.SerializeToJson(outputPath);
+	}
+}
+
 SWaveBankResourceData& WaveBank::GetWaveBankResourceData()
 {
 	return waveBankResourceData;

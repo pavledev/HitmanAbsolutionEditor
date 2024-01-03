@@ -15,6 +15,18 @@ void CompositionBlueprint::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void CompositionBlueprint::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		musicCompositionData->SerializeToJson(outputPath);
+	}
+}
+
 void CompositionBlueprint::Parse(void* musicCompositionData)
 {
 	this->musicCompositionData = std::make_shared<SMusicCompositionData>();

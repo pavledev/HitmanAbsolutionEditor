@@ -3,6 +3,102 @@
 #include "Logger.h"
 #include "Resources/Texture.h"
 
+void RenderMaterialInstance::Property::SerializeToJson(const std::vector<std::shared_ptr<Resource>>& references, rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+{
+	const std::string& propertyName = materialPropertyNames[propertyInfo.lName];
+	const PROPERTY_TYPE propertyType = static_cast<PROPERTY_TYPE>(propertyInfo.lType);
+
+	writer.String(propertyName.c_str());
+
+	switch (propertyType)
+	{
+		case PROPERTY_TYPE::PT_FLOAT:
+		{
+			writer.Double(floatValue);
+			break;
+		}
+		case PROPERTY_TYPE::PT_CHAR:
+		{
+			writer.String(stringValue.c_str());
+			break;
+		}
+		case PROPERTY_TYPE::PT_UINT32:
+		{
+			if (propertyInfo.lName == 'TXID')
+			{
+				std::string textureResourceID;
+
+				if (uint32Value != -1)
+				{
+					textureResourceID = references[uint32Value]->GetResourceID();
+				}
+
+				writer.String(textureResourceID.c_str());
+			}
+			else
+			{
+				writer.Uint(uint32Value);
+			}
+
+			break;
+		}
+		case PROPERTY_TYPE::PT_LIST:
+		{
+			writer.StartArray();
+			writer.StartObject();
+
+			for (size_t i = 0; i < childProperties.size(); ++i)
+			{
+				childProperties[i].SerializeToJson(references, writer);
+			}
+
+			writer.EndObject();
+			writer.EndArray();
+
+			break;
+		}
+	}
+}
+
+RenderMaterialInstance::RenderMaterialInstance()
+{
+	if (materialPropertyNames.empty())
+	{
+		materialPropertyNames.insert(std::make_pair('AREF', "Alpha Reference"));
+		materialPropertyNames.insert(std::make_pair('ATST', "Alpha Test Enabled"));
+		materialPropertyNames.insert(std::make_pair('BENA', "Blend Enabled"));
+		materialPropertyNames.insert(std::make_pair('BIND', "Binder"));
+		materialPropertyNames.insert(std::make_pair('BMOD', "Blend Mode"));
+		materialPropertyNames.insert(std::make_pair('COLO', "Color"));
+		materialPropertyNames.insert(std::make_pair('CULL', "Culling Mode"));
+		materialPropertyNames.insert(std::make_pair('DBDE', "Decal Blend Diffuse"));
+		materialPropertyNames.insert(std::make_pair('DBEE', "Decal Blend Emission"));
+		materialPropertyNames.insert(std::make_pair('DBNE', "Decal Blend Normal"));
+		materialPropertyNames.insert(std::make_pair('DBRE', "Decal Blend Roughness"));
+		materialPropertyNames.insert(std::make_pair('DBSE', "Decal Blend Specular"));
+		materialPropertyNames.insert(std::make_pair('ENAB', "Enabled"));
+		materialPropertyNames.insert(std::make_pair('FENA', "Fog Enabled"));
+		materialPropertyNames.insert(std::make_pair('FLTV', "Float Value"));
+		materialPropertyNames.insert(std::make_pair('INST', "Instance"));
+		materialPropertyNames.insert(std::make_pair('NAME', "Name"));
+		materialPropertyNames.insert(std::make_pair('OPAC', "Opacity"));
+		materialPropertyNames.insert(std::make_pair('RSTA', "Render State"));
+		materialPropertyNames.insert(std::make_pair('SSBW', "Subsurface Value"));
+		materialPropertyNames.insert(std::make_pair('SSVB', "Subsurface Blue"));
+		materialPropertyNames.insert(std::make_pair('SSVG', "Subsurface Green"));
+		materialPropertyNames.insert(std::make_pair('SSVR', "Subsurface Red"));
+		materialPropertyNames.insert(std::make_pair('TAGS', "Tags"));
+		materialPropertyNames.insert(std::make_pair('TEXT', "Texture"));
+		materialPropertyNames.insert(std::make_pair('TILU', "Tiling U"));
+		materialPropertyNames.insert(std::make_pair('TILV', "Tiling V"));
+		materialPropertyNames.insert(std::make_pair('TXID', "Texture Id"));
+		materialPropertyNames.insert(std::make_pair('TYPE', "Type"));
+		materialPropertyNames.insert(std::make_pair('VALU', "Value"));
+		materialPropertyNames.insert(std::make_pair('ZBIA', "Z Bias"));
+		materialPropertyNames.insert(std::make_pair('ZOFF', "Z Offset"));
+	}
+}
+
 void RenderMaterialInstance::Deserialize()
 {
 	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
@@ -12,9 +108,57 @@ void RenderMaterialInstance::Deserialize()
 
 	materialPropertyList = binaryReader.Read<SRMaterialPropertyList>();
 
+	binaryReader.Seek(materialPropertyList.lMaterialClassType, SeekOrigin::Begin);
+
+	materialClassType = binaryReader.ReadString();
+
 	ReadProperty(instanceProperty, binaryReader, materialPropertyList.lPropertyList);
 
 	isResourceDeserialized = true;
+}
+
+void RenderMaterialInstance::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
+void RenderMaterialInstance::SerializeToJson(const std::string& outputFilePath)
+{
+	std::vector<std::shared_ptr<Resource>>& references = GetReferences();
+	rapidjson::StringBuffer stringBuffer;
+	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+
+	writer.StartObject();
+
+	writer.String("materialInfo");
+	materialPropertyList.SerializeToJson(materialClassType, references, writer);
+
+	instanceProperty.SerializeToJson(references, writer);
+
+	writer.EndObject();
+
+	std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+	outputFileStream << stringBuffer.GetString();
+
+	outputFileStream.close();
+}
+
+SRMaterialPropertyList& RenderMaterialInstance::GetMaterialPropertyList()
+{
+	return materialPropertyList;
+}
+
+std::string& RenderMaterialInstance::GetMaterialClassType()
+{
+	return materialClassType;
 }
 
 void RenderMaterialInstance::ReadProperty(Property& property, BinaryReader& binaryReader, const unsigned int propertyOffset)
@@ -216,4 +360,9 @@ void RenderMaterialInstance::GetTextures(const Property& property, std::shared_p
 	{
 		textures.push_back(texture);
 	}
+}
+
+std::unordered_map<unsigned int, std::string>& RenderMaterialInstance::GetMaterialPropertyNames()
+{
+	return materialPropertyNames;
 }

@@ -23,7 +23,8 @@ public:
 	};
 
 	~RenderMaterialEffect() override;
-	void Deserialize();
+	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	void GetConstantBufferNames(ID3DX11Effect* compiledEffect, D3DX11_EFFECT_DESC& effectDesc);
 	void GetGlobalVariableNames(ID3DX11Effect* compiledEffect, D3DX11_EFFECT_DESC& effectDesc);
 	void GetTechniques(ID3DX11Effect* compiledEffect, D3DX11_EFFECT_DESC& effectDesc);
@@ -33,6 +34,7 @@ public:
 	std::vector<Technique>& GetTechniques();
 	std::vector<Shader>& GetShaders();
 	void AddShader(const D3DX11_PASS_SHADER_DESC& passShaderDesc, const std::string& techniqueName, const std::string& shaderType);
+	void SerializeToJson(const std::string& outputFilePath);
 
 private:
 	ID3DX11Effect* compiledEffect;

@@ -19,8 +19,9 @@ public:
 		SSBCExternalParametersProperties properties;
 	};
 
-	void Deserialize();
-	std::string SerializeToJson();
+	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
+	void SerializeToJson(const std::string& outputFilePath);
 	unsigned int GetNextID();
 	std::vector<SoundBlendContainerExternalParameter>& GetSoundBlendContainerExternalParameters();
 

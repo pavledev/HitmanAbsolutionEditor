@@ -20,6 +20,30 @@ void GFXMovie::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void GFXMovie::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		const std::string fileName = outputPath.substr(outputPath.find_last_of("\\") + 1);
+		const std::string gfxFilePath = std::format("{}\\{}.gfx", outputPath, fileName);
+		BinaryWriter binaryWriter = BinaryWriter(gfxFilePath);
+
+		binaryWriter.Write(gfxResource->gfxData, gfxResource->gfxDataLength);
+
+		for (size_t i = 0; i < gfxResource->filenames.Size(); ++i)
+		{
+			const std::string ddsFilePath = std::format("{}\\{}", outputPath, gfxResource->filenames[i].ToCString());
+			BinaryWriter binaryWriter = BinaryWriter(ddsFilePath);
+
+			binaryWriter.Write(gfxResource->fileContents[i].GetStart(), gfxResource->fileContents[i].Size());
+		}
+	}
+}
+
 void GFXMovie::Parse(void* gfxResource)
 {
 	this->gfxResource = std::make_shared<SGfxResource>();

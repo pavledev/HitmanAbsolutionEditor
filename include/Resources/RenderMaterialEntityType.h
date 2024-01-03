@@ -25,7 +25,9 @@ public:
 		void* value;
 	};
 
-	void Deserialize();
+	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
+	void SerializeToJson(const std::string& outputFilePath);
 	std::vector<std::shared_ptr<Modifier>>& GetModifiers();
 
 private:

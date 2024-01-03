@@ -71,7 +71,9 @@ std::shared_ptr<CppEntity> CppEntityDocument::GetCppEntity() const
 void CppEntityDocument::RenderMenuBar()
 {
     if (!ImGui::BeginMenuBar())
+    {
         return;
+    }
 
     if (ImGui::BeginMenu("View"))
     {
@@ -82,6 +84,21 @@ void CppEntityDocument::RenderMenuBar()
 
         ImGui::EndMenu();
     }
+
+    static std::string exportResourceLabel = std::format("{} Export Resource", ICON_MDI_EXPORT);
+    static bool showResourceExportPopup = false;
+
+    if (ImGui::BeginMenu("Export"))
+    {
+        if (ImGui::MenuItem(exportResourceLabel.c_str()))
+        {
+            showResourceExportPopup = true;
+        }
+
+        ImGui::EndMenu();
+    }
+
+    UI::ResourceExportPopup(showResourceExportPopup, cppEntity);
 
     ImGui::EndMenuBar();
 }

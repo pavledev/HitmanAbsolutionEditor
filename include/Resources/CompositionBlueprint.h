@@ -8,6 +8,7 @@ class CompositionBlueprint : public Resource
 {
 public:
 	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	void Parse(void* musicCompositionData);
 	void ParseGameCues(void* musicCompositionData);
 	void ParsePlayLists(void* musicCompositionData);

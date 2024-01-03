@@ -16,6 +16,18 @@ void CppEntityBlueprint::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void CppEntityBlueprint::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		cppEntityBlueprint->SerializeToJson(outputPath);
+	}
+}
+
 void CppEntityBlueprint::Parse(void* cppEntityBlueprint)
 {
 	this->cppEntityBlueprint = std::make_shared<SCppEntityBlueprint>();

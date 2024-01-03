@@ -18,6 +18,8 @@ void SBehaviorTreeInfo::SerializeToJson(const std::string& outputFilePath)
     std::ofstream outputFileStream = std::ofstream(outputFilePath);
 
     outputFileStream << stringBuffer.GetString();
+
+    outputFileStream.close();
 }
 
 void SBehaviorTreeInfo::SerializeToMemory(ZBinarySerializer& binarySerializer)

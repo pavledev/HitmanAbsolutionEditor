@@ -1,6 +1,6 @@
 #include "Glacier/Entity/STemplateEntity.h"
 
-std::string STemplateEntity::SerializeToJson()
+void STemplateEntity::SerializeToJson(const std::string& outputFilePath)
 {
     rapidjson::StringBuffer stringBuffer;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
@@ -18,7 +18,11 @@ std::string STemplateEntity::SerializeToJson()
 
     writer.EndObject();
 
-    return stringBuffer.GetString();
+    std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+    outputFileStream << stringBuffer.GetString();
+
+    outputFileStream.close();
 }
 
 void STemplateEntity::SerializeToMemory(ZBinarySerializer& binarySerializer)

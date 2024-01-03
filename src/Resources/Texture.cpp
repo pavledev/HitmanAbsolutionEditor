@@ -55,6 +55,30 @@ void Texture::Deserialize()
     isResourceDeserialized = true;
 }
 
+void Texture::Export(const std::string& outputPath, const std::string& exportOption)
+{
+    if (exportOption.starts_with("Raw"))
+    {
+        ExportRawData(outputPath);
+    }
+    else if (exportOption.starts_with("DDS"))
+    {
+        ConvertTextureToDDS(outputPath);
+    }
+    else if (exportOption.starts_with("PNG"))
+    {
+        ConvertTextureToPNG(outputPath);
+    }
+    else if (exportOption.starts_with("BMP"))
+    {
+        ConvertTextureToBMP(outputPath);
+    }
+    else if (exportOption.starts_with("TGA"))
+    {
+        ConvertTextureToTGA(outputPath);
+    }
+}
+
 ZTextureMap::SMipLevel Texture::GetMipLevel(unsigned int level)
 {
     ZTextureMap::SMipLevel mipLevel;

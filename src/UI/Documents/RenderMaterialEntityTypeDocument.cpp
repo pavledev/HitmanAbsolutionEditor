@@ -70,7 +70,9 @@ std::shared_ptr<RenderMaterialEntityType> RenderMaterialEntityTypeDocument::GetR
 void RenderMaterialEntityTypeDocument::RenderMenuBar()
 {
     if (!ImGui::BeginMenuBar())
+    {
         return;
+    }
 
     if (ImGui::BeginMenu("View"))
     {
@@ -81,6 +83,21 @@ void RenderMaterialEntityTypeDocument::RenderMenuBar()
 
         ImGui::EndMenu();
     }
+
+    static std::string exportResourceLabel = std::format("{} Export Resource", ICON_MDI_EXPORT);
+    static bool showResourceExportPopup = false;
+
+    if (ImGui::BeginMenu("Export"))
+    {
+        if (ImGui::MenuItem(exportResourceLabel.c_str()))
+        {
+            showResourceExportPopup = true;
+        }
+
+        ImGui::EndMenu();
+    }
+
+    UI::ResourceExportPopup(showResourceExportPopup, renderMaterialEntityType);
 
     ImGui::EndMenuBar();
 }

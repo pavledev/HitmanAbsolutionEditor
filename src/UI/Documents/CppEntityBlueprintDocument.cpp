@@ -4,6 +4,8 @@
 #include <UI/Panels/CppEntityBlueprintSubsetsPanel.h>
 #include <UI/Panels/ResourceInfoPanel.h>
 #include <UI/Panels/HexViewerPanel.h>
+#include <UI/Documents/AnimationDatabaseDocument.h>
+#include <Utility/ResourceUtility.h>
 
 CppEntityBlueprintDocument::CppEntityBlueprintDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
@@ -72,6 +74,21 @@ void CppEntityBlueprintDocument::RenderMenuBar()
 
         ImGui::EndMenu();
     }
+
+    static std::string exportResourceLabel = std::format("{} Export Resource", ICON_MDI_EXPORT);
+    static bool showResourceExportPopup = false;
+
+    if (ImGui::BeginMenu("Export"))
+    {
+        if (ImGui::MenuItem(exportResourceLabel.c_str()))
+        {
+            showResourceExportPopup = true;
+        }
+
+        ImGui::EndMenu();
+    }
+
+    UI::ResourceExportPopup(showResourceExportPopup, cppEntityBlueprint);
 
     ImGui::EndMenuBar();
 }
