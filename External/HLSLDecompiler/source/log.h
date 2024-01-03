@@ -7,8 +7,8 @@ using namespace std;
 
 // Wrappers to make logging cleaner.
 
-extern FILE *LogFile;
-extern bool gLogDebug;
+inline FILE* LogFile = stderr; // Log to stderr by default
+inline bool gLogDebug = false;
 
 // Note that for now I've left the definitions of LogFile and LogDebug as they
 // were - either declared locally in a file, as an extern, or from another
