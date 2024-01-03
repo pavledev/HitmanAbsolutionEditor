@@ -164,6 +164,8 @@ std::string ResourceUtility::GetResourceName(const std::string& resourceID)
         }
     }
 
+    name = name.substr(0, name.find("."));
+
     return name;
 }
 
