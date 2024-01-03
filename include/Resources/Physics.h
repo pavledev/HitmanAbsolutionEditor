@@ -12,9 +12,9 @@
 #include "Glacier/Physics/ZPhysicsResourceData.h"
 #include "Glacier/Physics/ECollidableLayer.h"
 
-#include "IO/BinaryReader.h"
+#include "Resources/Resource.h"
 
-class Physics
+class Physics : public Resource
 {
 public:
 	Physics() = default;
