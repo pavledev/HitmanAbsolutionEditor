@@ -47,6 +47,7 @@ Editor::~Editor()
     directXRenderer->CleanupD3DDevice();
     DestroyWindow(hwnd);
     UnregisterClassW(wc.lpszClassName, wc.hInstance);
+    CoUninitialize();
 }
 
 Editor& Editor::GetInstance()
