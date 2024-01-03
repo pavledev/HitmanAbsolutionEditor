@@ -36,6 +36,7 @@ private:
 	void SVector2Property(std::string& name, void* value, const size_t index);
 	void SVector3Property(std::string& name, void* value, const size_t index);
 	void SVector4Property(std::string& name, void* value, const size_t index);
+	void StringProperty(std::string& name, void* value, const size_t index);
 
 	void RenderRemoveModifierButton(const rsize_t modifierIndex);
 

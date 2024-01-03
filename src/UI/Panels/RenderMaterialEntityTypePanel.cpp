@@ -87,7 +87,7 @@ void RenderMaterialEntityTypePanel::RenderModifiers()
 		switch (mattModifiers[i]->type)
 		{
 			case RenderMaterialEntityType::ModifierType::UInt:
-				Property(matbModifiers[i]->name, *static_cast<unsigned int*>(mattModifiers[i]->value), i);
+				StringProperty(matbModifiers[i]->name, mattModifiers[i]->value, i);
 				break;
 			case RenderMaterialEntityType::ModifierType::SColorRGB:
 				SColorRGBProperty(matbModifiers[i]->name, mattModifiers[i]->value, i);
@@ -449,6 +449,23 @@ void RenderMaterialEntityTypePanel::SVector4Property(std::string& name, void* va
 	ImGui::PopStyleVar();
 
 	UI::EndProperty();
+
+	RenderRemoveModifierButton(index);
+}
+
+void RenderMaterialEntityTypePanel::StringProperty(std::string& name, void* value, const size_t index)
+{
+	std::vector<std::shared_ptr<Resource>>& mattReferences = renderMaterialEntityTypeResource->GetReferences();
+	unsigned int* textureReferenceIndex = static_cast<unsigned int*>(value);
+	std::string resourceID;
+	static char stringBuffer[2048] = {};
+
+	if (*textureReferenceIndex != -1)
+	{
+		resourceID = mattReferences[*textureReferenceIndex]->GetResourceID();
+	}
+
+	UI::StringProperty(name, resourceID, nullptr, false);
 
 	RenderRemoveModifierButton(index);
 }
