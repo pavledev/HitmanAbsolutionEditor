@@ -334,3 +334,8 @@ void ResourceUtility::LoadResource(std::shared_ptr<Resource> resource)
         resource->LoadResource(0, -1, -1, false, false, true);
     }
 }
+
+std::string ResourceUtility::GenerateFileName(std::shared_ptr<Resource> resource)
+{
+    return std::format("{}_{}", resource->GetName(), StringUtility::ConvertValueToHexString(resource->GetRuntimeResourceID()));
+}
