@@ -14,7 +14,7 @@ public:
 
 private:
 	template <std::integral T>
-	void Property(std::string& name, T& value, const unsigned int index, T min = 0, T max = 0)
+	void Property(std::string& name, T& value, const size_t index, T min = 0, T max = 0)
 	{
 		UI::Property(name, value, min, max, nullptr, false);
 
@@ -22,7 +22,7 @@ private:
 	}
 
 	template <std::floating_point T>
-	void Property(std::string& name, T& value, const unsigned int index, T min = 0, T max = 0)
+	void Property(std::string& name, T& value, const size_t index, T min = 0, T max = 0)
 	{
 		UI::Property(name, value, min, max, nullptr, false, 0.1f, "%.3f");
 
@@ -31,13 +31,13 @@ private:
 
 	void RenderModifiers();
 
-	void SColorRGBProperty(std::string& name, void* value, const unsigned int index);
-	void SColorRGBAProperty(std::string& name, void* value, const unsigned int index);
-	void SVector2Property(std::string& name, void* value, const unsigned int index);
-	void SVector3Property(std::string& name, void* value, const unsigned int index);
-	void SVector4Property(std::string& name, void* value, const unsigned int index);
+	void SColorRGBProperty(std::string& name, void* value, const size_t index);
+	void SColorRGBAProperty(std::string& name, void* value, const size_t index);
+	void SVector2Property(std::string& name, void* value, const size_t index);
+	void SVector3Property(std::string& name, void* value, const size_t index);
+	void SVector4Property(std::string& name, void* value, const size_t index);
 
-	void RenderRemoveModifierButton(const unsigned int modifierIndex);
+	void RenderRemoveModifierButton(const rsize_t modifierIndex);
 
 	std::shared_ptr<RenderMaterialEntityType> renderMaterialEntityTypeResource;
 	std::shared_ptr<RenderMaterialEntityBlueprint> renderMaterialEntityBlueprint;
