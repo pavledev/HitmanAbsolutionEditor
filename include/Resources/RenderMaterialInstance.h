@@ -18,7 +18,7 @@ class RenderMaterialInstance : public Resource
 public:
 	struct Property
 	{
-		void SerializeToJson(const std::vector<std::shared_ptr<Resource>>& references, rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
+		void SerializeToJson(const std::vector<std::shared_ptr<Resource>>& references, rapidjson::Value& propertyObject, rapidjson::Document::AllocatorType& allocator);
 
 		SProperty propertyInfo;
 		std::vector<Property> childProperties;

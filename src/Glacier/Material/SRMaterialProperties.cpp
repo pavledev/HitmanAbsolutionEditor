@@ -2,116 +2,59 @@
 #include "Glacier/Material/RENDER_PRIMITIVE_INSTANCE_FLAGS.h"
 #include "Resources/Resource.h"
 
-void SRMaterialProperties::SerializeToJson(const std::string& materialClassType, std::vector<std::shared_ptr<Resource>>& references, rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+void SRMaterialProperties::SerializeToJson(const std::string& materialClassType, std::vector<std::shared_ptr<Resource>>& references, rapidjson::Document& document)
 {
-	writer.StartObject();
+	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();
+	rapidjson::Value materialInfoObject;
 
-	writer.String("materialClassType");
-	writer.String(materialClassType.c_str());
+	materialInfoObject.SetObject();
 
-	writer.String("materialEffectResourceID");
-	writer.String(references[lMaterialEffectIndex]->GetResourceID().c_str());
+	materialInfoObject.AddMember("materialClassType", rapidjson::Value(materialClassType.c_str(), allocator).Move(), allocator);
+	materialInfoObject.AddMember("materialEffectResourceID", rapidjson::Value(references[lMaterialEffectIndex]->GetResourceID().c_str(), allocator).Move(), allocator);
 
-	MATERIAL_FLAGS materialFlags = static_cast<MATERIAL_FLAGS>(lMaterialClassFlags);
+	const MATERIAL_FLAGS materialFlags = static_cast<MATERIAL_FLAGS>(lMaterialClassFlags);
+	rapidjson::Value materialClassFlagsObject;
 
-	writer.String("materialClassFlags");
-	writer.StartObject();
+	materialClassFlagsObject.SetObject();
 
-	writer.String("MF_REFLECTION2D");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_REFLECTION2D) == MATERIAL_FLAGS::MF_REFLECTION2D);
+	materialClassFlagsObject.AddMember("MF_REFLECTION2D", (materialFlags & MATERIAL_FLAGS::MF_REFLECTION2D) == MATERIAL_FLAGS::MF_REFLECTION2D, allocator);
+	materialClassFlagsObject.AddMember("MF_REFRACTION2D", (materialFlags & MATERIAL_FLAGS::MF_REFRACTION2D) == MATERIAL_FLAGS::MF_REFRACTION2D, allocator);
+	materialClassFlagsObject.AddMember("MF_LIGHTING", (materialFlags & MATERIAL_FLAGS::MF_LIGHTING) == MATERIAL_FLAGS::MF_LIGHTING, allocator);
+	materialClassFlagsObject.AddMember("MF_EMISSIVE", (materialFlags & MATERIAL_FLAGS::MF_EMISSIVE) == MATERIAL_FLAGS::MF_EMISSIVE, allocator);
+	materialClassFlagsObject.AddMember("MF_DISCARD", (materialFlags & MATERIAL_FLAGS::MF_DISCARD) == MATERIAL_FLAGS::MF_DISCARD, allocator);
+	materialClassFlagsObject.AddMember("MF_LM_SKIN", (materialFlags & MATERIAL_FLAGS::MF_LM_SKIN) == MATERIAL_FLAGS::MF_LM_SKIN, allocator);
+	materialClassFlagsObject.AddMember("MF_PRIMCLASS_STANDARD", (materialFlags & MATERIAL_FLAGS::MF_PRIMCLASS_STANDARD) == MATERIAL_FLAGS::MF_PRIMCLASS_STANDARD, allocator);
+	materialClassFlagsObject.AddMember("MF_PRIMCLASS_LINKED", (materialFlags & MATERIAL_FLAGS::MF_PRIMCLASS_LINKED) == MATERIAL_FLAGS::MF_PRIMCLASS_LINKED, allocator);
+	materialClassFlagsObject.AddMember("MF_PRIMCLASS_WEIGHTED", (materialFlags & MATERIAL_FLAGS::MF_PRIMCLASS_WEIGHTED) == MATERIAL_FLAGS::MF_PRIMCLASS_WEIGHTED, allocator);
+	materialClassFlagsObject.AddMember("MF_DOFOVERRIDE", (materialFlags & MATERIAL_FLAGS::MF_DOFOVERRIDE) == MATERIAL_FLAGS::MF_DOFOVERRIDE, allocator);
+	materialClassFlagsObject.AddMember("MF_USES_DEFAULT_VS", (materialFlags & MATERIAL_FLAGS::MF_USES_DEFAULT_VS) == MATERIAL_FLAGS::MF_USES_DEFAULT_VS, allocator);
+	materialClassFlagsObject.AddMember("MF_USES_SPRITE_SA_VS", (materialFlags & MATERIAL_FLAGS::MF_USES_SPRITE_SA_VS) == MATERIAL_FLAGS::MF_USES_SPRITE_SA_VS, allocator);
+	materialClassFlagsObject.AddMember("MF_USES_SPRITE_AO_VS", (materialFlags & MATERIAL_FLAGS::MF_USES_SPRITE_AO_VS) == MATERIAL_FLAGS::MF_USES_SPRITE_AO_VS, allocator);
+	materialClassFlagsObject.AddMember("MF_ALPHA", (materialFlags & MATERIAL_FLAGS::MF_ALPHA) == MATERIAL_FLAGS::MF_ALPHA, allocator);
+	materialClassFlagsObject.AddMember("MF_USES_SIMPLE_SHADER", (materialFlags & MATERIAL_FLAGS::MF_USES_SIMPLE_SHADER) == MATERIAL_FLAGS::MF_USES_SIMPLE_SHADER, allocator);
+	materialInfoObject.AddMember("materialClassFlags", materialClassFlagsObject, allocator);
 
-	writer.String("MF_REFRACTION2D");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_REFRACTION2D) == MATERIAL_FLAGS::MF_REFRACTION2D);
+	const RENDER_PRIMITIVE_INSTANCE_FLAGS renderPrimitiveInstanceFlags = static_cast<RENDER_PRIMITIVE_INSTANCE_FLAGS>(lTransparencyFlags);
+	rapidjson::Value transparencyFlagsObject;
 
-	writer.String("MF_LIGHTING");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_LIGHTING) == MATERIAL_FLAGS::MF_LIGHTING);
+	transparencyFlagsObject.SetObject();
 
-	writer.String("MF_EMISSIVE");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_EMISSIVE) == MATERIAL_FLAGS::MF_EMISSIVE);
+	transparencyFlagsObject.AddMember("TF_OPAQUE_EMISSIVE", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_OPAQUE_EMISSIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_OPAQUE_EMISSIVE, allocator);
+	transparencyFlagsObject.AddMember("TF_TRANS_EMISSIVE", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANS_EMISSIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANS_EMISSIVE, allocator);
+	transparencyFlagsObject.AddMember("TF_TRANSADD_EMISSIVE", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANSADD_EMISSIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANSADD_EMISSIVE, allocator);
+	transparencyFlagsObject.AddMember("TF_OPAQUE_LIT", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_OPAQUE_LIT) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_OPAQUE_LIT, allocator);
+	transparencyFlagsObject.AddMember("TF_TRANS_LIT", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANS_LIT) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANS_LIT, allocator);
+	transparencyFlagsObject.AddMember("TF_DECAL", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DECAL) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DECAL, allocator);
+	transparencyFlagsObject.AddMember("TF_REFRACTIVE", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_REFRACTIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_REFRACTIVE, allocator);
+	transparencyFlagsObject.AddMember("TF_LM_SKIN", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_LM_SKIN) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_LM_SKIN, allocator);
+	transparencyFlagsObject.AddMember("TF_FORCE_EMISSIVE", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_FORCE_EMISSIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_FORCE_EMISSIVE, allocator);
+	transparencyFlagsObject.AddMember("TF_DISABLE_SHADER_LOD", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DISABLE_SHADER_LOD) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DISABLE_SHADER_LOD, allocator);
+	transparencyFlagsObject.AddMember("TF_DISCARD", (renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DISCARD) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DISCARD, allocator);
+	materialInfoObject.AddMember("transparencyFlags", transparencyFlagsObject, allocator);
 
-	writer.String("MF_DISCARD");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_DISCARD) == MATERIAL_FLAGS::MF_DISCARD);
+	materialInfoObject.AddMember("materialDescriptor", lMaterialDescriptor, allocator);
+	materialInfoObject.AddMember("impactMaterial", lImpactMaterial, allocator);
+	materialInfoObject.AddMember("effectResource", lEffectResource, allocator);
 
-	writer.String("MF_LM_SKIN");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_LM_SKIN) == MATERIAL_FLAGS::MF_LM_SKIN);
-
-	writer.String("MF_PRIMCLASS_STANDARD");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_PRIMCLASS_STANDARD) == MATERIAL_FLAGS::MF_PRIMCLASS_STANDARD);
-
-	writer.String("MF_PRIMCLASS_LINKED");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_PRIMCLASS_LINKED) == MATERIAL_FLAGS::MF_PRIMCLASS_LINKED);
-
-	writer.String("MF_PRIMCLASS_WEIGHTED");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_PRIMCLASS_WEIGHTED) == MATERIAL_FLAGS::MF_PRIMCLASS_WEIGHTED);
-
-	writer.String("MF_DOFOVERRIDE");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_DOFOVERRIDE) == MATERIAL_FLAGS::MF_DOFOVERRIDE);
-
-	writer.String("MF_USES_DEFAULT_VS");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_USES_DEFAULT_VS) == MATERIAL_FLAGS::MF_USES_DEFAULT_VS);
-
-	writer.String("MF_USES_SPRITE_SA_VS");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_USES_SPRITE_SA_VS) == MATERIAL_FLAGS::MF_USES_SPRITE_SA_VS);
-
-	writer.String("MF_USES_SPRITE_AO_VS");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_USES_SPRITE_AO_VS) == MATERIAL_FLAGS::MF_USES_SPRITE_AO_VS);
-
-	writer.String("MF_ALPHA");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_ALPHA) == MATERIAL_FLAGS::MF_ALPHA);
-
-	writer.String("MF_USES_SIMPLE_SHADER");
-	writer.Bool((materialFlags & MATERIAL_FLAGS::MF_USES_SIMPLE_SHADER) == MATERIAL_FLAGS::MF_USES_SIMPLE_SHADER);
-
-	writer.EndObject();
-
-	RENDER_PRIMITIVE_INSTANCE_FLAGS renderPrimitiveInstanceFlags = static_cast<RENDER_PRIMITIVE_INSTANCE_FLAGS>(lTransparencyFlags);
-
-	writer.String("transparencyFlags");
-	writer.StartObject();
-
-	writer.String("TF_OPAQUE_EMISSIVE");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_OPAQUE_EMISSIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_OPAQUE_EMISSIVE);
-
-	writer.String("TF_TRANS_EMISSIVE");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANS_EMISSIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANS_EMISSIVE);
-
-	writer.String("TF_TRANSADD_EMISSIVE");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANSADD_EMISSIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANSADD_EMISSIVE);
-
-	writer.String("TF_OPAQUE_LIT");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_OPAQUE_LIT) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_OPAQUE_LIT);
-
-	writer.String("TF_TRANS_LIT");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANS_LIT) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_TRANS_LIT);
-
-	writer.String("TF_DECAL");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DECAL) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DECAL);
-
-	writer.String("TF_REFRACTIVE");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_REFRACTIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_REFRACTIVE);
-
-	writer.String("TF_LM_SKIN");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_LM_SKIN) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_LM_SKIN);
-
-	writer.String("TF_FORCE_EMISSIVE");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_FORCE_EMISSIVE) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_FORCE_EMISSIVE);
-
-	writer.String("TF_DISABLE_SHADER_LOD");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DISABLE_SHADER_LOD) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DISABLE_SHADER_LOD);
-
-	writer.String("TF_DISCARD");
-	writer.Bool((renderPrimitiveInstanceFlags & RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DISCARD) == RENDER_PRIMITIVE_INSTANCE_FLAGS::TF_DISCARD);
-
-	writer.EndObject();
-
-	writer.String("materialDescriptor");
-	writer.Uint(lMaterialDescriptor);
-
-	writer.String("impactMaterial");
-	writer.Uint(lImpactMaterial);
-
-	writer.String("effectResource");
-	writer.Uint(lEffectResource);
-
-	writer.EndObject();
+	document.AddMember("materialInfo", materialInfoObject, allocator);
 }

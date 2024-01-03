@@ -4,8 +4,7 @@
 #include <vector>
 #include <memory>
 
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/prettywriter.h"
+#include "rapidjson/document.h"
 
 class Resource;
 
@@ -30,7 +29,7 @@ struct SRMaterialProperties
 		MF_USES_SIMPLE_SHADER = 16384
 	};
 
-	void SerializeToJson(const std::string& materialClassType, std::vector<std::shared_ptr<Resource>>& references, rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer);
+	void SerializeToJson(const std::string& materialClassType, std::vector<std::shared_ptr<Resource>>& references, rapidjson::Document& document);
 
 	unsigned int lMaterialClassType;
 	unsigned int lMaterialEffectIndex;

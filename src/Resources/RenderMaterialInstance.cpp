@@ -3,23 +3,21 @@
 #include "Logger.h"
 #include "Resources/Texture.h"
 
-void RenderMaterialInstance::Property::SerializeToJson(const std::vector<std::shared_ptr<Resource>>& references, rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
+void RenderMaterialInstance::Property::SerializeToJson(const std::vector<std::shared_ptr<Resource>>& references, rapidjson::Value& propertyObject, rapidjson::Document::AllocatorType& allocator)
 {
 	const std::string& propertyName = materialPropertyNames[propertyInfo.lName];
 	const PROPERTY_TYPE propertyType = static_cast<PROPERTY_TYPE>(propertyInfo.lType);
-
-	writer.String(propertyName.c_str());
 
 	switch (propertyType)
 	{
 		case PROPERTY_TYPE::PT_FLOAT:
 		{
-			writer.Double(floatValue);
+			propertyObject.AddMember(rapidjson::Value(propertyName.c_str(), allocator).Move(), floatValue, allocator);
 			break;
 		}
 		case PROPERTY_TYPE::PT_CHAR:
 		{
-			writer.String(stringValue.c_str());
+			propertyObject.AddMember(rapidjson::Value(propertyName.c_str(), allocator).Move(), rapidjson::Value(stringValue.c_str(), allocator).Move(), allocator);
 			break;
 		}
 		case PROPERTY_TYPE::PT_UINT32:
@@ -33,27 +31,39 @@ void RenderMaterialInstance::Property::SerializeToJson(const std::vector<std::sh
 					textureResourceID = references[uint32Value]->GetResourceID();
 				}
 
-				writer.String(textureResourceID.c_str());
+				propertyObject.AddMember(rapidjson::Value(propertyName.c_str(), allocator).Move(), rapidjson::Value(textureResourceID.c_str(), allocator).Move(), allocator);
 			}
 			else
 			{
-				writer.Uint(uint32Value);
+				propertyObject.AddMember(rapidjson::Value(propertyName.c_str(), allocator).Move(), uint32Value, allocator);
 			}
 
 			break;
 		}
 		case PROPERTY_TYPE::PT_LIST:
 		{
-			writer.StartArray();
-			writer.StartObject();
+			rapidjson::Value childObject;
+
+			childObject.SetObject();
 
 			for (size_t i = 0; i < childProperties.size(); ++i)
 			{
-				childProperties[i].SerializeToJson(references, writer);
+				childProperties[i].SerializeToJson(references, childObject, allocator);
 			}
 
-			writer.EndObject();
-			writer.EndArray();
+			if (propertyObject.HasMember(propertyName.c_str()))
+			{
+				propertyObject[propertyName.c_str()].GetArray().PushBack(childObject, allocator);
+			}
+			else
+			{
+				rapidjson::Value array;
+
+				array.SetArray();
+				array.PushBack(childObject, allocator);
+
+				propertyObject.AddMember(rapidjson::Value(propertyName.c_str(), allocator).Move(), array, allocator);
+			}
 
 			break;
 		}
@@ -132,17 +142,25 @@ void RenderMaterialInstance::Export(const std::string& outputPath, const std::st
 void RenderMaterialInstance::SerializeToJson(const std::string& outputFilePath)
 {
 	std::vector<std::shared_ptr<Resource>>& references = GetReferences();
+	rapidjson::Document document;
+	rapidjson::Document::AllocatorType& allocator = document.GetAllocator();
+
+	document.SetObject();
+
+	materialPropertyList.SerializeToJson(materialClassType, references, document);
+
+	rapidjson::Value object;
+
+	object.SetObject();
+
+	instanceProperty.SerializeToJson(references, object, allocator);
+
+	document.AddMember("material", object, allocator);
+
 	rapidjson::StringBuffer stringBuffer;
 	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
 
-	writer.StartObject();
-
-	writer.String("materialInfo");
-	materialPropertyList.SerializeToJson(materialClassType, references, writer);
-
-	instanceProperty.SerializeToJson(references, writer);
-
-	writer.EndObject();
+	document.Accept(writer);
 
 	std::ofstream outputFileStream = std::ofstream(outputFilePath);
 
