@@ -453,6 +453,7 @@ void RenderMaterialEntityTypePanel::SVector4Property(std::string& name, void* va
 	RenderRemoveModifierButton(index);
 }
 
+void RenderMaterialEntityTypePanel::RenderRemoveModifierButton(const size_t modifierIndex)
 {
 	ImGui::TableNextColumn();
 
