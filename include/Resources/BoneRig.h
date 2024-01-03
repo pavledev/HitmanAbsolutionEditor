@@ -14,14 +14,12 @@
 #include "Glacier/Math/SMatrix43.h"
 #include "Glacier/Math/SMatrix44.h"
 
-#include "IO/BinaryReader.h"
+#include "Resources/Resource.h"
 
-class BoneRig
+class BoneRig : public Resource
 {
 public:
-	void Deserialize(const std::string& filePath);
-	void Deserialize(void* buffer, const unsigned int dataSize);
-	void Deserialize(BinaryReader& binaryReader);
+	void Deserialize();
 	void DeserializePrimaryHeader(BinaryReader& binaryReader);
 	void DeserializeBoneDefinitions(BinaryReader& binaryReader);
 	void DeserializeBindPoses(BinaryReader& binaryReader);
