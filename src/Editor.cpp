@@ -269,7 +269,7 @@ void Editor::RenderContent()
 
         if (ImGui::Button(ICON_MDI_FOLDER))
         {
-            runtimeFolderPath = FileDialog::OpenFolder(hwnd);
+            runtimeFolderPath = FileDialog::OpenFolder();
         }
 
         ImGui::Separator();
