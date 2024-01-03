@@ -21,6 +21,11 @@
 #include "Registry/EnumRegistry.h"
 #include "Registry/PropertyRegistry.h"
 #include "Hash.h"
+#include "Editor.h"
+#include "Utility/FileDialog.h"
+#include "Resources/WaveBankFSB.h"
+#include "Resources/FlashMovie.h"
+#include "Utility/ResourceUtility.h"
 
 bool UI::IsWindowHovered(const ImGuiID windowID)
 {
@@ -658,4 +663,274 @@ bool UI::PlayerBar(const char* label, float* value, const float min, const float
 	ImGui::RenderRectFilledRangeH(window->DrawList, bb, ImGui::GetColorU32(ImGuiCol_PlotHistogram), 0.f, fraction, style.FrameRounding);
 
 	return valueChanged;
+}
+
+void UI::ResourceExportPopup(bool& showPopup, std::shared_ptr<Resource> resource)
+{
+	if (showPopup)
+	{
+		ImGui::OpenPopup("Export Resource");
+	}
+
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImVec2 modalSize = ImVec2(600, 400);
+	ImVec2 centerPosition = ImVec2(
+		viewport->GetCenter().x - modalSize.x / 2,
+		viewport->GetCenter().y - modalSize.y / 2
+	);
+
+	ImGui::SetNextWindowSize(modalSize);
+	ImGui::SetNextWindowPos(centerPosition);
+
+	if (ImGui::BeginPopupModal("Export Resource", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		static std::string outputFolderPath;
+		const float windowWidth = ImGui::GetContentRegionAvail().x;
+		const float buttonWidth = GetIconButtonSize(ICON_MDI_FOLDER, "").x;
+		const float inputTextWidth = windowWidth - buttonWidth - ImGui::GetStyle().ItemSpacing.x;
+
+		ImGui::PushFont(Editor::GetInstance().GetImGuiRenderer()->GetMiddleFont());
+		ImGui::TextUnformatted("Ouput Folder Path");
+
+		ImGui::PushItemWidth(inputTextWidth);
+		ImGui::InputText("##OuputFolderPath", &outputFolderPath);
+		ImGui::PopItemWidth();
+		ImGui::SameLine();
+
+		if (ImGui::Button(ICON_MDI_FOLDER))
+		{
+			outputFolderPath = FileDialog::OpenFolder();
+		}
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		static size_t selectedExportOptionIndex = 0;
+		static const char* selectedExportOption = nullptr;
+
+		if (resource->IsResourceLoaded())
+		{
+			ImGui::Text("Export as:");
+			ImGui::Spacing();
+
+			ImGui::BeginChild("ScrollingRegion", ImVec2(600, 200));
+
+			const std::vector<std::string>& exportOptions = GetExportOptions(resource);
+
+			if (!selectedExportOption)
+			{
+				selectedExportOption = exportOptions[0].c_str();
+			}
+
+			for (size_t i = 0; i < exportOptions.size(); ++i)
+			{
+				if (ImGui::RadioButton(exportOptions[i].c_str(), selectedExportOptionIndex == i))
+				{
+					selectedExportOptionIndex = i;
+					selectedExportOption = exportOptions[i].c_str();
+				}
+
+				ImGui::Spacing();
+				ImGui::Spacing();
+			}
+
+			ImGui::EndChild();
+		}
+		else
+		{
+			ImGui::Text("Loading available export options...");
+		}
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		if (UI::IconButton("  " ICON_MDI_EXPORT, " Export "))
+		{
+			showPopup = false;
+
+			ImGui::CloseCurrentPopup();
+
+			if (!resource->IsResourceDeserialized())
+			{
+				resource->Deserialize();
+			}
+
+			const std::string fileName = ResourceUtility::GenerateFileName(resource);
+			std::string outputPath;
+			const std::string selectedExportOption2 = selectedExportOption;
+
+			if (strncmp(selectedExportOption, "Folder", 6) == 0)
+			{
+				outputPath = std::format("{}\\{}", outputFolderPath, fileName);
+
+				if (!std::filesystem::exists(outputPath))
+				{
+					std::filesystem::create_directory(outputPath);
+				}
+			}
+			else
+			{
+				const std::string selectedExportOption2 = selectedExportOption;
+				const size_t index = selectedExportOption2.find("(");
+				const std::string extension = selectedExportOption2.substr(index + 1, selectedExportOption2.find(")") - index - 1);
+
+				outputPath = std::format("{}\\{}{}", outputFolderPath, fileName, extension);
+			}
+
+			resource->Export(outputPath, selectedExportOption2);
+
+			resource.reset();
+		}
+
+		const ImVec2 framePadding = ImGui::GetStyle().FramePadding;
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + framePadding.x);
+
+		if (UI::IconButton("  " ICON_MDI_CLOSE, " Cancel "))
+		{
+			showPopup = false;
+
+			ImGui::CloseCurrentPopup();
+
+			resource.reset();
+		}
+
+		ImGui::PopFont();
+
+		ImGui::EndPopup();
+	}
+}
+
+const std::vector<std::string>& UI::GetExportOptions(std::shared_ptr<Resource> resource)
+{
+	static std::unordered_map<unsigned int, std::vector<std::string>> resourceTypeToExportOptions;
+
+	static std::vector<std::string> fsbfExportOptions = { "Raw File (.FSBF)", "FSB File (.FSB)", "Folder (OGG Files)" };
+	static std::vector<std::string> fsbfExportOptions2 = { "Raw File (.FSBF)", "FSB File (.FSB)", "Folder (WAV Files)" };
+	static std::vector<std::string> fsbmExportOptions = { "Raw File (.FSBM)", "FSB File (.FSB)", "Folder (OGG Files)" };
+	static std::vector<std::string> fsbmExportOptions2 = { "Raw File (.FSBM)", "FSB File (.FSB)", "Folder (WAV Files)" };
+	static std::vector<std::string> fsbsExportOptions = { "Raw File (.FSBS)", "FSB File (.FSB)", "Folder (OGG Files)" };
+	static std::vector<std::string> fsbsExportOptions2 = { "Raw File (.FSBS)", "FSB File (.FSB)", "Folder (WAV Files)" };
+
+	static std::vector<std::string> swffExportOptions = { "Raw File (.SWFF)", "DDS File (*.DDS)" };
+	static std::vector<std::string> swffExportOptions2 = { "Raw File (.SWFF)", "PNG File (*.PNG)" };
+	static std::vector<std::string> swffExportOptions3 = { "Raw File (.SWFF)", "SWF File (*.SWF)" };
+
+	if (resourceTypeToExportOptions.empty())
+	{
+		static std::vector<std::string> aibbExportOptions = { "Raw File (.AIBB)", "Json File (.JSON)" };
+		static std::vector<std::string> cbluExportOptions = { "Raw File (.CBLU)", "Json File (.JSON)" };
+		static std::vector<std::string> closExportOptions = { "Raw File (.CLOS)", "XML File (.XML)" };
+		static std::vector<std::string> clotExportOptions = { "Raw File (.CLOT)", "Json File (.JSON)" };
+		static std::vector<std::string> cpptExportOptions = { "Raw File (.CPPT)", "Json File (.JSON)" };
+		static std::vector<std::string> chrtExportOptions = { "Raw File (.ChrT)", "Json File (.JSON)" };
+		static std::vector<std::string> gfxfExportOptions = { "Raw File (.GFXF)", "Folder (GFX with DDS files)" };
+		static std::vector<std::string> gidxExportOptions = { "Raw File (.GIDX)", "Json File (.JSON)" };
+		static std::vector<std::string> locmExportOptions = { "Raw File (.LOCM)", "Json File (.JSON)" };
+		static std::vector<std::string> locrExportOptions = { "Raw File (.LOCR)", "Json File (.JSON)" };
+		static std::vector<std::string> mateExportOptions = { "Raw File (.MATE)", "Folder (JSON with HLSL files)" };
+		static std::vector<std::string> matiExportOptions = { "Raw File (.MATI)", "Json File (.JSON)" };
+		static std::vector<std::string> mattExportOptions = { "Raw File (.MATT)", "Json File (.JSON)" };
+		static std::vector<std::string> mucbExportOptions = { "Raw File (.MUCB)", "Json File (.JSON)" };
+		static std::vector<std::string> pkglExportOptions = { "Raw File (.PKGL)", "Json File (.JSON)" };
+		static std::vector<std::string> sbpbExportOptions = { "Raw File (.SBPB)", "Json File (.JSON)" };
+		static std::vector<std::string> sbpdExportOptions = { "Raw File (.SBPD)", "Json File (.JSON)" };
+		static std::vector<std::string> scdaExportOptions = { "Raw File (.SCDA)", "Json File (.JSON)" };
+		static std::vector<std::string> sdefExportOptions = { "Raw File (.SDEF)", "Json File (.JSON)" };
+		static std::vector<std::string> tbluExportOptions = { "Raw File (.TBLU)", "Json File (.JSON)" };
+		static std::vector<std::string> teliExportOptions = { "Raw File (.TELI)", "Json File (.JSON)" };
+		static std::vector<std::string> tempExportOptions = { "Raw File (.TEMP)", "Json File (.JSON)" };
+		static std::vector<std::string> textExportOptions = { "Raw File (.TEXT)", "DDS File (.DDS)", "PNG File (.PNG)", "BMP File (.BMP)", "TGA File (.TGA)" };
+		static std::vector<std::string> videExportOptions = { "Raw File (.VIDE)", "BINK File (.BIK)" };
+		static std::vector<std::string> wavbExportOptions = { "Raw File (.WAVB)", "Json File (.JSON)" };
+		static std::vector<std::string> wbfxExportOptions = { "Raw File (.WBFX)", "Json File (.JSON)" };
+
+		resourceTypeToExportOptions.insert(std::make_pair('AIBB', aibbExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('CBLU', cbluExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('CLOS', closExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('CLOT', clotExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('CPPT', cpptExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('ChrT', chrtExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('GFXF', gfxfExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('GIDX', gidxExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('LOCM', locmExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('LOCR', locrExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('MATE', mateExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('MATI', matiExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('MATT', mattExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('MUCB', mucbExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('PKGL', pkglExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('SBPB', sbpbExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('SBPD', sbpdExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('SCDA', scdaExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('SDEF', sdefExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('TBLU', tbluExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('TELI', teliExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('TEMP', tempExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('TEXT', textExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('VIDE', videExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('WAVB', wavbExportOptions));
+		resourceTypeToExportOptions.insert(std::make_pair('WBFX', wbfxExportOptions));
+	}
+
+	const unsigned int resourceType = resource->GetResourceHeaderHeader().m_type;
+
+	if (resourceType == 'FSBF' || resourceType == 'FSBM' || resourceType == 'FSBS')
+	{
+		std::shared_ptr<WaveBankFSB> waveBank = std::static_pointer_cast<WaveBankFSB>(resource);
+
+		if (resourceType == 'FSBF')
+		{
+			if (waveBank->GetFormat() == FSB::Format::Vorbis)
+			{
+				return fsbfExportOptions;
+			}
+			else
+			{
+				return fsbfExportOptions2;
+			}
+		}
+		else if (resourceType == 'FSBM')
+		{
+			if (waveBank->GetFormat() == FSB::Format::Vorbis)
+			{
+				return fsbmExportOptions;
+			}
+			else
+			{
+				return fsbmExportOptions2;
+			}
+		}
+		else if (resourceType == 'FSBS')
+		{
+			if (waveBank->GetFormat() == FSB::Format::Vorbis)
+			{
+				return fsbsExportOptions;
+			}
+			else
+			{
+				return fsbsExportOptions2;
+			}
+		}
+	}
+	else if (resourceType == 'SWFF')
+	{
+		std::shared_ptr<FlashMovie> flashMovie = std::static_pointer_cast<FlashMovie>(resource);
+		const FlashMovie::Format format = flashMovie->GetFormat();
+
+		switch (format)
+		{
+			case FlashMovie::Format::DDS:
+				return swffExportOptions;
+			case FlashMovie::Format::PNG:
+				return swffExportOptions2;
+			case FlashMovie::Format::SWF:
+				return swffExportOptions3;
+		}
+	}
+
+	return resourceTypeToExportOptions[resourceType];
 }

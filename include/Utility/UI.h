@@ -21,6 +21,8 @@ struct STypeID;
 struct SEntityTemplateReference;
 class ZString;
 
+class Resource;
+
 class UI
 {
 public:
@@ -317,7 +319,11 @@ public:
 
 	static bool PlayerBar(const char* label, float* value, const float min, const float max, const ImVec2& size);
 
+	static void ResourceExportPopup(bool& showPopup, std::shared_ptr<Resource> resource);
+
 private:
+	static const std::vector<std::string>& GetExportOptions(std::shared_ptr<Resource> resource);
+
 	inline static const char* tableName;
 	inline static unsigned int propertyCounter = 0;
 };
