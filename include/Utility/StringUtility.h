@@ -7,11 +7,11 @@ class StringUtility
 {
 public:
 	template <typename T>
-	static std::string ConvertValueToHexString(const T value)
+	static std::string ConvertValueToHexString(const T value, const unsigned int width = 16)
 	{
 		std::stringstream stringstream;
 
-		stringstream << "0x" << std::hex << std::uppercase << value;
+		stringstream << "0x" << std::hex << std::uppercase << std::setw(width) << std::setfill('0') << value;
 
 		return stringstream.str();
 	}
