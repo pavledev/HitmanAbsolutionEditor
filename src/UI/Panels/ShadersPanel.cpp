@@ -50,7 +50,6 @@ void ShadersPanel::Render()
 
 				if (shaders[i].hlslCode.empty())
 				{
-					std::string hlsl;
 					std::string model;
 
 					Decompile(shaders[i].byteCode, shaders[i].byteCodeLength, &shaders[i].hlslCode, &model);
