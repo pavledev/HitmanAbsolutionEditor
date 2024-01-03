@@ -30,6 +30,27 @@
 #include "Resources/ScatterData.h"
 #include "Resources/FabricResourceEntity.h"
 #include "Resources/FabricResourceEntityBlueprint.h"
+#include "Resources/BehaviorTreeEntityType.h"
+#include "Resources/CompiledBehaviorTree.h"
+#include "Resources/ReasoningGrid.h"
+#include "Resources/Physics.h"
+#include "Resources/AspectEntityBlueprint.h"
+#include "Resources/AspectEntityType.h"
+#include "Resources/BoneRig.h"
+#include "Resources/Cloth.h"
+#include "Resources/CrowdMapData.h"
+#include "Resources/EntityResource.h"
+#include "Resources/FaceFXActor.h"
+#include "Resources/FaceFXAnimSet.h"
+#include "Resources/Animation.h"
+#include "Resources/EventTrack.h"
+#include "Resources/Network.h"
+#include "Resources/Rig.h"
+#include "Resources/CompositionType.h"
+#include "Resources/Composition.h"
+#include "Resources/Navmesh.h"
+#include "Resources/RenderPrimitive.h"
+#include "Resources/RenderBink.h"
 #include "Registry/ResourceInfoRegistry.h"
 
 std::string ResourceUtility::ConvertResourceIDToFilePath(const std::string& resourceID)
@@ -195,61 +216,69 @@ std::shared_ptr<Resource> ResourceUtility::CreateResource(const std::string& typ
 {
     std::shared_ptr<Resource> resource;
 
-    if (type == "CPPT")
+    if (type == "AIBB")
     {
-        resource = std::make_shared<CppEntity>();
+        resource = std::make_shared<BehaviorTreeEntityBlueprint>();
+    }
+    else if (type == "AIBX")
+    {
+        resource = std::make_shared<BehaviorTreeEntityType>();
+    }
+    else if (type == "AIBZ")
+    {
+        resource = std::make_shared<CompiledBehaviorTree>();
+    }
+    else if (type == "AIRG")
+    {
+        resource = std::make_shared<ReasoningGrid>();
+    }
+    else if (type == "ALOC")
+    {
+        resource = std::make_shared<Physics>();
+    }
+    else if (type == "ASEB")
+    {
+        resource = std::make_shared<AspectEntityBlueprint>();
+    }
+    else if (type == "ASET")
+    {
+        resource = std::make_shared<AspectEntityType>();
+    }
+    else if (type == "BORG")
+    {
+        resource = std::make_shared<BoneRig>();
     }
     else if (type == "CBLU")
     {
         resource = std::make_shared<CppEntityBlueprint>();
     }
-    else if (type == "TEMP")
+    else if (type == "CLOB")
     {
-        resource = std::make_shared<TemplateEntity>();
+        resource = std::make_shared<FabricResourceEntityBlueprint>();
     }
-    else if (type == "TBLU")
+    else if (type == "CLOS")
     {
-        resource = std::make_shared<TemplateEntityBlueprint>();
+        resource = std::make_shared<Cloth>();
     }
-    else if (type == "TEXT")
+    else if (type == "CLOT")
     {
-        resource = std::make_shared<Texture>();
+        resource = std::make_shared<FabricResourceEntity>();
     }
-    else if (type == "TELI")
+    else if (type == "CPPT")
     {
-        resource = std::make_shared<TextList>();
+        resource = std::make_shared<CppEntity>();
     }
-    else if (type == "LOCR")
+    else if (type == "CRMD")
     {
-        resource = std::make_shared<Localization>();
+        resource = std::make_shared<CrowdMapData>();
     }
-    else if (type == "LOCM")
+    else if (type == "ChrT")
     {
-        resource = std::make_shared<MultiLanguage>();
+        resource = std::make_shared<AnimationDatabase>();
     }
-    else if (type == "MATT")
+    else if (type == "ERES")
     {
-        resource = std::make_shared<RenderMaterialEntityType>();
-    }
-    else if (type == "MATB")
-    {
-        resource = std::make_shared<RenderMaterialEntityBlueprint>();
-    }
-    else if (type == "MATI")
-    {
-        resource = std::make_shared<RenderMaterialInstance>();
-    }
-    else if (type == "MATE")
-    {
-        resource = std::make_shared<RenderMaterialEffect>();
-    }
-    else if (type == "SBPD")
-    {
-        resource = std::make_shared<SoundBlendContainerExternalParametersType>();
-    }
-    else if (type == "SBPB")
-    {
-        resource = std::make_shared<SoundBlendContainerExternalParametersBlueprint>();
+        resource = std::make_shared<EntityResource>();
     }
     else if (type == "FSBF")
     {
@@ -263,6 +292,126 @@ std::shared_ptr<Resource> ResourceUtility::CreateResource(const std::string& typ
     {
         resource = std::make_shared<WaveBankFSBS>();
     }
+    else if (type == "FXAC")
+    {
+        resource = std::make_shared<FaceFXActor>();
+    }
+    else if (type == "FXAS")
+    {
+        resource = std::make_shared<FaceFXAnimSet>();
+    }
+    else if (type == "GFXF")
+    {
+        resource = std::make_shared<GFXMovie>();
+    }
+    else if (type == "GIDX")
+    {
+        resource = std::make_shared<GlobalResourceIndex>();
+    }
+    else if (type == "LOCM")
+    {
+        resource = std::make_shared<MultiLanguage>();
+    }
+    else if (type == "LOCR")
+    {
+        resource = std::make_shared<Localization>();
+    }
+    else if (type == "MATB")
+    {
+        resource = std::make_shared<RenderMaterialEntityBlueprint>();
+    }
+    else if (type == "MATE")
+    {
+        resource = std::make_shared<RenderMaterialEffect>();
+    }
+    else if (type == "MATI")
+    {
+        resource = std::make_shared<RenderMaterialInstance>();
+    }
+    else if (type == "MATT")
+    {
+        resource = std::make_shared<RenderMaterialEntityType>();
+    }
+    else if (type == "MJBA")
+    {
+        resource = std::make_shared<Animation>();
+    }
+    else if (type == "MRTE")
+    {
+        resource = std::make_shared<EventTrack>();
+    }
+    else if (type == "MRTN")
+    {
+        resource = std::make_shared<Network>();
+    }
+    else if (type == "MRTR")
+    {
+        resource = std::make_shared<Rig>();
+    }
+    else if (type == "MUCB")
+    {
+        resource = std::make_shared<CompositionBlueprint>();
+    }
+    else if (type == "MUCT")
+    {
+        resource = std::make_shared<CompositionType>();
+    }
+    else if (type == "MUSC")
+    {
+        resource = std::make_shared<Composition>();
+    }
+    else if (type == "NMSH")
+    {
+        resource = std::make_shared<Navmesh>();
+    }
+    else if (type == "PKGL")
+    {
+        resource = std::make_shared<PackageList>();
+    }
+    else if (type == "PRIM")
+    {
+        resource = std::make_shared<RenderPrimitive>();
+    }
+    else if (type == "SBPB")
+    {
+        resource = std::make_shared<SoundBlendContainerExternalParametersBlueprint>();
+    }
+    else if (type == "SBPD")
+    {
+        resource = std::make_shared<SoundBlendContainerExternalParametersType>();
+    }
+    else if (type == "SCDA")
+    {
+        resource = std::make_shared<ScatterData>();
+    }
+    else if (type == "SDEF")
+    {
+        resource = std::make_shared<SoundDefinitions>();
+    }
+    else if (type == "SWFF")
+    {
+        resource = std::make_shared<FlashMovie>();
+    }
+    else if (type == "TBLU")
+    {
+        resource = std::make_shared<TemplateEntityBlueprint>();
+    }
+    else if (type == "TELI")
+    {
+        resource = std::make_shared<TextList>();
+    }
+    else if (type == "TEMP")
+    {
+        resource = std::make_shared<TemplateEntity>();
+    }
+    else if (type == "TEXT")
+    {
+        resource = std::make_shared<Texture>();
+    }
+    else if (type == "VIDE")
+    {
+        resource = std::make_shared<RenderBink>();
+    }
     else if (type == "WAVB")
     {
         resource = std::make_shared<WaveBank>();
@@ -270,50 +419,6 @@ std::shared_ptr<Resource> ResourceUtility::CreateResource(const std::string& typ
     else if (type == "WBFX")
     {
         resource = std::make_shared<WaveBankFX>();
-    }
-    else if (type == "SWFF")
-    {
-        resource = std::make_shared<FlashMovie>();
-    }
-    else if (type == "GFXF")
-    {
-        resource = std::make_shared<GFXMovie>();
-    }
-    else if (type == "ChrT")
-    {
-        resource = std::make_shared<AnimationDatabase>();
-    }
-    else if (type == "SDEF")
-    {
-        resource = std::make_shared<SoundDefinitions>();
-    }
-    else if (type == "GIDX")
-    {
-        resource = std::make_shared<GlobalResourceIndex>();
-    }
-    else if (type == "AIBB")
-    {
-        resource = std::make_shared<BehaviorTreeEntityBlueprint>();
-    }
-    else if (type == "MUCB")
-    {
-        resource = std::make_shared<CompositionBlueprint>();
-    }
-    else if (type == "PKGL")
-    {
-        resource = std::make_shared<PackageList>();
-    }
-    else if (type == "SCDA")
-    {
-        resource = std::make_shared<ScatterData>();
-    }
-    else if (type == "CLOT")
-    {
-        resource = std::make_shared<FabricResourceEntity>();
-    }
-    else if (type == "CLOB")
-    {
-        resource = std::make_shared<FabricResourceEntityBlueprint>();
     }
     else
     {
