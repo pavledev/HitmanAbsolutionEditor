@@ -89,11 +89,6 @@ const EResourceReferenceFlags Resource::GetResourceReferenceFlags() const
 	return resourceReferenceFlags;
 }
 
-std::string Resource::GetFileFormat() const
-{
-	return fileFormat;
-}
-
 const unsigned int Resource::GetOffsetInHeaderLibrary() const
 {
 	return offsetInHeaderLibrary;
@@ -187,11 +182,6 @@ void Resource::SetResourceID(std::string resourceID)
 void Resource::SetResourceReferenceFlags(const EResourceReferenceFlags resourceReferenceFlags)
 {
 	this->resourceReferenceFlags = resourceReferenceFlags;
-}
-
-void Resource::SetFileFormat(std::string fileFormat)
-{
-	this->fileFormat = fileFormat;
 }
 
 void Resource::SetHeaderData(void* headerData)

@@ -34,7 +34,6 @@ public:
     std::string GetHeaderLibraryChunkResourceID() const;
     unsigned int GetIndexInLibrary() const;
     const EResourceReferenceFlags GetResourceReferenceFlags() const;
-    std::string GetFileFormat() const;
     const unsigned int GetOffsetInHeaderLibrary() const;
     const unsigned int GetOffsetInResourceLibrary() const;
     const void* GetHeaderData() const;
@@ -54,7 +53,6 @@ public:
     void SetRuntimeResourceID(const ZRuntimeResourceID& runtimeResourceID);
     void SetResourceID(std::string resourceID);
     void SetResourceReferenceFlags(const EResourceReferenceFlags resourceReferenceFlags);
-    void SetFileFormat(std::string fileFormat);
     void SetHeaderData(void* headerData);
     void SetHeaderDataSize(const unsigned int headerDataSize);
     void SetResourceData(void* resourceData);
