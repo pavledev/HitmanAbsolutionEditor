@@ -5,5 +5,5 @@
 class FileDialog
 {
 public:
-	static std::string OpenFolder(HWND owner);
+	static std::string OpenFolder();
 };

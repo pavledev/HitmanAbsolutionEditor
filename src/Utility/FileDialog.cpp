@@ -3,58 +3,51 @@
 #include "Utility/FileDialog.h"
 #include "Utility/StringUtility.h"
 
-std::string FileDialog::OpenFolder(HWND owner)
+std::string FileDialog::OpenFolder()
 {
     std::string folderPath;
-    HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    IFileOpenDialog* pFileOpen;
+
+    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
 
     if (SUCCEEDED(hr))
     {
-        IFileOpenDialog* pFileOpen;
+        DWORD dwOptions;
 
-        hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
+        if (SUCCEEDED(hr = pFileOpen->GetOptions(&dwOptions)))
+        {
+            hr = pFileOpen->SetOptions(dwOptions | FOS_PICKFOLDERS);
+        }
 
         if (SUCCEEDED(hr))
         {
-            DWORD dwOptions;
+            hr = pFileOpen->Show(nullptr);
+        }
 
-            if (SUCCEEDED(hr = pFileOpen->GetOptions(&dwOptions)))
-            {
-                hr = pFileOpen->SetOptions(dwOptions | FOS_PICKFOLDERS);
-            }
+        if (SUCCEEDED(hr))
+        {
+            IShellItem* pItem;
 
-            if (SUCCEEDED(hr))
-            {
-                hr = pFileOpen->Show(nullptr);
-            }
+            hr = pFileOpen->GetResult(&pItem);
 
             if (SUCCEEDED(hr))
             {
-                IShellItem* pItem;
+                PWSTR pszFilePath;
 
-                hr = pFileOpen->GetResult(&pItem);
+                hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
 
                 if (SUCCEEDED(hr))
                 {
-                    PWSTR pszFilePath;
+                    folderPath = StringUtility::WideStringToAnsiString(pszFilePath);
 
-                    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
-
-                    if (SUCCEEDED(hr))
-                    {
-                        folderPath = StringUtility::WideStringToAnsiString(pszFilePath);
-
-                        CoTaskMemFree(pszFilePath);
-                    }
-
-                    pItem->Release();
+                    CoTaskMemFree(pszFilePath);
                 }
-            }
 
-            pFileOpen->Release();
+                pItem->Release();
+            }
         }
 
-        CoUninitialize();
+        pFileOpen->Release();
     }
 
     return folderPath;
