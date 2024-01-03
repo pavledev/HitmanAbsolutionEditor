@@ -1,6 +1,3 @@
-#include <sstream>
-#include <format>
-
 #include "Resources/Cloth.h"
 
 Cloth::Node::Node(const CloakWorks::Reflection::FieldType fieldType) : fieldType(fieldType)
@@ -41,132 +38,6 @@ void Cloth::Node::SetClassName(const std::string className)
     this->className = className;
 }
 
-Cloth::BoolNode::BoolNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
-{
-}
-
-const std::vector<bool>& Cloth::BoolNode::GetPrimitives() const
-{
-    return primitives;
-}
-
-void Cloth::BoolNode::AddPrimitive(const bool value)
-{
-    primitives.push_back(value);
-}
-
-Cloth::ByteNode::ByteNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
-{
-}
-
-const std::vector<unsigned char>& Cloth::ByteNode::GetPrimitives() const
-{
-    return primitives;
-}
-
-void Cloth::ByteNode::AddPrimitive(const unsigned char value)
-{
-    primitives.push_back(value);
-}
-
-Cloth::CharNode::CharNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
-{
-}
-
-const std::vector<char>& Cloth::CharNode::GetPrimitives() const
-{
-    return primitives;
-}
-
-void Cloth::CharNode::AddPrimitive(const char value)
-{
-    primitives.push_back(value);
-}
-
-Cloth::UShortNode::UShortNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
-{
-}
-
-const std::vector<unsigned short>& Cloth::UShortNode::GetPrimitives() const
-{
-    return primitives;
-}
-
-void Cloth::UShortNode::AddPrimitive(const unsigned short value)
-{
-    primitives.push_back(value);
-}
-
-Cloth::ShortNode::ShortNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
-{
-}
-
-const std::vector<short>& Cloth::ShortNode::GetPrimitives() const
-{
-    return primitives;
-}
-
-void Cloth::ShortNode::AddPrimitive(const short value)
-{
-    primitives.push_back(value);
-}
-
-Cloth::UIntNode::UIntNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
-{
-}
-
-const std::vector<unsigned int>& Cloth::UIntNode::GetPrimitives() const
-{
-    return primitives;
-}
-
-void Cloth::UIntNode::AddPrimitive(const unsigned int value)
-{
-    primitives.push_back(value);
-}
-
-Cloth::IntNode::IntNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
-{
-}
-
-const std::vector<int>& Cloth::IntNode::GetPrimitives() const
-{
-    return primitives;
-}
-
-void Cloth::IntNode::AddPrimitive(const int value)
-{
-    primitives.push_back(value);
-}
-
-Cloth::FloatNode::FloatNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
-{
-}
-
-const std::vector<float>& Cloth::FloatNode::GetPrimitives() const
-{
-    return primitives;
-}
-
-void Cloth::FloatNode::AddPrimitive(const float value)
-{
-    primitives.push_back(value);
-}
-
-Cloth::StringNode::StringNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
-{
-}
-
-const std::vector<std::string>& Cloth::StringNode::GetPrimitives() const
-{
-    return primitives;
-}
-
-void Cloth::StringNode::AddPrimitive(const std::string& value)
-{
-    primitives.push_back(value);
-}
-
 Cloth::ObjectNode::ObjectNode(const CloakWorks::Reflection::FieldType fieldType) : Node(fieldType)
 {
 }
@@ -175,22 +46,12 @@ Cloth::ObjectNode::ObjectNode(const CloakWorks::Reflection::FieldType fieldType,
 {
 }
 
-Cloth::ObjectNode::~ObjectNode()
-{
-    for (size_t i = 0; i < children.size(); ++i)
-    {
-        delete children[i];
-    }
-
-    children.clear();
-}
-
-const std::vector<Cloth::Node*>& Cloth::ObjectNode::GetChildren() const
+const std::vector<std::shared_ptr<Cloth::Node>>& Cloth::ObjectNode::GetChildren() const
 {
     return children;
 }
 
-void Cloth::ObjectNode::AddChild(Node* childNode)
+void Cloth::ObjectNode::AddChild(std::shared_ptr<Node> childNode)
 {
     children.push_back(childNode);
 }
@@ -199,69 +60,41 @@ Cloth::ArrayNode::ArrayNode(const CloakWorks::Reflection::FieldType fieldType, c
 {
 }
 
-Cloth::ArrayNode::~ArrayNode()
-{
-    for (size_t i = 0; i < children.size(); ++i)
-    {
-        delete children[i];
-    }
-
-    children.clear();
-}
-
 unsigned int Cloth::ArrayNode::GetArrayPrimitiveCount() const
 {
     return arrayPrimitiveCount;
 }
 
-const std::vector<Cloth::Node*>& Cloth::ArrayNode::GetChildren() const
+const std::vector<std::shared_ptr<Cloth::Node>>& Cloth::ArrayNode::GetChildren() const
 {
     return children;
 }
 
-void Cloth::ArrayNode::AddChild(Node* childNode)
+void Cloth::ArrayNode::AddChild(std::shared_ptr<Node> childNode)
 {
     children.push_back(childNode);
 }
 
-Cloth::~Cloth()
+void Cloth::Deserialize()
 {
-    delete shroudObject;
-}
+    BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
 
-void Cloth::Deserialize(const std::string& filePath)
-{
-    BinaryReader binaryReader = BinaryReader(filePath);
-
-    Deserialize(binaryReader);
-}
-
-void Cloth::Deserialize(void* buffer, const unsigned int dataSize)
-{
-    BinaryReader binaryReader = BinaryReader(buffer, dataSize);
-
-    Deserialize(binaryReader);
-}
-
-void Cloth::Deserialize(BinaryReader& binaryReader)
-{
     binaryReader.Seek(0x24, SeekOrigin::Begin);
 
     unsigned int binaryNodeOffset = binaryReader.Read<unsigned int>();
-    unsigned int outerBinaryNodeOffset = 0;
 
     binaryReader.Seek(binaryNodeOffset - 4, SeekOrigin::Current);
 
-    shroudObject = new ObjectNode(CloakWorks::Reflection::FieldType::kFieldType_Invalid);
+    shroudObject = std::make_shared<ObjectNode>(CloakWorks::Reflection::FieldType::kFieldType_Invalid);
 
-    Deserialize(shroudObject, binaryReader, binaryNodeOffset, outerBinaryNodeOffset, 0);
+    Deserialize(shroudObject, binaryReader, 0);
 }
 
-void Cloth::Deserialize(Node* node, BinaryReader& binaryReader, unsigned int& binaryNodeOffset, unsigned int& nextBinaryNodeOffset, unsigned int depth)
+void Cloth::Deserialize(std::shared_ptr<Node> node, BinaryReader& binaryReader, unsigned int depth)
 {
     while (binaryReader.GetPosition() < binaryReader.GetSize())
     {
-        Node* childNode = nullptr;
+        std::shared_ptr<Node> childNode;
         size_t currentPosition = binaryReader.GetPosition();
         CloakWorks::BinaryNode binaryNode = binaryReader.Read<CloakWorks::BinaryNode>();
         std::string name;
@@ -298,22 +131,17 @@ void Cloth::Deserialize(Node* node, BinaryReader& binaryReader, unsigned int& bi
 
         if (binaryNode.primitiveType == CloakWorks::Reflection::FieldType::kFieldType_Object)
         {
-            if (binaryNode.nextBinaryNodeOffset > 0)
-            {
-                nextBinaryNodeOffset = static_cast<unsigned int>(currentPosition) + offsetof(CloakWorks::BinaryNode, nextBinaryNodeOffset) + binaryNode.nextBinaryNodeOffset;
-            }
-
             binaryReader.Seek(currentPosition + offsetof(CloakWorks::BinaryNode, childBinaryNodeOffset) + binaryNode.childBinaryNodeOffset, SeekOrigin::Begin);
 
             if (depth != 0)
             {
-                childNode = new ObjectNode(binaryNode.primitiveType, name, className);
+                childNode = std::make_shared<ObjectNode>(binaryNode.primitiveType, name, className);
 
-                Deserialize(childNode, binaryReader, binaryNodeOffset, nextBinaryNodeOffset, depth + 1);
+                Deserialize(childNode, binaryReader, depth + 1);
             }
             else
             {
-                Deserialize(node, binaryReader, binaryNodeOffset, nextBinaryNodeOffset, depth + 1);
+                Deserialize(node, binaryReader, depth + 1);
             }
 
             if (binaryNode.nextBinaryNodeOffset == 0)
@@ -322,177 +150,110 @@ void Cloth::Deserialize(Node* node, BinaryReader& binaryReader, unsigned int& bi
                 {
                     if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Object)
                     {
-                        static_cast<ObjectNode*>(node)->AddChild(childNode);
+                        std::static_pointer_cast<ObjectNode>(node)->AddChild(childNode);
                     }
                     else if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Array)
                     {
-                        static_cast<ArrayNode*>(node)->AddChild(childNode);
+                        std::static_pointer_cast<ArrayNode>(node)->AddChild(childNode);
                     }
                 }
 
                 break;
             }
 
-            binaryNodeOffset = binaryNode.nextBinaryNodeOffset;
-
-            binaryReader.Seek(currentPosition + offsetof(CloakWorks::BinaryNode, nextBinaryNodeOffset) + binaryNodeOffset, SeekOrigin::Begin);
+            binaryReader.Seek(currentPosition + offsetof(CloakWorks::BinaryNode, nextBinaryNodeOffset) + binaryNode.nextBinaryNodeOffset, SeekOrigin::Begin);
         }
         else if (binaryNode.primitiveType == CloakWorks::Reflection::FieldType::kFieldType_Array)
         {
-            childNode = new ArrayNode(binaryNode.primitiveType, name, className, binaryNode.arrayPrimitiveCount);
+            childNode = std::make_shared<ArrayNode>(binaryNode.primitiveType, name, className, binaryNode.arrayPrimitiveCount);
 
             if (binaryNode.arrayPrimitiveType == CloakWorks::Reflection::FieldType::kFieldType_Object)
             {
-                if (binaryNode.nextBinaryNodeOffset > 0)
-                {
-                    nextBinaryNodeOffset = static_cast<unsigned int>(currentPosition) + 0x10 + binaryNode.nextBinaryNodeOffset;
-                }
-
                 binaryReader.Seek(currentPosition + offsetof(CloakWorks::BinaryNode, childBinaryNodeOffset) + binaryNode.childBinaryNodeOffset, SeekOrigin::Begin);
 
-                Deserialize(childNode, binaryReader, binaryNodeOffset, nextBinaryNodeOffset, depth + 1);
+                Deserialize(childNode, binaryReader, depth + 1);
 
                 if (binaryNode.nextBinaryNodeOffset == 0)
                 {
                     if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Object)
                     {
-                        static_cast<ObjectNode*>(node)->AddChild(childNode);
+                        std::static_pointer_cast<ObjectNode>(node)->AddChild(childNode);
                     }
                     else if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Array)
                     {
-                        static_cast<ArrayNode*>(node)->AddChild(childNode);
+                        std::static_pointer_cast<ArrayNode>(node)->AddChild(childNode);
                     }
 
                     break;
                 }
 
-                binaryNodeOffset = binaryNode.nextBinaryNodeOffset;
-
-                binaryReader.Seek(currentPosition + offsetof(CloakWorks::BinaryNode, nextBinaryNodeOffset) + binaryNodeOffset, SeekOrigin::Begin);
+                binaryReader.Seek(currentPosition + offsetof(CloakWorks::BinaryNode, nextBinaryNodeOffset) + binaryNode.nextBinaryNodeOffset, SeekOrigin::Begin);
             }
             else
             {
                 binaryReader.Seek(currentPosition + offsetof(CloakWorks::BinaryNode, dataOffset) + binaryNode.dataOffset, SeekOrigin::Begin);
 
-                unsigned int arrayCount = binaryNode.dataSize / GetBaseTypeSize(binaryNode.arrayPrimitiveType);
-
                 switch (binaryNode.arrayPrimitiveType)
                 {
                     case CloakWorks::Reflection::FieldType::kFieldType_bool:
                     {
-                        for (unsigned int i = 0; i < arrayCount; ++i)
-                        {
-                            BoolNode* boolNode = new BoolNode(binaryNode.arrayPrimitiveType, "", "");
-
-                            boolNode->AddPrimitive(binaryReader.Read<bool>());
-
-                            static_cast<ArrayNode*>(childNode)->AddChild(boolNode);
-                        }
+                        DeserializeArrayPrimitives<bool>(binaryReader, childNode, binaryNode);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_byte:
                     {
-                        for (unsigned int i = 0; i < arrayCount; ++i)
-                        {
-                            ByteNode* byteNode = new ByteNode(binaryNode.arrayPrimitiveType, "", "");
-
-                            byteNode->AddPrimitive(binaryReader.Read<unsigned char>());
-
-                            static_cast<ArrayNode*>(childNode)->AddChild(byteNode);
-                        }
+                        DeserializeArrayPrimitives<unsigned char>(binaryReader, childNode, binaryNode);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_char:
                     {
-                        for (unsigned int i = 0; i < arrayCount; ++i)
-                        {
-                            CharNode* charNode = new CharNode(binaryNode.arrayPrimitiveType, "", "");
-
-                            charNode->AddPrimitive(binaryReader.Read<char>());
-
-                            static_cast<ArrayNode*>(childNode)->AddChild(charNode);
-                        }
+                        DeserializeArrayPrimitives<char>(binaryReader, childNode, binaryNode);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_uint16:
                     {
-                        for (unsigned int i = 0; i < arrayCount; ++i)
-                        {
-                            UShortNode* uShortNode = new UShortNode(binaryNode.arrayPrimitiveType, "", "");
-
-                            uShortNode->AddPrimitive(binaryReader.Read<unsigned short>());
-
-                            static_cast<ArrayNode*>(childNode)->AddChild(uShortNode);
-                        }
+                        DeserializeArrayPrimitives<unsigned short>(binaryReader, childNode, binaryNode);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_int16:
                     {
-                        for (unsigned int i = 0; i < arrayCount; ++i)
-                        {
-                            ShortNode* shortNode = new ShortNode(binaryNode.arrayPrimitiveType, "", "");
-
-                            shortNode->AddPrimitive(binaryReader.Read<short>());
-
-                            static_cast<ArrayNode*>(childNode)->AddChild(shortNode);
-                        }
+                        DeserializeArrayPrimitives<short>(binaryReader, childNode, binaryNode);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_uint32:
                     {
-                        for (unsigned int i = 0; i < arrayCount; ++i)
-                        {
-                            UIntNode* uIntNode = new UIntNode(binaryNode.arrayPrimitiveType, "", "");
-
-                            uIntNode->AddPrimitive(binaryReader.Read<unsigned int>());
-
-                            static_cast<ArrayNode*>(childNode)->AddChild(uIntNode);
-                        }
+                        DeserializeArrayPrimitives<unsigned int>(binaryReader, childNode, binaryNode);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_int32:
                     {
-                        for (unsigned int i = 0; i < arrayCount; ++i)
-                        {
-                            IntNode* intNode = new IntNode(binaryNode.arrayPrimitiveType, "", "");
-
-                            intNode->AddPrimitive(binaryReader.Read<int>());
-
-                            static_cast<ArrayNode*>(childNode)->AddChild(intNode);
-                        }
+                        DeserializeArrayPrimitives<int>(binaryReader, childNode, binaryNode);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_float:
                     {
-                        for (unsigned int i = 0; i < arrayCount; ++i)
-                        {
-                            FloatNode* floatNode = new FloatNode(binaryNode.arrayPrimitiveType, "", "");
-
-                            floatNode->AddPrimitive(binaryReader.Read<float>());
-
-                            static_cast<ArrayNode*>(childNode)->AddChild(floatNode);
-                        }
+                        DeserializeArrayPrimitives<float>(binaryReader, childNode, binaryNode);
 
                         break;
                     }
                 }
 
-                if (binaryReader.GetPosition() == nextBinaryNodeOffset || nextBinaryNodeOffset == 0)
+                if (binaryNode.nextBinaryNodeOffset == 0)
                 {
                     if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Object)
                     {
-                        static_cast<ObjectNode*>(node)->AddChild(childNode);
+                        std::static_pointer_cast<ObjectNode>(node)->AddChild(childNode);
                     }
                     else if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Array)
                     {
-                        static_cast<ArrayNode*>(node)->AddChild(childNode);
+                        std::static_pointer_cast<ArrayNode>(node)->AddChild(childNode);
                     }
 
                     break;
@@ -507,127 +268,55 @@ void Cloth::Deserialize(Node* node, BinaryReader& binaryReader, unsigned int& bi
             {
                 case CloakWorks::Reflection::FieldType::kFieldType_bool:
                 {
-                    childNode = new BoolNode(binaryNode.primitiveType, name, className);
-
-                    if (binaryNode.dataOffset > 0)
-                    {
-                        for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
-                        {
-                            static_cast<BoolNode*>(childNode)->AddPrimitive(binaryReader.Read<bool>());
-                        }
-                    }
+                    DeserializePrimitives<bool>(binaryReader, childNode, binaryNode, name, className);
 
                     break;
                 }
                 case CloakWorks::Reflection::FieldType::kFieldType_byte:
                 {
-                    childNode = new ByteNode(binaryNode.primitiveType, name, className);
-
-                    if (binaryNode.dataOffset > 0)
-                    {
-                        for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
-                        {
-                            static_cast<ByteNode*>(childNode)->AddPrimitive(binaryReader.Read<unsigned char>());
-                        }
-                    }
+                    DeserializePrimitives<unsigned char>(binaryReader, childNode, binaryNode, name, className);
 
                     break;
                 }
                 case CloakWorks::Reflection::FieldType::kFieldType_char:
                 {
-                    childNode = new CharNode(binaryNode.primitiveType, name, className);
-
-                    if (binaryNode.dataOffset > 0)
-                    {
-                        for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
-                        {
-                            static_cast<CharNode*>(childNode)->AddPrimitive(binaryReader.Read<char>());
-                        }
-                    }
+                    DeserializePrimitives<char>(binaryReader, childNode, binaryNode, name, className);
 
                     break;
                 }
                 case CloakWorks::Reflection::FieldType::kFieldType_uint16:
                 {
-                    childNode = new UShortNode(binaryNode.primitiveType, name, className);
-
-                    if (binaryNode.dataOffset > 0)
-                    {
-                        for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
-                        {
-                            static_cast<UShortNode*>(childNode)->AddPrimitive(binaryReader.Read<unsigned short>());
-                        }
-                    }
+                    DeserializePrimitives<unsigned short>(binaryReader, childNode, binaryNode, name, className);
 
                     break;
                 }
                 case CloakWorks::Reflection::FieldType::kFieldType_int16:
                 {
-                    childNode = new ShortNode(binaryNode.primitiveType, name, className);
-
-                    if (binaryNode.dataOffset > 0)
-                    {
-                        for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
-                        {
-                            static_cast<ShortNode*>(childNode)->AddPrimitive(binaryReader.Read<short>());
-                        }
-                    }
+                    DeserializePrimitives<short>(binaryReader, childNode, binaryNode, name, className);
 
                     break;
                 }
                 case CloakWorks::Reflection::FieldType::kFieldType_uint32:
                 {
-                    childNode = new UIntNode(binaryNode.primitiveType, name, className);
-
-                    if (binaryNode.dataOffset > 0)
-                    {
-                        for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
-                        {
-                            static_cast<UIntNode*>(childNode)->AddPrimitive(binaryReader.Read<unsigned int>());
-                        }
-                    }
+                    DeserializePrimitives<unsigned int>(binaryReader, childNode, binaryNode, name, className);
 
                     break;
                 }
                 case CloakWorks::Reflection::FieldType::kFieldType_int32:
                 {
-                    childNode = new IntNode(binaryNode.primitiveType, name, className);
-
-                    if (binaryNode.dataOffset > 0)
-                    {
-                        for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
-                        {
-                            static_cast<IntNode*>(childNode)->AddPrimitive(binaryReader.Read<int>());
-                        }
-                    }
+                    DeserializePrimitives<int>(binaryReader, childNode, binaryNode, name, className);
 
                     break;
                 }
                 case CloakWorks::Reflection::FieldType::kFieldType_float:
                 {
-                    childNode = new FloatNode(binaryNode.primitiveType, name, className);
-
-                    if (binaryNode.dataOffset > 0)
-                    {
-                        for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
-                        {
-                            static_cast<FloatNode*>(childNode)->AddPrimitive(binaryReader.Read<float>());
-                        }
-                    }
+                    DeserializePrimitives<float>(binaryReader, childNode, binaryNode, name, className);
 
                     break;
                 }
                 case CloakWorks::Reflection::FieldType::kFieldType_string:
                 {
-                    childNode = new StringNode(binaryNode.primitiveType, name, className);
-
-                    if (binaryNode.dataOffset > 0)
-                    {
-                        for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
-                        {
-                            static_cast<StringNode*>(childNode)->AddPrimitive(binaryReader.ReadString(static_cast<size_t>(binaryNode.dataSize)));
-                        }
-                    }
+                    DeserializePrimitives<std::string>(binaryReader, childNode, binaryNode, name, className);
 
                     break;
                 }
@@ -637,11 +326,11 @@ void Cloth::Deserialize(Node* node, BinaryReader& binaryReader, unsigned int& bi
             {
                 if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Object)
                 {
-                    static_cast<ObjectNode*>(node)->AddChild(childNode);
+                    std::static_pointer_cast<ObjectNode>(node)->AddChild(childNode);
                 }
                 else if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Array)
                 {
-                    static_cast<ArrayNode*>(node)->AddChild(childNode);
+                    std::static_pointer_cast<ArrayNode>(node)->AddChild(childNode);
                 }
 
                 break;
@@ -654,11 +343,11 @@ void Cloth::Deserialize(Node* node, BinaryReader& binaryReader, unsigned int& bi
         {
             if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Object)
             {
-                static_cast<ObjectNode*>(node)->AddChild(childNode);
+                std::static_pointer_cast<ObjectNode>(node)->AddChild(childNode);
             }
             else if (node->GetFieldType() == CloakWorks::Reflection::FieldType::kFieldType_Array)
             {
-                static_cast<ArrayNode*>(node)->AddChild(childNode);
+                std::static_pointer_cast<ArrayNode>(node)->AddChild(childNode);
             }
         }
     }
@@ -684,7 +373,7 @@ unsigned char Cloth::GetBaseTypeSize(const CloakWorks::Reflection::FieldType fie
     }
 }
 
-void Cloth::SerializeToXML(std::string& xmlOutput)
+void Cloth::SerializeToXML(const std::string& filePath)
 {
     std::stringstream stringStream;
 
@@ -692,17 +381,22 @@ void Cloth::SerializeToXML(std::string& xmlOutput)
 
     SerializeToXML(shroudObject, stringStream, 0);
 
-    xmlOutput = stringStream.str();
+    std::string xmlOutput = stringStream.str();
+    std::ofstream ofstream = std::ofstream(filePath);
+
+    ofstream << xmlOutput;
+
+    ofstream.close();
 }
 
-void Cloth::SerializeToXML(Node* node, std::stringstream& stringStream, unsigned int depth)
+void Cloth::SerializeToXML(std::shared_ptr<Node> node, std::stringstream& stringStream, unsigned int depth)
 {
     CloakWorks::Reflection::FieldType fieldType = node->GetFieldType();
     std::string name = node->GetName();
     std::string className = node->GetClassName();
 
     if (fieldType == CloakWorks::Reflection::FieldType::kFieldType_string &&
-        static_cast<StringNode*>(node)->GetPrimitives().size() == 0)
+        std::static_pointer_cast<PrimitiveNode<std::string>>(node)->GetPrimitives().size() == 0)
     {
         return;
     }
@@ -716,197 +410,62 @@ void Cloth::SerializeToXML(Node* node, std::stringstream& stringStream, unsigned
     {
         case CloakWorks::Reflection::FieldType::kFieldType_bool:
         {
-            BoolNode* boolNode = static_cast<BoolNode*>(node);
-            const std::vector<bool> primitives = boolNode->GetPrimitives();
-
-            stringStream << std::format("<BOOL name=\"{}\" primitiveCount=\"{}\">", name, boolNode->GetPrimitives().size());
-
-            for (size_t i = 0; i < primitives.size(); ++i)
-            {
-                stringStream << primitives[i];
-
-                if (i < primitives.size() - 1)
-                {
-                    stringStream << " ";
-                }
-            }
-
-            stringStream << "</BOOL>" << std::endl;
+            SerializePrimitivesToXML<bool>(node, stringStream, depth);
 
             break;
         }
         case CloakWorks::Reflection::FieldType::kFieldType_byte:
         {
-            ByteNode* byteNode = static_cast<ByteNode*>(node);
-            const std::vector<unsigned char> primitives = byteNode->GetPrimitives();
-
-            stringStream << std::format("<BYTE name=\"{}\" primitiveCount=\"{}\">", name, byteNode->GetPrimitives().size());
-
-            for (size_t i = 0; i < primitives.size(); ++i)
-            {
-                stringStream << primitives[i];
-
-                if (i < primitives.size() - 1)
-                {
-                    stringStream << " ";
-                }
-            }
-
-            stringStream << "</BYTE>" << std::endl;
+            SerializePrimitivesToXML<unsigned char>(node, stringStream, depth);
 
             break;
         }
         case CloakWorks::Reflection::FieldType::kFieldType_char:
         {
-            CharNode* charNode = static_cast<CharNode*>(node);
-            const std::vector<char> primitives = charNode->GetPrimitives();
-
-            stringStream << std::format("<CHAR name=\"{}\" primitiveCount=\"{}\">", name, charNode->GetPrimitives().size());
-
-            for (size_t i = 0; i < primitives.size(); ++i)
-            {
-                stringStream << primitives[i];
-
-                if (i < primitives.size() - 1)
-                {
-                    stringStream << " ";
-                }
-            }
-
-            stringStream << "</CHAR>" << std::endl;
+            SerializePrimitivesToXML<char>(node, stringStream, depth);
 
             break;
         }
         case CloakWorks::Reflection::FieldType::kFieldType_uint16:
         {
-            UShortNode* uShortNode = static_cast<UShortNode*>(node);
-            const std::vector<unsigned short> primitives = uShortNode->GetPrimitives();
-
-            stringStream << std::format("<UINT16 name=\"{}\" primitiveCount=\"{}\">", name, uShortNode->GetPrimitives().size());
-
-            for (size_t i = 0; i < primitives.size(); ++i)
-            {
-                stringStream << primitives[i];
-
-                if (i < primitives.size() - 1)
-                {
-                    stringStream << " ";
-                }
-            }
-
-            stringStream << "</UINT16>" << std::endl;
+            SerializePrimitivesToXML<unsigned short>(node, stringStream, depth);
 
             break;
         }
         case CloakWorks::Reflection::FieldType::kFieldType_int16:
         {
-            ShortNode* shortNode = static_cast<ShortNode*>(node);
-            const std::vector<short> primitives = shortNode->GetPrimitives();
-
-            stringStream << std::format("<INT16 name=\"{}\" primitiveCount=\"{}\">", name, shortNode->GetPrimitives().size());
-
-            for (size_t i = 0; i < primitives.size(); ++i)
-            {
-                stringStream << primitives[i];
-
-                if (i < primitives.size() - 1)
-                {
-                    stringStream << " ";
-                }
-            }
-
-            stringStream << "</INT16>" << std::endl;
+            SerializePrimitivesToXML<short>(node, stringStream, depth);
 
             break;
         }
         case CloakWorks::Reflection::FieldType::kFieldType_uint32:
         {
-            UIntNode* uIntNode = static_cast<UIntNode*>(node);
-            const std::vector<unsigned int> primitives = uIntNode->GetPrimitives();
-
-            stringStream << std::format("<UINT32 name=\"{}\" primitiveCount=\"{}\">", name, uIntNode->GetPrimitives().size());
-
-            for (size_t i = 0; i < primitives.size(); ++i)
-            {
-                stringStream << primitives[i];
-
-                if (i < primitives.size() - 1)
-                {
-                    stringStream << " ";
-                }
-            }
-
-            stringStream << "</UINT32>" << std::endl;
+            SerializePrimitivesToXML<unsigned int>(node, stringStream, depth);
 
             break;
         }
         case CloakWorks::Reflection::FieldType::kFieldType_int32:
         {
-            IntNode* intNode = static_cast<IntNode*>(node);
-            const std::vector<int> primitives = intNode->GetPrimitives();
-
-            stringStream << std::format("<INT32 name=\"{}\" primitiveCount=\"{}\">", name, intNode->GetPrimitives().size());
-
-            for (size_t i = 0; i < primitives.size(); ++i)
-            {
-                stringStream << primitives[i];
-
-                if (i < primitives.size() - 1)
-                {
-                    stringStream << " ";
-                }
-            }
-
-            stringStream << "</INT32>" << std::endl;
+            SerializePrimitivesToXML<int>(node, stringStream, depth);
 
             break;
         }
         case CloakWorks::Reflection::FieldType::kFieldType_float:
         {
-            FloatNode* floatNode = static_cast<FloatNode*>(node);
-            const std::vector<float> primitives = floatNode->GetPrimitives();
-
-            stringStream << std::format("<FLOAT name=\"{}\" primitiveCount=\"{}\">", name, floatNode->GetPrimitives().size());
-
-            for (size_t i = 0; i < primitives.size(); ++i)
-            {
-                stringStream << primitives[i];
-
-                if (i < primitives.size() - 1)
-                {
-                    stringStream << " ";
-                }
-            }
-
-            stringStream << "</FLOAT>" << std::endl;
+            SerializePrimitivesToXML<float>(node, stringStream, depth);
 
             break;
         }
         case CloakWorks::Reflection::FieldType::kFieldType_string:
         {
-            StringNode* stringNode = static_cast<StringNode*>(node);
-            const std::vector<std::string> primitives = stringNode->GetPrimitives();
-
-            stringStream << std::format("<STRING name=\"{}\" primitiveCount=\"{}\">", name, stringNode->GetPrimitives().size());
-
-            for (size_t i = 0; i < primitives.size(); ++i)
-            {
-                stringStream << primitives[i];
-
-                if (i < primitives.size() - 1)
-                {
-                    stringStream << " ";
-                }
-            }
-
-            stringStream << "</STRING>" << std::endl;
+            SerializePrimitivesToXML<std::string>(node, stringStream, depth);
 
             break;
         }
         case CloakWorks::Reflection::FieldType::kFieldType_Object:
         {
-            ObjectNode* objectNode = static_cast<ObjectNode*>(node);
-            const std::vector<Node*> children = objectNode->GetChildren();
+            std::shared_ptr<ObjectNode> objectNode = std::static_pointer_cast<ObjectNode>(node);
+            const std::vector<std::shared_ptr<Node>> children = objectNode->GetChildren();
 
             stringStream << std::format("<OBJECT", name, className);
 
@@ -938,8 +497,8 @@ void Cloth::SerializeToXML(Node* node, std::stringstream& stringStream, unsigned
         }
         case CloakWorks::Reflection::FieldType::kFieldType_Array:
         {
-            ArrayNode* arrayNode = static_cast<ArrayNode*>(node);
-            const std::vector<Node*> children = arrayNode->GetChildren();
+            std::shared_ptr<ArrayNode> arrayNode = std::static_pointer_cast<ArrayNode>(node);
+            const std::vector<std::shared_ptr<Node>> children = arrayNode->GetChildren();
             std::string arrayType = ConvertFieldTypeToString(children[0]->GetFieldType());
             unsigned int arrayPrimitiveCount = arrayNode->GetArrayPrimitiveCount();
 
@@ -965,113 +524,49 @@ void Cloth::SerializeToXML(Node* node, std::stringstream& stringStream, unsigned
                 {
                     case CloakWorks::Reflection::FieldType::kFieldType_bool:
                     {
-                        for (size_t i = 0; i < children.size(); ++i)
-                        {
-                            stringStream << static_cast<BoolNode*>(children[i])->GetPrimitives()[0];
-
-                            if (i < children.size() - 1)
-                            {
-                                stringStream << " ";
-                            }
-                        }
+                        SerializeArrayPrimitivesToXML<bool>(node, stringStream, depth);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_byte:
                     {
-                        for (size_t i = 0; i < children.size(); ++i)
-                        {
-                            stringStream << static_cast<ByteNode*>(children[i])->GetPrimitives()[0];
-
-                            if (i < children.size() - 1)
-                            {
-                                stringStream << " ";
-                            }
-                        }
+                        SerializeArrayPrimitivesToXML<unsigned char>(node, stringStream, depth);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_char:
                     {
-                        for (size_t i = 0; i < children.size(); ++i)
-                        {
-                            stringStream << static_cast<CharNode*>(children[i])->GetPrimitives()[0];
-
-                            if (i < children.size() - 1)
-                            {
-                                stringStream << " ";
-                            }
-                        }
+                        SerializeArrayPrimitivesToXML<char>(node, stringStream, depth);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_uint16:
                     {
-                        for (size_t i = 0; i < children.size(); ++i)
-                        {
-                            stringStream << static_cast<UShortNode*>(children[i])->GetPrimitives()[0];
-
-                            if (i < children.size() - 1)
-                            {
-                                stringStream << " ";
-                            }
-                        }
+                        SerializeArrayPrimitivesToXML<unsigned short>(node, stringStream, depth);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_int16:
                     {
-                        for (size_t i = 0; i < children.size(); ++i)
-                        {
-                            stringStream << static_cast<ShortNode*>(children[i])->GetPrimitives()[0];
-
-                            if (i < children.size() - 1)
-                            {
-                                stringStream << " ";
-                            }
-                        }
+                        SerializeArrayPrimitivesToXML<short>(node, stringStream, depth);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_uint32:
                     {
-                        for (size_t i = 0; i < children.size(); ++i)
-                        {
-                            stringStream << static_cast<UIntNode*>(children[i])->GetPrimitives()[0];
-
-                            if (i < children.size() - 1)
-                            {
-                                stringStream << " ";
-                            }
-                        }
+                        SerializeArrayPrimitivesToXML<unsigned int>(node, stringStream, depth);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_int32:
                     {
-                        for (size_t i = 0; i < children.size(); ++i)
-                        {
-                            stringStream << static_cast<IntNode*>(children[i])->GetPrimitives()[0];
-
-                            if (i < children.size() - 1)
-                            {
-                                stringStream << " ";
-                            }
-                        }
+                        SerializeArrayPrimitivesToXML<int>(node, stringStream, depth);
 
                         break;
                     }
                     case CloakWorks::Reflection::FieldType::kFieldType_float:
                     {
-                        for (size_t i = 0; i < children.size(); ++i)
-                        {
-                            stringStream << static_cast<FloatNode*>(children[i])->GetPrimitives()[0];
-
-                            if (i < children.size() - 1)
-                            {
-                                stringStream << " ";
-                            }
-                        }
+                        SerializeArrayPrimitivesToXML<float>(node, stringStream, depth);
 
                         break;
                     }
