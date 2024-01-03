@@ -7,8 +7,8 @@
 #include <log.h>
 #include <version.h>
 
-FILE* LogFile = stderr; // Log to stderr by default
-bool gLogDebug = false;
+//FILE* LogFile = stderr; // Log to stderr by default
+//bool gLogDebug = false;
 
 // Old version directly using D3DDisassemble, suffers from precision issues due
 // to bug in MS's disassembler that always prints floats with %f, which does
