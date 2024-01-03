@@ -38,6 +38,5 @@ private:
 	char resourceName[256] = { "" };
 	bool isInputTextActive;
 	unsigned int nodeIndex;
-	std::set<unsigned int> selectedNodeIndices;
 	unsigned int selectedNodeIndex;
 };

@@ -144,21 +144,6 @@ void ResourceBrowserPanel::Render()
         RenderTree(assemblyNode, assemblyNode.name);
         RenderTree(modulesNode, modulesNode.name);
 
-        if (selectedNodeIndex != -1)
-        {
-            // Update selection state
-            // (process outside of tree loop to avoid visual inconsistencies during the clicking frame)
-            if (ImGui::GetIO().KeyCtrl)
-            {
-                selectedNodeIndices.insert(selectedNodeIndex);
-                selectedNodeIndex = -1;
-            }
-            else
-            {
-                selectedNodeIndices.clear();
-                selectedNodeIndices.insert(selectedNodeIndex);
-            }
-        }
     }
 
     ImGui::PopFont();
@@ -172,7 +157,7 @@ void ResourceBrowserPanel::RenderTree(ResourceNode& parentNode, std::string pare
 
     std::string label;
     ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_SpanFullWidth;
-    const bool isNodeSelected = selectedNodeIndices.contains(parentNode.index);
+    const bool isNodeSelected = selectedNodeIndex == parentNode.index;
 
     if (isNodeSelected)
     {
