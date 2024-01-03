@@ -113,7 +113,7 @@ void RenderMaterialEntityTypePanel::RenderModifiers()
 	UI::EndProperties();
 }
 
-void RenderMaterialEntityTypePanel::SColorRGBProperty(std::string& name, void* value, const unsigned int index)
+void RenderMaterialEntityTypePanel::SColorRGBProperty(std::string& name, void* value, const size_t index)
 {
 	SColorRGB* colorRGB = static_cast<SColorRGB*>(value);
 
@@ -126,7 +126,7 @@ void RenderMaterialEntityTypePanel::SColorRGBProperty(std::string& name, void* v
 	RenderRemoveModifierButton(index);
 }
 
-void RenderMaterialEntityTypePanel::SColorRGBAProperty(std::string& name, void* value, const unsigned int index)
+void RenderMaterialEntityTypePanel::SColorRGBAProperty(std::string& name, void* value, const size_t index)
 {
 	SColorRGBA* colorRGBA = static_cast<SColorRGBA*>(value);
 
@@ -139,7 +139,7 @@ void RenderMaterialEntityTypePanel::SColorRGBAProperty(std::string& name, void* 
 	RenderRemoveModifierButton(index);
 }
 
-void RenderMaterialEntityTypePanel::SVector2Property(std::string& name, void* value, const unsigned int index)
+void RenderMaterialEntityTypePanel::SVector2Property(std::string& name, void* value, const size_t index)
 {
 	SVector2* vector = static_cast<SVector2*>(value);
 
@@ -209,7 +209,7 @@ void RenderMaterialEntityTypePanel::SVector2Property(std::string& name, void* va
 	RenderRemoveModifierButton(index);
 }
 
-void RenderMaterialEntityTypePanel::SVector3Property(std::string& name, void* value, const unsigned int index)
+void RenderMaterialEntityTypePanel::SVector3Property(std::string& name, void* value, const size_t index)
 {
 	SVector3* vector = static_cast<SVector3*>(value);
 
@@ -317,7 +317,7 @@ void RenderMaterialEntityTypePanel::SVector3Property(std::string& name, void* va
 	RenderRemoveModifierButton(index);
 }
 
-void RenderMaterialEntityTypePanel::SVector4Property(std::string& name, void* value, const unsigned int index)
+void RenderMaterialEntityTypePanel::SVector4Property(std::string& name, void* value, const size_t index)
 {
 	SVector4* vector = static_cast<SVector4*>(value);
 
@@ -453,7 +453,6 @@ void RenderMaterialEntityTypePanel::SVector4Property(std::string& name, void* va
 	RenderRemoveModifierButton(index);
 }
 
-void RenderMaterialEntityTypePanel::RenderRemoveModifierButton(const unsigned int modifierIndex)
 {
 	ImGui::TableNextColumn();
 
