@@ -2,22 +2,10 @@
 
 #include "Resources/BoneRig.h"
 
-void BoneRig::Deserialize(const std::string& filePath)
+void BoneRig::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(filePath);
+	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
 
-	Deserialize(binaryReader);
-}
-
-void BoneRig::Deserialize(void* buffer, const unsigned int dataSize)
-{
-	BinaryReader binaryReader = BinaryReader(buffer, dataSize);
-
-	Deserialize(binaryReader);
-}
-
-void BoneRig::Deserialize(BinaryReader& binaryReader)
-{
 	DeserializePrimaryHeader(binaryReader);
 	DeserializeBoneDefinitions(binaryReader);
 	DeserializeBindPoses(binaryReader);
