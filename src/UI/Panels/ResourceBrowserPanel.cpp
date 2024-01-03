@@ -98,7 +98,7 @@ void ResourceBrowserPanel::Render()
         ImGui::Text("Resource Types");
         ImGui::Spacing();
 
-        ImGui::BeginChild("ScrollingRegion", ImVec2(300, 300), false, ImGuiWindowFlags_HorizontalScrollbar);
+        ImGui::BeginChild("ScrollingRegion", ImVec2(300, 300));
 
         for (auto it = resourceTypes.begin(); it != resourceTypes.end(); ++it)
         {
