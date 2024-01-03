@@ -2,14 +2,16 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
+#include <format>
 
 #include "CloakWorks/CloakWorks.h"
 
-#include "IO/BinaryReader.h"
+#include "Resources/Resource.h"
 
 #undef GetClassName
 
-class Cloth
+class Cloth : public Resource
 {
 public:
     class Node
@@ -30,103 +32,26 @@ public:
         std::string className;
     };
 
-    class BoolNode : public Node
+    template <typename T>
+    class PrimitiveNode : public Node
     {
     public:
-        BoolNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        const std::vector<bool>& GetPrimitives() const;
-        void AddPrimitive(const bool value);
+        PrimitiveNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className) : Node(fieldType, name, className)
+        {
+        }
+
+        const std::vector<T>& GetPrimitives() const
+        {
+            return primitives;
+        }
+
+        void AddPrimitive(const T value)
+        {
+            primitives.push_back(value);
+        }
 
     private:
-        std::vector<bool> primitives;
-    };
-
-    class ByteNode : public Node
-    {
-    public:
-        ByteNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        const std::vector<unsigned char>& GetPrimitives() const;
-        void AddPrimitive(const unsigned char value);
-
-    private:
-        std::vector<unsigned char> primitives;
-    };
-
-    class CharNode : public Node
-    {
-    public:
-        CharNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        const std::vector<char>& GetPrimitives() const;
-        void AddPrimitive(const char value);
-
-    private:
-        std::vector<char> primitives;
-    };
-
-    class UShortNode : public Node
-    {
-    public:
-        UShortNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        const std::vector<unsigned short>& GetPrimitives() const;
-        void AddPrimitive(const unsigned short value);
-
-    private:
-        std::vector<unsigned short> primitives;
-    };
-
-    class ShortNode : public Node
-    {
-    public:
-        ShortNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        const std::vector<short>& GetPrimitives() const;
-        void AddPrimitive(const short value);
-
-    private:
-        std::vector<short> primitives;
-    };
-
-    class UIntNode : public Node
-    {
-    public:
-        UIntNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        const std::vector<unsigned int>& GetPrimitives() const;
-        void AddPrimitive(const unsigned int value);
-
-    private:
-        std::vector<unsigned int> primitives;
-    };
-
-    class IntNode : public Node
-    {
-    public:
-        IntNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        const std::vector<int>& GetPrimitives() const;
-        void AddPrimitive(const int value);
-
-    private:
-        std::vector<int> primitives;
-    };
-
-    class FloatNode : public Node
-    {
-    public:
-        FloatNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        const std::vector<float>& GetPrimitives() const;
-        void AddPrimitive(const float value);
-
-    private:
-        std::vector<float> primitives;
-    };
-
-    class StringNode : public Node
-    {
-    public:
-        StringNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        const std::vector<std::string>& GetPrimitives() const;
-        void AddPrimitive(const std::string& value);
-
-    private:
-        std::vector<std::string> primitives;
+        std::vector<T> primitives;
     };
 
     class ObjectNode : public Node
@@ -134,38 +59,111 @@ public:
     public:
         ObjectNode(const CloakWorks::Reflection::FieldType fieldType);
         ObjectNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
-        ~ObjectNode();
-        const std::vector<Node*>& GetChildren() const;
-        void AddChild(Node* childNode);
+        const std::vector<std::shared_ptr<Node>>& GetChildren() const;
+        void AddChild(std::shared_ptr<Node> childNode);
 
     private:
-        std::vector<Node*> children;
+        std::vector<std::shared_ptr<Node>> children;
     };
 
     class ArrayNode : public Node
     {
     public:
         ArrayNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className, unsigned int arrayPrimitiveCount);
-        ~ArrayNode();
         unsigned int GetArrayPrimitiveCount() const;
-        const std::vector<Node*>& GetChildren() const;
-        void AddChild(Node* childNode);
+        const std::vector<std::shared_ptr<Node>>& GetChildren() const;
+        void AddChild(std::shared_ptr<Node> childNode);
 
     private:
         unsigned int arrayPrimitiveCount;
-        std::vector<Node*> children;
+        std::vector<std::shared_ptr<Node>> children;
     };
 
-    ~Cloth();
-    void Deserialize(const std::string& filePath);
-    void Deserialize(void* buffer, const unsigned int dataSize);
-    void Deserialize(BinaryReader& binaryReader);
-    void Deserialize(Node* node, BinaryReader& binaryReader, unsigned int& binaryNodeOffset, unsigned int& nextBinaryNodeOffset, unsigned int depth);
+    void Deserialize() override;
+    void Deserialize(std::shared_ptr<Node> node, BinaryReader& binaryReader, unsigned int depth);
+
+    template <typename T>
+    void DeserializePrimitives(BinaryReader& binaryReader, std::shared_ptr<Node>& childNode, const CloakWorks::BinaryNode& binaryNode, const std::string& name, const std::string& className)
+    {
+        childNode = std::make_shared<PrimitiveNode<T>>(binaryNode.primitiveType, name, className);
+
+        if (binaryNode.dataOffset > 0)
+        {
+            for (unsigned int i = 0; i < binaryNode.primitiveCount; ++i)
+            {
+                std::static_pointer_cast<PrimitiveNode<T>>(childNode)->AddPrimitive(binaryReader.Read<T>());
+            }
+        }
+    }
+
+    template <>
+    void DeserializePrimitives<std::string>(BinaryReader& binaryReader, std::shared_ptr<Node>& childNode, const CloakWorks::BinaryNode& binaryNode, const std::string& name, const std::string& className)
+    {
+        childNode = std::make_shared<PrimitiveNode<std::string>>(binaryNode.primitiveType, name, className);
+
+        if (binaryNode.dataOffset > 0)
+        {
+            std::static_pointer_cast<PrimitiveNode<std::string>>(childNode)->AddPrimitive(binaryReader.ReadString(static_cast<size_t>(binaryNode.dataSize)));
+        }
+    }
+
+    template <typename T>
+    void DeserializeArrayPrimitives(BinaryReader& binaryReader, std::shared_ptr<Node> childNode, const CloakWorks::BinaryNode& binaryNode)
+    {
+        unsigned int arrayCount = binaryNode.dataSize / GetBaseTypeSize(binaryNode.arrayPrimitiveType);
+
+        for (unsigned int i = 0; i < arrayCount; ++i)
+        {
+            std::shared_ptr<Node> node = std::make_shared<PrimitiveNode<T>>(binaryNode.arrayPrimitiveType, "", "");
+
+            std::static_pointer_cast<PrimitiveNode<T>>(node)->AddPrimitive(binaryReader.Read<T>());
+            std::static_pointer_cast<ArrayNode>(childNode)->AddChild(node);
+        }
+    }
+
     static unsigned char GetBaseTypeSize(const CloakWorks::Reflection::FieldType fieldType);
-    void SerializeToXML(std::string& xmlOutput);
-    void SerializeToXML(Node* node, std::stringstream& stringStream, unsigned int depth);
+    void SerializeToXML(const std::string& filePath);
+    void SerializeToXML(std::shared_ptr<Node> node, std::stringstream& stringStream, unsigned int depth);
+
+    template <typename T>
+    void SerializePrimitivesToXML(std::shared_ptr<Node> node, std::stringstream& stringStream, unsigned int depth)
+    {
+        const std::vector<T>& primitives = std::static_pointer_cast<PrimitiveNode<T>>(node)->GetPrimitives();
+        std::string nodeType = ConvertFieldTypeToString(node->GetFieldType());
+
+        stringStream << std::format("<{} name=\"{}\" primitiveCount=\"{}\">", nodeType, node->GetName(), primitives.size());
+
+        for (size_t i = 0; i < primitives.size(); ++i)
+        {
+            stringStream << primitives[i];
+
+            if (i < primitives.size() - 1)
+            {
+                stringStream << " ";
+            }
+        }
+
+        stringStream << std::format("</{}>", nodeType) << std::endl;
+    }
+
+    template <typename T>
+    void SerializeArrayPrimitivesToXML(std::shared_ptr<Node> node, std::stringstream& stringStream, unsigned int depth)
+    {
+        const std::vector<std::shared_ptr<Node>> children = std::static_pointer_cast<ArrayNode>(node)->GetChildren();
+
+        for (size_t i = 0; i < children.size(); ++i)
+        {
+            stringStream << std::static_pointer_cast<PrimitiveNode<T>>(children[i])->GetPrimitives()[0];
+
+            if (i < children.size() - 1)
+            {
+                stringStream << " ";
+            }
+        }
+    }
+
     static std::string ConvertFieldTypeToString(const CloakWorks::Reflection::FieldType fieldType);
 
 private:
-    Node* shroudObject;
+    std::shared_ptr<Node> shroudObject;
 };
