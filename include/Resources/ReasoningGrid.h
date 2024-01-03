@@ -4,9 +4,9 @@
 
 #include "Glacier/ReasoningGrid/SReasoningGrid.h"
 
-#include "IO/BinaryReader.h"
+#include "Resources/Resource.h"
 
-class ReasoningGrid
+class ReasoningGrid : public Resource
 {
 public:
 	~ReasoningGrid();
