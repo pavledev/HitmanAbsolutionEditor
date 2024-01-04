@@ -828,9 +828,9 @@ const std::vector<std::string>& UI::GetExportOptions(std::shared_ptr<Resource> r
 		static std::vector<std::string> alocExportOptions = { "Raw File (.ALOC)" };
 		static std::vector<std::string> asebExportOptions = { "Raw File (.ASEB)" };
 		static std::vector<std::string> asetExportOptions = { "Raw File (.ASET)" };
-		static std::vector<std::string> borgExportOptions = { "Raw File (.BORG)" };
+		static std::vector<std::string> borgExportOptions = { "Raw File (.BORG)", "Json File (.JSON)" };
 		static std::vector<std::string> cbluExportOptions = { "Raw File (.CBLU)", "Json File (.JSON)" };
-		static std::vector<std::string> clobExportOptions = { "Raw File (.CLOB)" };
+		static std::vector<std::string> clobExportOptions = { "Raw File (.CLOB)", "Json File (.JSON)" };
 		static std::vector<std::string> closExportOptions = { "Raw File (.CLOS)", "XML File (.XML)" };
 		static std::vector<std::string> clotExportOptions = { "Raw File (.CLOT)", "Json File (.JSON)" };
 		static std::vector<std::string> cpptExportOptions = { "Raw File (.CPPT)", "Json File (.JSON)" };
