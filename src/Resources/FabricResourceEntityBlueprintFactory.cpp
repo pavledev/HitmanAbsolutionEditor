@@ -34,7 +34,7 @@ void FabricResourceEntityBlueprint::Deserialize()
 	isResourceDeserialized = true;
 }
 
-std::string FabricResourceEntityBlueprint::SerializeToJson()
+void FabricResourceEntityBlueprint::SerializeToJson(const std::string& outputFilePath)
 {
 	rapidjson::StringBuffer stringBuffer;
 	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
@@ -83,7 +83,11 @@ std::string FabricResourceEntityBlueprint::SerializeToJson()
 
 	writer.EndObject();
 
-	return stringBuffer.GetString();
+	std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+	outputFileStream << stringBuffer.GetString();
+
+	outputFileStream.close();
 }
 
 const std::vector<std::string>& FabricResourceEntityBlueprint::GetClothPieceNames() const
