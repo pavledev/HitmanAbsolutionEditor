@@ -815,9 +815,9 @@ const std::vector<std::string>& UI::GetExportOptions(std::shared_ptr<Resource> r
 	static std::vector<std::string> fsbsExportOptions = { "Raw File (.FSBS)", "FSB File (.FSB)", "Folder (OGG Files)" };
 	static std::vector<std::string> fsbsExportOptions2 = { "Raw File (.FSBS)", "FSB File (.FSB)", "Folder (WAV Files)" };
 
-	static std::vector<std::string> swffExportOptions = { "Raw File (.SWFF)", "DDS File (*.DDS)" };
-	static std::vector<std::string> swffExportOptions2 = { "Raw File (.SWFF)", "PNG File (*.PNG)" };
-	static std::vector<std::string> swffExportOptions3 = { "Raw File (.SWFF)", "SWF File (*.SWF)" };
+	static std::vector<std::string> swffExportOptions = { "Raw File (.SWFF)", "DDS File (.DDS)" };
+	static std::vector<std::string> swffExportOptions2 = { "Raw File (.SWFF)", "PNG File (.PNG)" };
+	static std::vector<std::string> swffExportOptions3 = { "Raw File (.SWFF)", "SWF File (.SWF)" };
 
 	if (resourceTypeToExportOptions.empty())
 	{
