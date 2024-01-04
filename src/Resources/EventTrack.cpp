@@ -4,7 +4,7 @@
 
 void EventTrack::Deserialize()
 {
-	eventSequenceHeader = static_cast<MR::EventSequenceHeader*>(buffer);
+	eventSequenceHeader = static_cast<MR::EventSequenceHeader*>(resourceData);
 
 	eventSequenceHeader->Locate();
 }
