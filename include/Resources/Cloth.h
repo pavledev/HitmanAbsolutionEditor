@@ -122,7 +122,7 @@ public:
     }
 
     static unsigned char GetBaseTypeSize(const CloakWorks::Reflection::FieldType fieldType);
-    void SerializeToXML(const std::string& filePath);
+    void SerializeToXML(const std::string& outputFilePath);
     void SerializeToXML(std::shared_ptr<Node> node, std::stringstream& stringStream, unsigned int depth);
 
     template <typename T>
