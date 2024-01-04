@@ -262,6 +262,7 @@ void ConsolePanel::RenderTable(const std::vector<Logger::Message>& messages)
 	{
 		ImGuiTableColumnFlags columnFlags = ImGuiTableColumnFlags_NoSort | ImGuiTableColumnFlags_NoHide;
 
+		ImGui::TableSetupScrollFreeze(0, 1);
 		ImGui::TableSetupColumn("ID", columnFlags | ImGuiTableColumnFlags_WidthFixed);
 		ImGui::TableSetupColumn("Time", columnFlags | ImGuiTableColumnFlags_WidthFixed);
 		ImGui::TableSetupColumn("Process", columnFlags | ImGuiTableColumnFlags_WidthFixed);
