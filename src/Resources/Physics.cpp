@@ -24,24 +24,9 @@ const ZCollisionShape& Physics::GetCollisionShape() const
 	return collisionShape;
 }
 
-void Physics::Deserialize(const std::string& filePath)
+void Physics::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(filePath);
-
-	Deserialize(binaryReader);
-}
-
-void Physics::Deserialize(void* data, const unsigned int dataSize)
-{
-	BinaryReader binaryReader = BinaryReader(data, dataSize);
-
-	Deserialize(binaryReader);
-
-	//SerializeToJson("ALOC.json");
-}
-
-void Physics::Deserialize(BinaryReader& binaryReader)
-{
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	physicsSDK = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION);
 
 	if (!DeserializeHeader(binaryReader))
