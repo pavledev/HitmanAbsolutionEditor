@@ -71,7 +71,15 @@ void ConsolePanel::Render()
 	std::vector<Logger::Message> filteredMessages;
 
 	FilterMessages(messages, filteredMessages);
-	RenderTable(filteredMessages);
+
+	if (filteredMessages.size() > 0)
+	{
+		RenderTable(filteredMessages);
+	}
+	else
+	{
+		RenderTable(messages);
+	}
 
 	ImGui::PopFont();
 
