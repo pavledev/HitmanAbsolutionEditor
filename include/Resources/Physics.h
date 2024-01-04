@@ -19,9 +19,7 @@ class Physics : public Resource
 public:
 	Physics() = default;
 	const ZCollisionShape& GetCollisionShape() const;
-	void Deserialize(const std::string& filePath);
-	void Deserialize(void* data, const unsigned int dataSize);
-	void Deserialize(BinaryReader& binaryReader);
+	void Deserialize() override;
 	bool DeserializeHeader(BinaryReader& binaryReader);
 	bool DeserializeCollisionShape(BinaryReader& binaryReader);
 	bool DeserializeConvexMesh(BinaryReader& binaryReader);
