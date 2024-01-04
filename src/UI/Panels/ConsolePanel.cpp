@@ -243,7 +243,7 @@ void ConsolePanel::RenderButtons(const std::vector<Logger::Message>& messages)
 
 	std::string hint = std::format("{} Search message...", ICON_MDI_MAGNIFY);
 
-	ImGui::PushItemWidth(1000);
+	ImGui::PushItemWidth(-1);
 	ImGui::InputTextWithHint("##SearchMessage", hint.c_str(), message, IM_ARRAYSIZE(message));
 	ImGui::PopItemWidth();
 }
