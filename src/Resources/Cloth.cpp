@@ -373,7 +373,7 @@ unsigned char Cloth::GetBaseTypeSize(const CloakWorks::Reflection::FieldType fie
     }
 }
 
-void Cloth::SerializeToXML(const std::string& filePath)
+void Cloth::SerializeToXML(const std::string& outputFilePath)
 {
     std::stringstream stringStream;
 
@@ -382,7 +382,7 @@ void Cloth::SerializeToXML(const std::string& filePath)
     SerializeToXML(shroudObject, stringStream, 0);
 
     std::string xmlOutput = stringStream.str();
-    std::ofstream ofstream = std::ofstream(filePath);
+    std::ofstream ofstream = std::ofstream(outputFilePath);
 
     ofstream << xmlOutput;
 
