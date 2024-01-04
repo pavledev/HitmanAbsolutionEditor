@@ -19,7 +19,7 @@
 class BoneRig : public Resource
 {
 public:
-	void Deserialize();
+	void Deserialize() override;
 	void DeserializePrimaryHeader(BinaryReader& binaryReader);
 	void DeserializeBoneDefinitions(BinaryReader& binaryReader);
 	void DeserializeBindPoses(BinaryReader& binaryReader);
