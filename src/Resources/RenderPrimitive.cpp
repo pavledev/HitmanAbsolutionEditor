@@ -65,22 +65,9 @@ void RenderPrimitive::SetPhysics(Physics* physics)
 	this->physics = physics;
 }
 
-void RenderPrimitive::Deserialize(const std::string& filePath)
+void RenderPrimitive::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(filePath);
-
-	Deserialize(binaryReader);
-}
-
-void RenderPrimitive::Deserialize(void* buffer, const unsigned int dataSize)
-{
-	BinaryReader binaryReader = BinaryReader(buffer, dataSize);
-
-	Deserialize(binaryReader);
-}
-
-void RenderPrimitive::Deserialize(BinaryReader& binaryReader)
-{
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	const unsigned int primaryOffset = binaryReader.Read<unsigned int>();
 
 	binaryReader.Seek(primaryOffset, SeekOrigin::Begin);
