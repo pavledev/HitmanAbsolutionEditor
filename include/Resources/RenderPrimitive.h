@@ -132,9 +132,7 @@ public:
 	BoneRig* GetBoneRig();
 	void SetBoneRig(BoneRig* boneRig);
 	void SetPhysics(Physics* physics);
-	void Deserialize(const std::string& filePath);
-	void Deserialize(void* buffer, const unsigned int dataSize);
-	void Deserialize(BinaryReader& binaryReader);
+	void Deserialize() override;
 	void ConvertToOBJ(const std::string& objFilePath);
 	void ConvertToGLB(const std::string& resourceName, const std::string& gltfFilePath, bool rotate);
 
