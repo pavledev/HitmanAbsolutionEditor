@@ -9,8 +9,7 @@
 class Rig : public Resource
 {
 public:
-	void Deserialize(const std::string& filePath);
-	void Deserialize(void* buffer);
+	void Deserialize() override;
 	void SerializeToJson(std::string& jsonOutput);
 
 private:
