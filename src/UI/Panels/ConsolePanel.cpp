@@ -253,7 +253,7 @@ void ConsolePanel::RenderTable(const std::vector<Logger::Message>& messages)
 	static ImGuiTableFlags tableFlags =
 		ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable
 		| ImGuiTableFlags_Borders | ImGuiTableFlags_NoBordersInBody
-		| ImGuiTableFlags_SizingFixedFit;
+		| ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY;
 	static ImVector<int> selections;
 	static float minRowHeight = 0.0f;
 	static int columnCount = 5;
