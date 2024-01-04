@@ -2,11 +2,7 @@
 
 #include "Resources/Network.h"
 
-void Network::Deserialize(const std::string& filePath)
-{
-}
-
-void Network::Deserialize(void* buffer)
+void Network::Deserialize()
 {
 	networkDef = static_cast<MR::NetworkDef*>(buffer);
 
