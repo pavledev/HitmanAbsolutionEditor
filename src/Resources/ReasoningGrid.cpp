@@ -12,35 +12,16 @@ SReasoningGrid* ReasoningGrid::GetReasoningGrid()
 	return reasoningGrid;
 }
 
-bool ReasoningGrid::Deserialize(const std::string& filePath)
-{
-	BinaryReader binaryReader = BinaryReader(filePath);
-
-	return Deserialize(binaryReader);
-}
-
-bool ReasoningGrid::Deserialize(void* data, const unsigned int dataSize)
-{
-	BinaryReader binaryReader = BinaryReader(data, dataSize);
-
-	return Deserialize(binaryReader);
-}
-
-bool ReasoningGrid::Deserialize(BinaryReader& binaryReader)
+void ReasoningGrid::Deserialize()
 {
 	ZBinaryDeserializer binaryDeserializer;
 
-	reasoningGrid = static_cast<SReasoningGrid*>(binaryDeserializer.Deserialize(binaryReader));
+	reasoningGrid = static_cast<SReasoningGrid*>(binaryDeserializer.Deserialize(resourceData, resourceDataSize));
 	alignment = binaryDeserializer.GetAlignment();
+}
 
-	if (!reasoningGrid)
 	{
-		Logger::GetInstance().Log(Logger::Level::Error, "Failed to deserialize reasoning grid!");
-
-		return false;
 	}
-
-	return true;
 }
 
 void ReasoningGrid::SerializeToJson(const std::string& outputFilePath)
