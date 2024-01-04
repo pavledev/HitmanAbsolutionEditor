@@ -11,7 +11,7 @@ DirectXRenderer::DirectXRenderer()
     swapChain = nullptr;
 }
 
-bool DirectXRenderer::Setup(HWND hwnd, WNDCLASSEXW* wc)
+bool DirectXRenderer::Setup(HWND hwnd, WNDCLASSEXA* wc)
 {
     this->hwnd = hwnd;
     swapChain = new SwapChain(Display::GetWidth(), Display::GetHeight(), SwapChain::PresentMode::Immediate, 2);
@@ -19,7 +19,7 @@ bool DirectXRenderer::Setup(HWND hwnd, WNDCLASSEXW* wc)
     if (!CreateD3DDevice(hwnd))
     {
         CleanupD3DDevice();
-        UnregisterClassW(wc->lpszClassName, wc->hInstance);
+        UnregisterClassA(wc->lpszClassName, wc->hInstance);
 
         return false;
     }
@@ -27,7 +27,7 @@ bool DirectXRenderer::Setup(HWND hwnd, WNDCLASSEXW* wc)
     if (!swapChain->Create() || !swapChain->CreateRenderTargetView())
     {
         CleanupD3DDevice();
-        UnregisterClassW(wc->lpszClassName, wc->hInstance);
+        UnregisterClassA(wc->lpszClassName, wc->hInstance);
 
         return false;
     }

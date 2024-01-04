@@ -37,7 +37,7 @@ private:
 	Editor(const Editor& other) = delete;
 	Editor& operator=(const Editor& other) = delete;
 
-	WNDCLASSEXW wc;
+	WNDCLASSEXA wc;
 	HWND hwnd;
 	inline static unsigned int resizeWidth;
 	inline static unsigned int resizeHeight;

@@ -46,7 +46,7 @@ Editor::~Editor()
     imGuiRenderer->Cleanup();
     directXRenderer->CleanupD3DDevice();
     DestroyWindow(hwnd);
-    UnregisterClassW(wc.lpszClassName, wc.hInstance);
+    UnregisterClassA(wc.lpszClassName, wc.hInstance);
     CoUninitialize();
 }
 
@@ -59,13 +59,13 @@ Editor& Editor::GetInstance()
 
 bool Editor::Setup()
 {
-    wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"Hitman Absolution Editor", nullptr };
+    wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, "Hitman Absolution Editor", nullptr };
 
-    RegisterClassExW(&wc);
+    RegisterClassExA(&wc);
 
     int width = GetSystemMetrics(SM_CXSCREEN);
     int height = GetSystemMetrics(SM_CYSCREEN);
-    hwnd = CreateWindowExW(0, wc.lpszClassName, L"Hitman Absolution Editor", WS_OVERLAPPEDWINDOW, 0, 0, width, height, nullptr, nullptr, wc.hInstance, nullptr);
+    hwnd = CreateWindowExA(0, wc.lpszClassName, "Hitman Absolution Editor", WS_OVERLAPPEDWINDOW, 0, 0, width, height, nullptr, nullptr, wc.hInstance, nullptr);
 
     Logger& logger = Logger::GetInstance();
 

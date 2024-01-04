@@ -11,7 +11,7 @@ class DirectXRenderer
 {
 public:
 	DirectXRenderer();
-	bool Setup(HWND hwnd, WNDCLASSEXW* wc);
+	bool Setup(HWND hwnd, WNDCLASSEXA* wc);
 	bool CreateD3DDevice(HWND hWnd);
 	void CleanupD3DDevice();
 	const HWND GetHWND() const;
