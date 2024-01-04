@@ -782,6 +782,9 @@ void UI::ResourceExportPopup(bool& showPopup, std::shared_ptr<Resource> resource
 			resource->Export(outputPath, selectedExportOption2);
 
 			resource.reset();
+
+			selectedExportOptionIndex = 0;
+			selectedExportOption = nullptr;
 		}
 
 		const ImVec2 framePadding = ImGui::GetStyle().FramePadding;
@@ -796,6 +799,9 @@ void UI::ResourceExportPopup(bool& showPopup, std::shared_ptr<Resource> resource
 			ImGui::CloseCurrentPopup();
 
 			resource.reset();
+
+			selectedExportOptionIndex = 0;
+			selectedExportOption = nullptr;
 		}
 
 		ImGui::PopFont();
