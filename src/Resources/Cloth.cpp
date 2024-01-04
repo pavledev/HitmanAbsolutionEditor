@@ -353,6 +353,18 @@ void Cloth::Deserialize(std::shared_ptr<Node> node, BinaryReader& binaryReader, 
     }
 }
 
+void Cloth::Export(const std::string& outputPath, const std::string& exportOption)
+{
+    if (exportOption.starts_with("Raw"))
+    {
+        ExportRawData(outputPath);
+    }
+    else
+    {
+        SerializeToXML(outputPath);
+    }
+}
+
 unsigned char Cloth::GetBaseTypeSize(const CloakWorks::Reflection::FieldType fieldType)
 {
     switch (fieldType)

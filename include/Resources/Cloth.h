@@ -81,6 +81,7 @@ public:
 
     void Deserialize() override;
     void Deserialize(std::shared_ptr<Node> node, BinaryReader& binaryReader, unsigned int depth);
+    void Export(const std::string& outputPath, const std::string& exportOption) override;
 
     template <typename T>
     void DeserializePrimitives(BinaryReader& binaryReader, std::shared_ptr<Node>& childNode, const CloakWorks::BinaryNode& binaryNode, const std::string& name, const std::string& className)

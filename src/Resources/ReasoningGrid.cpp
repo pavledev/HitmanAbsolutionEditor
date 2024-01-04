@@ -20,7 +20,11 @@ void ReasoningGrid::Deserialize()
 	alignment = binaryDeserializer.GetAlignment();
 }
 
+void ReasoningGrid::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
 	{
+		ExportRawData(outputPath);
 	}
 }
 

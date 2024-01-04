@@ -32,6 +32,7 @@ public:
 	void DeserializeNames(BinaryReader& binaryReader);
 	void DeserializeNamesEntryIndices(BinaryReader& binaryReader);
 	void DeserializeFaceBoneIndices(BinaryReader& binaryReader);
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	const std::vector<SBoneDefinition>& GetBoneDefinitions() const;
 	const std::vector<SQV>& GetBindPoses() const;
 	std::vector<SQV>& GetBindPoses();

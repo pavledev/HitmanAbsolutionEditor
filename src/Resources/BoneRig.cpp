@@ -191,6 +191,18 @@ void BoneRig::DeserializeFaceBoneIndices(BinaryReader& binaryReader)
 	}
 }
 
+void BoneRig::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
 const std::vector<SBoneDefinition>& BoneRig::GetBoneDefinitions() const
 {
 	return boneDefinitions;

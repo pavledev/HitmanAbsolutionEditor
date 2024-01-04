@@ -34,6 +34,18 @@ void FabricResourceEntityBlueprint::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void FabricResourceEntityBlueprint::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
 void FabricResourceEntityBlueprint::SerializeToJson(const std::string& outputFilePath)
 {
 	rapidjson::StringBuffer stringBuffer;

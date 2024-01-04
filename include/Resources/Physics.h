@@ -32,6 +32,7 @@ public:
 	bool DeserializeKinematicLinkedData(BinaryReader& binaryReader);
 	NxMat34 DeserializeNxMat34(BinaryReader& binaryReader);
 	bool IsCollisionLayerOpaque(const ECollidableLayer collidableLayer);
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	void SerializeToJson(const std::string& outputFilePath);
 
 private:

@@ -23,6 +23,7 @@ public:
 	};
 
 	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	std::vector<std::shared_ptr<Modifier>>& GetModifiers();
 
 private:

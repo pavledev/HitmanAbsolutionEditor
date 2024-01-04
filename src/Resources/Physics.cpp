@@ -501,6 +501,18 @@ bool Physics::IsCollisionLayerOpaque(const ECollidableLayer collidableLayer)
 	}
 }
 
+void Physics::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
 void Physics::SerializeToJson(const std::string& outputFilePath)
 {
 	rapidjson::StringBuffer stringBuffer;

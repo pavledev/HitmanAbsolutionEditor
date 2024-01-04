@@ -133,6 +133,7 @@ public:
 	void SetBoneRig(BoneRig* boneRig);
 	void SetPhysics(Physics* physics);
 	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	void ConvertToOBJ(const std::string& objFilePath);
 	void ConvertToGLB(const std::string& resourceName, const std::string& gltfFilePath, bool rotate);
 

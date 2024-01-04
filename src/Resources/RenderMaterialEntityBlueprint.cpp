@@ -17,6 +17,14 @@ void RenderMaterialEntityBlueprint::Deserialize()
 	isResourceDeserialized = true;
 }
 
+void RenderMaterialEntityBlueprint::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+}
+
 std::vector<std::shared_ptr<RenderMaterialEntityBlueprint::Modifier>>& RenderMaterialEntityBlueprint::GetModifiers()
 {
 	return modifiers;

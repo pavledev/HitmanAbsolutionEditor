@@ -9,6 +9,14 @@ void Network::Deserialize()
 	networkDef->Locate();
 }
 
+void Network::Export(const std::string& outputPath, const std::string& exportOption)
+{
+	if (exportOption.starts_with("Raw"))
+	{
+		ExportRawData(outputPath);
+	}
+}
+
 void Network::SerializeToJson(std::string& jsonOutput)
 {
 	jsonOutput = networkDef->SerializeToJson();

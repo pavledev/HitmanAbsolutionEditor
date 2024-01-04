@@ -12,6 +12,7 @@ public:
 	~ReasoningGrid();
 	SReasoningGrid* GetReasoningGrid();
 	void Deserialize() override;
+	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	void SerializeToJson(const std::string& outputFilePath);
 
 private:
