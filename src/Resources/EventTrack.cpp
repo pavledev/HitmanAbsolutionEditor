@@ -2,11 +2,7 @@
 
 #include "Resources/EventTrack.h"
 
-void EventTrack::Deserialize(const std::string& filePath)
-{
-}
-
-void EventTrack::Deserialize(void* buffer)
+void EventTrack::Deserialize()
 {
 	eventSequenceHeader = static_cast<MR::EventSequenceHeader*>(buffer);
 
