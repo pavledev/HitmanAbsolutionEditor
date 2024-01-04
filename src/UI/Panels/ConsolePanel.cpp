@@ -66,7 +66,7 @@ void ConsolePanel::Render()
 
 	RenderButtons(messages);
 
-	ImGui::Text("");
+	ImGui::Spacing();
 
 	std::vector<Logger::Message> filteredMessages;
 
