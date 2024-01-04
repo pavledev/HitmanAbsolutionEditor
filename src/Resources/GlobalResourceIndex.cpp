@@ -6,7 +6,7 @@
 void GlobalResourceIndex::Deserialize()
 {
 	ZBinaryDeserializer binaryDeserializer;
-	void* resourceIndex = binaryDeserializer.Deserialize(GetResourceData(), GetResourceDataSize());
+	void* resourceIndex = binaryDeserializer.Deserialize(resourceData, resourceDataSize);
 
 	Parse(resourceIndex);
 

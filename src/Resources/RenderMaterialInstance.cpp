@@ -111,7 +111,7 @@ RenderMaterialInstance::RenderMaterialInstance()
 
 void RenderMaterialInstance::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	const unsigned int materialInfoOffset = binaryReader.Read<unsigned int>();
 
 	binaryReader.Seek(materialInfoOffset, SeekOrigin::Begin);

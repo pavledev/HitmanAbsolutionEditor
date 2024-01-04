@@ -11,7 +11,7 @@ GFXMovie::~GFXMovie()
 void GFXMovie::Deserialize()
 {
 	ZBinaryDeserializer binaryDeserializer;
-	void* gfxResource = binaryDeserializer.Deserialize(GetResourceData(), GetResourceDataSize());
+	void* gfxResource = binaryDeserializer.Deserialize(resourceData, resourceDataSize);
 
 	Parse(gfxResource);
 

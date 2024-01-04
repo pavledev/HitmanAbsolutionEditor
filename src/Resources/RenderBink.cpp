@@ -11,6 +11,6 @@ void RenderBink::Export(const std::string& outputPath, const std::string& export
 	{
 		BinaryWriter binaryWriter = BinaryWriter(outputPath);
 
-		binaryWriter.Write(GetResourceData(), GetResourceDataSize());
+		binaryWriter.Write(resourceData, resourceDataSize);
 	}
 }

@@ -2,7 +2,7 @@
 
 void MultiLanguage::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	localizationCategory = binaryReader.Read<char>();
 	const unsigned int count = (GetResourceDataSize() - 1) >> 3;
 	const char* data = static_cast<const char*>(GetResourceData());

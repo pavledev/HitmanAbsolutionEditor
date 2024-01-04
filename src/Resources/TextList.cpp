@@ -4,7 +4,7 @@
 
 void TextList::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	const unsigned int entryCount = binaryReader.Read<unsigned int>();
 
 	entries.reserve(entryCount);

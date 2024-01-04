@@ -38,7 +38,7 @@ Texture::~Texture()
 
 void Texture::Deserialize()
 {
-    BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+    BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
     textureMapHeader = binaryReader.Read<ZTextureMap::STextureMapHeader>();
     data = binaryReader.Read<unsigned char>(binaryReader.GetSize() - binaryReader.GetPosition());
     texMetadata = GenerateTexMetadata();

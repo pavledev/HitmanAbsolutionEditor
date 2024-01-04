@@ -26,7 +26,7 @@ void FlashMovie::Export(const std::string& outputPath, const std::string& export
 
 void FlashMovie::GetTextureData(void*& textureData, unsigned int& textureDataSize, bool& isDDSTexture)
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	const unsigned char type = binaryReader.Read<unsigned char>();
 	const unsigned int fileOffset = binaryReader.Read<unsigned int>();
 

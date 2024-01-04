@@ -2,7 +2,7 @@
 
 void WaveBank::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	waveBankResourceData = binaryReader.Read<SWaveBankResourceData>();
 
 	isResourceDeserialized = true;

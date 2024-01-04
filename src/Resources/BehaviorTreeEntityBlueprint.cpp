@@ -6,7 +6,7 @@
 void BehaviorTreeEntityBlueprint::Deserialize()
 {
 	ZBinaryDeserializer binaryDeserializer;
-	void* behaviorTreeInfo = binaryDeserializer.Deserialize(GetResourceData(), GetResourceDataSize());
+	void* behaviorTreeInfo = binaryDeserializer.Deserialize(resourceData, resourceDataSize);
 
 	Parse(behaviorTreeInfo);
 

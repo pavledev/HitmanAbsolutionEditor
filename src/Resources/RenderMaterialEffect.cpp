@@ -12,7 +12,7 @@ RenderMaterialEffect::~RenderMaterialEffect()
 
 void RenderMaterialEffect::Deserialize()
 {
-    BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+    BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
     unsigned int effectDataOffset = binaryReader.Read<unsigned int>();
     unsigned int effectDataSize = binaryReader.Read<unsigned int>();
 

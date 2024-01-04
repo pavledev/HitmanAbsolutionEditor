@@ -2,7 +2,7 @@
 
 void ScatterData::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 
 	scatterDataHeader = binaryReader.Read<SScatterDataHeader>();
 

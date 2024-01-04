@@ -6,7 +6,7 @@
 void PackageList::Deserialize()
 {
 	ZBinaryDeserializer binaryDeserializer;
-	void* packageListData = binaryDeserializer.Deserialize(GetResourceData(), GetResourceDataSize());
+	void* packageListData = binaryDeserializer.Deserialize(resourceData, resourceDataSize);
 
 	Parse(packageListData);
 

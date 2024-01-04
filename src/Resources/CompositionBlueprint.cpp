@@ -6,7 +6,7 @@
 void CompositionBlueprint::Deserialize()
 {
 	ZBinaryDeserializer binaryDeserializer;
-	void* musicCompositionData = binaryDeserializer.Deserialize(GetResourceData(), GetResourceDataSize());
+	void* musicCompositionData = binaryDeserializer.Deserialize(resourceData, resourceDataSize);
 
 	Parse(musicCompositionData);
 

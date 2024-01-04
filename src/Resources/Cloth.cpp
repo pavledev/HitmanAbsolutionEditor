@@ -77,7 +77,7 @@ void Cloth::ArrayNode::AddChild(std::shared_ptr<Node> childNode)
 
 void Cloth::Deserialize()
 {
-    BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+    BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 
     binaryReader.Seek(0x24, SeekOrigin::Begin);
 

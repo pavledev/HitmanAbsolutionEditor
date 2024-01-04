@@ -19,7 +19,7 @@ FSB::Format WaveBankFSBS::GetFormat()
 void WaveBankFSBS::GetFSB5Data(void*& fsb5Data, unsigned int& fsb5Size)
 {
 	const unsigned int fsb5DataOffset = FindFSB5DataOffsetInFSBS();
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 
 	binaryReader.Seek(fsb5DataOffset);
 
@@ -59,7 +59,7 @@ void WaveBankFSBS::GetFilePaths(std::vector<std::string>& filePaths)
 
 unsigned int WaveBankFSBS::FindFSB5DataOffsetInFSBS()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 
 	binaryReader.Seek(24 + 16);
 

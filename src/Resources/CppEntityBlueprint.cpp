@@ -7,7 +7,7 @@
 void CppEntityBlueprint::Deserialize()
 {
 	ZBinaryDeserializer binaryDeserializer;
-	void* cppEntityBlueprint = binaryDeserializer.Deserialize(GetResourceData(), GetResourceDataSize());
+	void* cppEntityBlueprint = binaryDeserializer.Deserialize(resourceData, resourceDataSize);
 
 	Parse(cppEntityBlueprint);
 

@@ -4,7 +4,7 @@
 
 void BoneRig::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 
 	DeserializePrimaryHeader(binaryReader);
 	DeserializeBoneDefinitions(binaryReader);

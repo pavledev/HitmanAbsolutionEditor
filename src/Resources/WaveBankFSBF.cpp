@@ -2,7 +2,7 @@
 
 FSB::Format WaveBankFSBF::GetFormat()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	unsigned int offset = offsetof(FSB::Header, mode);
 
 	binaryReader.Seek(16 + offset);
@@ -12,7 +12,7 @@ FSB::Format WaveBankFSBF::GetFormat()
 
 void WaveBankFSBF::GetFSB5Data(void*& fsb5Data, unsigned int& fsb5Size)
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 
 	binaryReader.Seek(16);
 

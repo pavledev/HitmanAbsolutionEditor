@@ -15,7 +15,7 @@
 void CppEntity::Deserialize()
 {
 	ZBinaryDeserializer binaryDeserializer;
-	void* cppEntity = binaryDeserializer.Deserialize(GetResourceData(), GetResourceDataSize());
+	void* cppEntity = binaryDeserializer.Deserialize(resourceData, resourceDataSize);
 
 	Parse(cppEntity);
 

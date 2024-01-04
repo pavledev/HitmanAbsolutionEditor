@@ -4,7 +4,7 @@
 
 void WaveBankFX::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	const unsigned int entryCount = binaryReader.Read<unsigned int>();
 
 	faceFXAnimationReferences.reserve(entryCount);

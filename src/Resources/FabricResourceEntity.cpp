@@ -3,7 +3,7 @@
 
 void FabricResourceEntity::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(GetResourceData(), GetResourceDataSize());
+	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 
 	while (binaryReader.GetPosition() < binaryReader.GetSize())
 	{
