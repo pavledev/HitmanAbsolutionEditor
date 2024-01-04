@@ -4,7 +4,7 @@
 
 void Network::Deserialize()
 {
-	networkDef = static_cast<MR::NetworkDef*>(buffer);
+	networkDef = static_cast<MR::NetworkDef*>(resourceData);
 
 	networkDef->Locate();
 }
