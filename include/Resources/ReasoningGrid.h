@@ -11,9 +11,7 @@ class ReasoningGrid : public Resource
 public:
 	~ReasoningGrid();
 	SReasoningGrid* GetReasoningGrid();
-	bool Deserialize(const std::string& filePath);
-	bool Deserialize(void* data, const unsigned int dataSize);
-	bool Deserialize(BinaryReader& binaryReader);
+	void Deserialize() override;
 	void SerializeToJson(const std::string& outputFilePath);
 
 private:
