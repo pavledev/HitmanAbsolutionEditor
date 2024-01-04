@@ -2,15 +2,14 @@
 
 #include "Resources/Rig.h"
 
-void Rig::Deserialize(const std::string& filePath)
+void Rig::Deserialize()
 {
-}
-
-void Rig::Deserialize(void* buffer)
-{
-	rig = static_cast<MR::Rig*>(buffer);
+	rig = static_cast<MR::Rig*>(resourceData);
 
 	rig->Locate();
+}
+
+{
 }
 
 void Rig::SerializeToJson(std::string& jsonOutput)
