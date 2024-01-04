@@ -8,7 +8,7 @@ class FabricResourceEntityBlueprint : public Resource
 {
 public:
 	void Deserialize() override;
-	std::string SerializeToJson();
+	void SerializeToJson(const std::string& outputFilePath);
 	const std::vector<std::string>& GetClothPieceNames() const;
 	const std::vector<std::string>& GetClothPieceExtendedNames() const;
 	const std::vector<std::string>& GetTransformNames() const;
