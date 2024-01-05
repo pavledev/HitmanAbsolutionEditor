@@ -3,7 +3,6 @@
 #include <UI/Documents/TemplateEntityDocument.h>
 #include <UI/Panels/SceneHierarchyPanel.h>
 #include <UI/Panels/TemplateEntityPropertiesPanel.h>
-#include <Utility/ResourceUtility.h>
 
 TemplateEntityDocument::TemplateEntityDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
