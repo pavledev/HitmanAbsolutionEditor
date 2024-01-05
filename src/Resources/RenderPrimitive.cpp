@@ -705,14 +705,14 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 
 	for (size_t i = 0; i < meshes.size(); ++i)
 	{
-		unsigned char lodMask = meshes[i]->GetLODMask();
+		const unsigned char lodMask = meshes[i]->GetLODMask();
 
 		if ((lodMask & 1) != 1)
 		{
 			continue;
 		}
 
-		std::vector<Vertex>& vertices = meshes[i]->GetVertices();
+		const std::vector<Vertex>& vertices = meshes[i]->GetVertices();
 
 		objFile << "o Mesh " << i << std::endl;
 
@@ -730,7 +730,7 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 		{
 			for (size_t j = 0; j < vertices.size(); ++j)
 			{
-				std::vector<Vector2>& uv = vertices[j].uv;
+				const std::vector<Vector2>& uv = vertices[j].uv;
 
 				objFile << std::format("vt {} {}\n", uv[0].x, -1 * uv[0].y + 1);
 			}
@@ -741,8 +741,8 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 
 			if (!materialIndicesToResourceNames.contains(matiReferenceIndex))
 			{
-				std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
-				std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
+				const std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
+				const std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
 
 				const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
 				std::vector<RenderMaterialInstance::Texture> textures;
@@ -753,7 +753,7 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 				matiReference->GetTextures(matiReference, textures);
 
 				materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
-				std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
+				const std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
 
 				for (size_t j = 0; j < textures.size(); ++j)
 				{
@@ -877,7 +877,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 	{
 		std::vector<float> tempVerticesMin;
 		std::vector<float> tempVerticesMax;
-		unsigned char lodMask = meshes[i]->GetLODMask();
+		const unsigned char lodMask = meshes[i]->GetLODMask();
 
 		if ((lodMask & 1) != 1)
 		{
@@ -887,7 +887,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 			continue;
 		}
 
-		std::vector<Vertex> vertices = meshes[i]->GetVertices();
+		const std::vector<Vertex> vertices = meshes[i]->GetVertices();
 
 		for (size_t j = 0; j < vertices.size(); j++)
 		{
@@ -939,8 +939,8 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 		verticesMax.push_back(tempVerticesMax);
 	}
 
-	std::filesystem::path glbFilePath2 = glbFilePath;
-	std::filesystem::path glbFileName = glbFilePath2.filename();
+	const std::filesystem::path glbFilePath2 = glbFilePath;
+	const std::filesystem::path glbFileName = glbFilePath2.filename();
 
 	std::unique_ptr<GLTFStreamWriter> streamWriter = std::make_unique<GLTFStreamWriter>(glbFilePath2.parent_path().string());
 	std::unique_ptr<Microsoft::glTF::ResourceWriter> resourceWriter = std::make_unique<Microsoft::glTF::GLBResourceWriter>(std::move(streamWriter));
@@ -959,7 +959,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 
 	for (size_t i = 0; i < meshes.size(); ++i)
 	{
-		unsigned char lodMask = meshes[i]->GetLODMask();
+		const unsigned char lodMask = meshes[i]->GetLODMask();
 
 		if ((lodMask & 1) != 1)
 		{
@@ -983,18 +983,18 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 		matiReference->Deserialize();
 		matiReference->GetTextures(matiReference, textures);
 
-		std::string materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
-		std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
+		const std::string materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
+		const std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
 		Microsoft::glTF::Material material;
 
 		material.name = materialResourceName;
 
 		for (size_t j = 0; j < textures.size(); ++j)
 		{
-			unsigned int textureReferenceIndex = textures[j].textureReferenceIndex;
-			std::string textureResourceID = matiReferences[textureReferenceIndex]->GetResourceID();
-			std::string textureResourceName = ResourceUtility::GetResourceName(textureResourceID);
-			std::shared_ptr<Texture> textReference = std::static_pointer_cast<Texture>(matiReferences[textures[j].textureReferenceIndex]);
+			const unsigned int textureReferenceIndex = textures[j].textureReferenceIndex;
+			const std::string textureResourceID = matiReferences[textureReferenceIndex]->GetResourceID();
+			const std::string textureResourceName = ResourceUtility::GetResourceName(textureResourceID);
+			const std::shared_ptr<Texture> textReference = std::static_pointer_cast<Texture>(matiReferences[textures[j].textureReferenceIndex]);
 			const ResourceInfoRegistry::ResourceInfo& textReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(textReference->GetHash());
 			DirectX::Blob blob;
 
@@ -1131,8 +1131,8 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 
 		if (meshes[i]->IsWeighted())
 		{
-			std::vector<float> weights = meshes[i]->GetWeights();
-			std::vector<unsigned char> boneRemapValues = meshes[i]->GetBoneRemapValues();
+			const std::vector<float> weights = meshes[i]->GetWeights();
+			const std::vector<unsigned char> boneRemapValues = meshes[i]->GetBoneRemapValues();
 			std::vector<unsigned char> joints;
 
 			joints.reserve(boneRemapValues.size() * 4);
@@ -1244,7 +1244,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 					tempSkin.jointIds.push_back(joint);
 				}
 
-				std::vector<SMatrix44> bindPoseInverseGlobalMatrices = boneRig->GetBindPoseInverseGlobalMatrices();
+				const std::vector<SMatrix44> bindPoseInverseGlobalMatrices = boneRig->GetBindPoseInverseGlobalMatrices();
 				std::vector<float> bindPoseInverseGlobalMatrices2;
 
 				bindPoseInverseGlobalMatrices2.reserve(bindPoseInverseGlobalMatrices.size() * 4);
