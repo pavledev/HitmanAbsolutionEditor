@@ -15,7 +15,7 @@ class Mesh : public Component
 {
 public:
     Mesh(const char* name, const char* icon, std::weak_ptr<Entity> entity);
-    void Initialize(RenderPrimitive::Mesh* mesh, std::shared_ptr<Resource> matiResource);
+    void Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<Resource> matiResource);
 
     template <typename T>
     void Initialize(const std::vector<T>& vertices, const SceneRenderer::Shaders vertexShader, const SceneRenderer::Shaders pixelShader, Vector3 color, PrimitiveType primitiveType = PrimitiveType::TriangleList)
@@ -74,7 +74,7 @@ public:
     const Vector4& GetOutlineColor() const;
     const PrimitiveType GetPrimitiveType() const;
 
-    void CreateGpuBuffers(RenderPrimitive::Mesh* mesh);
+    void CreateGpuBuffers(std::shared_ptr<RenderPrimitive::Mesh> mesh);
 
     template <typename T>
     void CreateGpuBuffers(const std::vector<T>& vertices)
@@ -93,7 +93,7 @@ public:
         indexBuffer->Create(indices);
     }
 
-    void CreateBoundingBox(const RenderPrimitive::Mesh* mesh);
+    void CreateBoundingBox(const std::shared_ptr<RenderPrimitive::Mesh> mesh);
 
     template <typename T>
     void CreateBoundingBox(const std::vector<T>& vertices)
@@ -101,7 +101,7 @@ public:
         boundingBox = BoundingBox(vertices);
     }
 
-    void CreateMaterial(const RenderPrimitive::Mesh* mesh, std::shared_ptr<Resource> matiResource);
+    void CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<Resource> matiResource);
     void Render() override;
     void RenderProperties() override;
     void SetWireframe(const bool wireframe);
