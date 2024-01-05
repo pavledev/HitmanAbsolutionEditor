@@ -29,7 +29,7 @@ Mesh::Mesh(const char* name, const char* icon, std::weak_ptr<Entity> entity) : C
     specularGloss = 8.0f;
 }
 
-void Mesh::Initialize(RenderPrimitive::Mesh* mesh, std::shared_ptr<Resource> matiReference)
+void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<Resource> matiReference)
 {
     lodMask = mesh->GetLODMask();
 
@@ -170,7 +170,7 @@ const PrimitiveType Mesh::GetPrimitiveType() const
     return primitiveType;
 }
 
-void Mesh::CreateGpuBuffers(RenderPrimitive::Mesh* mesh)
+void Mesh::CreateGpuBuffers(std::shared_ptr<RenderPrimitive::Mesh> mesh)
 {
     mesh->CreateVertexBuffer();
 
@@ -181,7 +181,7 @@ void Mesh::CreateGpuBuffers(RenderPrimitive::Mesh* mesh)
     indexBuffer->Create(mesh->GetIndices());
 }
 
-void Mesh::CreateBoundingBox(const RenderPrimitive::Mesh* mesh)
+void Mesh::CreateBoundingBox(const std::shared_ptr<RenderPrimitive::Mesh> mesh)
 {
     const Vector3 boundingBoxMin = mesh->GetBoundingBoxMin();
     const Vector3 boundingBoxMax = mesh->GetBoundingBoxMax();
@@ -189,7 +189,7 @@ void Mesh::CreateBoundingBox(const RenderPrimitive::Mesh* mesh)
     boundingBox = BoundingBox(boundingBoxMin, boundingBoxMax);
 }
 
-void Mesh::CreateMaterial(const RenderPrimitive::Mesh* mesh, std::shared_ptr<Resource> matiResource)
+void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<Resource> matiResource)
 {
     const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiResource->GetHash());
     RenderMaterialInstance renderMaterialInstance;
