@@ -13,6 +13,7 @@ public:
 	void CreateEntities();
 	void Render() override;
 	void RenderTree(std::shared_ptr<Entity> parentEntity);
+	void OnResourceLoaded();
 
 private:
 	std::shared_ptr<RenderPrimitive> renderPrimitive;
