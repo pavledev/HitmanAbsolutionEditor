@@ -15,16 +15,6 @@
 #include "Utility/ResourceUtility.h"
 #include "Resources/Texture.h"
 
-RenderPrimitive::~RenderPrimitive()
-{
-	for (size_t i = 0; i < meshes.size(); ++i)
-	{
-		delete meshes[i];
-	}
-
-	meshes.clear();
-}
-
 const SPrimObjectHeader& RenderPrimitive::GetPrimObjectHeader() const
 {
 	return primObjectHeader;
@@ -35,7 +25,7 @@ const unsigned int RenderPrimitive::GetBoneRigResourceIndex() const
 	return primObjectHeader.lBoneRigResourceIndex;
 }
 
-const std::vector<RenderPrimitive::Mesh*>& RenderPrimitive::GetMeshes() const
+const std::vector<std::shared_ptr<RenderPrimitive::Mesh>>& RenderPrimitive::GetMeshes() const
 {
 	return meshes;
 }
@@ -117,7 +107,7 @@ void RenderPrimitive::Deserialize()
 		{
 			case SPrimObject::SUBTYPE::SUBTYPE_STANDARD:
 			{
-				StandardMesh* standardMesh = new StandardMesh();
+				std::shared_ptr<StandardMesh> standardMesh = std::make_shared<StandardMesh>();
 
 				standardMesh->Deserialize(binaryReader, hasHighResolutionPositions);
 
@@ -127,7 +117,7 @@ void RenderPrimitive::Deserialize()
 			}
 			case SPrimObject::SUBTYPE::SUBTYPE_LINKED:
 			{
-				LinkedMesh* linkedMesh = new LinkedMesh();
+				std::shared_ptr<LinkedMesh> linkedMesh = std::make_shared<LinkedMesh>();
 
 				linkedMesh->Deserialize(binaryReader, hasHighResolutionPositions);
 
@@ -137,7 +127,7 @@ void RenderPrimitive::Deserialize()
 			}
 			case SPrimObject::SUBTYPE::SUBTYPE_WEIGHTED:
 			{
-				WeightedMesh* weightedMesh = new WeightedMesh();
+				std::shared_ptr<WeightedMesh> weightedMesh = std::make_shared<WeightedMesh>();
 
 				weightedMesh->Deserialize(binaryReader, hasHighResolutionPositions);
 
@@ -157,6 +147,14 @@ void RenderPrimitive::Export(const std::string& outputPath, const std::string& e
 	if (exportOption.starts_with("Raw"))
 	{
 		ExportRawData(outputPath);
+	}
+	else if (exportOption.starts_with("GLB"))
+	{
+		ConvertToGLB(outputPath, true);
+	}
+	else
+	{
+		ConvertToOBJ(outputPath);
 	}
 }
 
@@ -696,19 +694,13 @@ const unsigned char RenderPrimitive::WeightedMesh::GetBoneIndex(unsigned char bo
 	return -1;
 }
 
-void RenderPrimitive::ConvertToOBJ(const std::string& objFilePath)
+void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 {
-	/*std::ofstream ofstream = std::ofstream(objFilePath, std::ofstream::binary);
+	const std::string fileName = outputPath.substr(outputPath.find_last_of("\\") + 1);
+	const std::string objFilePath = std::format("{}\\{}.obj", outputPath, fileName);
 
-	if (!ofstream.good())
-	{
-		Logger::GetInstance().Log(Logger::Level::Error, "Error: OBJ file {} could not be created.", objFilePath);
-
-		return;
-	}*/
-
-	std::ofstream objFile = std::ofstream(std::format("{}.obj", GetName()));
-	unsigned int vertexCount = 1;
+	std::ofstream objFile = std::ofstream(objFilePath);
+	size_t vertexCount = 1;
 
 	for (size_t i = 0; i < meshes.size(); ++i)
 	{
@@ -745,22 +737,15 @@ void RenderPrimitive::ConvertToOBJ(const std::string& objFilePath)
 
 			std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
 			const unsigned int matiReferenceIndex = meshes[i]->GetMaterialID();
-			std::shared_ptr<Resource> matiReference = primReferences[matiReferenceIndex];
+			std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
 
-			const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
-			RenderMaterialInstance renderMaterialInstance;
+			const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
 			std::vector<RenderMaterialInstance::Texture> textures;
 
-			matiReference->SetHeaderLibraries(&referenceInfo.headerLibraries);
-			matiReference->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-
-			if (matiReference->GetRuntimeResourceID().GetID() == 0x80000049E33E805D)
-			{
-				int a = 2;
-			}
-
-			//renderMaterialInstance.Deserialize(matiReference->GetResourceData(), matiReference->GetResourceDataSize());
-			renderMaterialInstance.GetTextures(matiReference, textures);
+			matiReference->SetHeaderLibraries(&matiReferenceInfo.headerLibraries);
+			matiReference->LoadResource(0, matiReferenceInfo.headerLibraries[0].chunkIndex, matiReferenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+			matiReference->Deserialize();
+			matiReference->GetTextures(matiReference, textures);
 
 			std::string materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
 			std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
@@ -770,23 +755,23 @@ void RenderPrimitive::ConvertToOBJ(const std::string& objFilePath)
 				unsigned int textureReferenceIndex = textures[j].textureReferenceIndex;
 				std::string textureResourceID = matiReferences[textureReferenceIndex]->GetResourceID();
 				std::string textureResourceName = ResourceUtility::GetResourceName(textureResourceID);
-				std::shared_ptr<Resource> textReference = matiReferences[textures[j].textureReferenceIndex];
-				const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(textReference->GetHash());
-				Texture texture;
+				std::shared_ptr<Texture> textReference = std::static_pointer_cast<Texture>(matiReferences[textures[j].textureReferenceIndex]);
+				const ResourceInfoRegistry::ResourceInfo& textReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(textReference->GetHash());
 
-				textures[j].name = std::format("{}_{}.png", textureResourceName, matiReferenceIndex);
+				textures[j].name = std::format("{}\\{}_{}.tga", outputPath, textureResourceName, matiReferenceIndex);
 
-				textReference->SetHeaderLibraries(&referenceInfo.headerLibraries);
-				textReference->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
-				//texture.Deserialize(textReference->GetResourceData(), textReference->GetResourceDataSize());
-				texture.ConvertTextureToPNG(textures[j].name);
+				textReference->SetHeaderLibraries(&textReferenceInfo.headerLibraries);
+				textReference->LoadResource(0, textReferenceInfo.headerLibraries[0].chunkIndex, textReferenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
+				textReference->Deserialize();
+				textReference->ConvertTextureToTGA(textures[j].name);
 				textReference->DeleteResourceData();
 			}
 
 			matiReference->DeleteResourceData();
 
 			std::string mtlFileName = std::format("{}.mtl", materialResourceName);
-			std::ofstream mtlFile = std::ofstream(mtlFileName);
+			std::string mtlFilePath = std::format("{}\\{}", outputPath, mtlFileName);
+			std::ofstream mtlFile = std::ofstream(mtlFilePath);
 
 			objFile << "mtllib " << mtlFileName << std::endl;
 
@@ -816,9 +801,9 @@ void RenderPrimitive::ConvertToOBJ(const std::string& objFilePath)
 
 			for (size_t j = 0; j < indices.size() / 3; ++j)
 			{
-				unsigned int vertexIndex = indices[j * 3] + vertexCount;
-				unsigned int vertexIndex2 = indices[j * 3 + 1] + vertexCount;
-				unsigned int vertexIndex3 = indices[j * 3 + 2] + vertexCount;
+				size_t vertexIndex = indices[j * 3] + vertexCount;
+				size_t vertexIndex2 = indices[j * 3 + 1] + vertexCount;
+				size_t vertexIndex3 = indices[j * 3 + 2] + vertexCount;
 
 				objFile << std::format("f {}/{} {}/{} {}/{}\n", vertexIndex, vertexIndex, vertexIndex2, vertexIndex2, vertexIndex3, vertexIndex3);
 			}
@@ -833,9 +818,9 @@ void RenderPrimitive::ConvertToOBJ(const std::string& objFilePath)
 
 			for (size_t j = 0; j < indices.size() / 3; ++j)
 			{
-				unsigned int vertexIndex = indices[j * 3] + vertexCount;
-				unsigned int vertexIndex2 = indices[j * 3 + 1] + vertexCount;
-				unsigned int vertexIndex3 = indices[j * 3 + 2] + vertexCount;
+				size_t vertexIndex = indices[j * 3] + vertexCount;
+				size_t vertexIndex2 = indices[j * 3 + 1] + vertexCount;
+				size_t vertexIndex3 = indices[j * 3 + 2] + vertexCount;
 
 				objFile << std::format("f {} {} {}\n", vertexIndex, vertexIndex2, vertexIndex3);
 			}
@@ -847,8 +832,32 @@ void RenderPrimitive::ConvertToOBJ(const std::string& objFilePath)
 	objFile.close();
 }
 
-void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::string& gltfFilePath, bool rotate)
+void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 {
+	std::shared_ptr<BoneRig> boneRig;
+	std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
+
+	for (size_t i = 0; i < primReferences.size(); ++i)
+	{
+		const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(primReferences[i]->GetHash());
+
+		if (referenceInfo.type == "BORG")
+		{
+			boneRig = std::static_pointer_cast<BoneRig>(primReferences[i]);
+
+			break;
+		}
+	}
+
+	if (!boneRig->IsResourceLoaded())
+	{
+		const ResourceInfoRegistry::ResourceInfo& borgResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(boneRig->GetHash());
+
+		boneRig->LoadResource(0, borgResourceInfo.headerLibraries[0].chunkIndex, borgResourceInfo.headerLibraries[0].indexInLibrary, false, false, true);
+		boneRig->Deserialize();
+		boneRig->DeleteResourceData();
+	}
+
 	std::vector<std::vector<float>> verticesMin;
 	std::vector<std::vector<float>> verticesMax;
 
@@ -918,10 +927,10 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 		verticesMax.push_back(tempVerticesMax);
 	}
 
-	std::filesystem::path gltfFilePath2 = gltfFilePath;
-	std::filesystem::path glbFileName = gltfFilePath2.filename();
+	std::filesystem::path glbFilePath2 = glbFilePath;
+	std::filesystem::path glbFileName = glbFilePath2.filename();
 
-	std::unique_ptr<GLTFStreamWriter> streamWriter = std::make_unique<GLTFStreamWriter>(gltfFilePath2.parent_path().string());
+	std::unique_ptr<GLTFStreamWriter> streamWriter = std::make_unique<GLTFStreamWriter>(glbFilePath2.parent_path().string());
 	std::unique_ptr<Microsoft::glTF::ResourceWriter> resourceWriter = std::make_unique<Microsoft::glTF::GLBResourceWriter>(std::move(streamWriter));
 
 	if (!resourceWriter)
@@ -935,7 +944,6 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 	bufferBuilder.AddBuffer(Microsoft::glTF::GLB_BUFFER_ID);
 
 	std::unordered_map<unsigned int, std::string> materialIDs;
-	std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
 
 	for (size_t i = 0; i < meshes.size(); ++i)
 	{
@@ -947,17 +955,15 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 		}
 
 		const unsigned int matiReferenceIndex = meshes[i]->GetMaterialID();
-		std::shared_ptr<Resource> matiReference = primReferences[matiReferenceIndex];
+		std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
 
-		const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
-		RenderMaterialInstance renderMaterialInstance;
+		const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
 		std::vector<RenderMaterialInstance::Texture> textures;
 
-		matiReference->SetHeaderLibraries(&referenceInfo.headerLibraries);
-		matiReference->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-
-		//renderMaterialInstance.Deserialize(matiReference->GetResourceData(), matiReference->GetResourceDataSize());
-		renderMaterialInstance.GetTextures(matiReference, textures);
+		matiReference->SetHeaderLibraries(&matiReferenceInfo.headerLibraries);
+		matiReference->LoadResource(0, matiReferenceInfo.headerLibraries[0].chunkIndex, matiReferenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+		matiReference->Deserialize();
+		matiReference->GetTextures(matiReference, textures);
 
 		std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
 
@@ -966,15 +972,14 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 			unsigned int textureReferenceIndex = textures[j].textureReferenceIndex;
 			std::string textureResourceID = matiReferences[textureReferenceIndex]->GetResourceID();
 			std::string textureResourceName = ResourceUtility::GetResourceName(textureResourceID);
-			std::shared_ptr<Resource> textReference = matiReferences[textures[j].textureReferenceIndex];
-			const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(textReference->GetHash());
-			Texture texture;
+			std::shared_ptr<Texture> textReference = std::static_pointer_cast<Texture>(matiReferences[textures[j].textureReferenceIndex]);
+			const ResourceInfoRegistry::ResourceInfo& textReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(textReference->GetHash());
 			DirectX::Blob blob;
 
-			textReference->SetHeaderLibraries(&referenceInfo.headerLibraries);
-			textReference->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
-			//texture.Deserialize(textReference->GetResourceData(), textReference->GetResourceDataSize());
-			texture.ConvertTextureToPNG(&blob);
+			textReference->SetHeaderLibraries(&textReferenceInfo.headerLibraries);
+			textReference->LoadResource(0, textReferenceInfo.headerLibraries[0].chunkIndex, textReferenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
+			textReference->Deserialize();
+			textReference->ConvertTextureToPNG(&blob);
 
 			Microsoft::glTF::Material material;
 
@@ -1065,7 +1070,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 	{
 		Microsoft::glTF::Node node;
 
-		node.name = resourceName;
+		node.name = name;
 
 		if (rotate)
 		{
@@ -1128,7 +1133,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 			{
 				if (weights[j] != 0)
 				{
-					joints.push_back(static_cast<WeightedMesh*>(meshes[i])->GetBoneIndex(boneRemapValues[j] / 3));
+					joints.push_back(std::static_pointer_cast<WeightedMesh>(meshes[i])->GetBoneIndex(boneRemapValues[j] / 3));
 				}
 				else
 				{
@@ -1137,7 +1142,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 
 				if (weights[j + 1] != 0)
 				{
-					joints.push_back(static_cast<WeightedMesh*>(meshes[i])->GetBoneIndex(boneRemapValues[j + 1] / 3));
+					joints.push_back(std::static_pointer_cast<WeightedMesh>(meshes[i])->GetBoneIndex(boneRemapValues[j + 1] / 3));
 				}
 				else
 				{
@@ -1146,7 +1151,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 
 				if (weights[j + 2] != 0)
 				{
-					joints.push_back(static_cast<WeightedMesh*>(meshes[i])->GetBoneIndex(boneRemapValues[j + 2] / 3));
+					joints.push_back(std::static_pointer_cast<WeightedMesh>(meshes[i])->GetBoneIndex(boneRemapValues[j + 2] / 3));
 				}
 				else
 				{
@@ -1155,7 +1160,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 
 				if (weights[j + 3] != 0)
 				{
-					joints.push_back(static_cast<WeightedMesh*>(meshes[i])->GetBoneIndex(boneRemapValues[j + 3] / 3));
+					joints.push_back(std::static_pointer_cast<WeightedMesh>(meshes[i])->GetBoneIndex(boneRemapValues[j + 3] / 3));
 				}
 				else
 				{
@@ -1212,7 +1217,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 
 				Microsoft::glTF::Node node;
 
-				node.name = resourceName;
+				node.name = name;
 				node.children.push_back(joints2.front());
 
 				if (rotate)
@@ -1224,7 +1229,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 
 				Microsoft::glTF::Skin tempSkin;
 
-				tempSkin.name = "S_" + resourceName;
+				tempSkin.name = "S_" + name;
 
 				for (const auto& joint : joints2)
 				{
@@ -1267,7 +1272,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& resourceName, const std::s
 
 		Microsoft::glTF::Mesh mesh;
 		mesh.primitives.push_back(std::move(meshPrimitive));
-		mesh.name = std::format("{}_{}", resourceName, i);
+		mesh.name = std::format("{}_{}", name, i);
 
 		auto meshId = document.meshes.Append(std::move(mesh), Microsoft::glTF::AppendIdPolicy::GenerateOnEmpty).id;
 
