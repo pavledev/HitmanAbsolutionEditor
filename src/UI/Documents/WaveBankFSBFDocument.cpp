@@ -5,7 +5,6 @@
 #include <UI/Panels/ResourceInfoPanel.h>
 #include <UI/Panels/HexViewerPanel.h>
 #include <Editor.h>
-#include <Utility/ResourceUtility.h>
 
 WaveBankFSBFDocument::WaveBankFSBFDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
