@@ -123,10 +123,9 @@ public:
 		SBoneInfo boneInfo;
 	};
 
-	~RenderPrimitive();
 	const SPrimObjectHeader& GetPrimObjectHeader() const;
 	const unsigned int GetBoneRigResourceIndex() const;
-	const std::vector<Mesh*>& GetMeshes() const;
+	const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const;
 	const BoneRig* GetBoneRig() const;
 	const Physics* GetPhysics() const;
 	BoneRig* GetBoneRig();
@@ -134,12 +133,12 @@ public:
 	void SetPhysics(Physics* physics);
 	void Deserialize() override;
 	void Export(const std::string& outputPath, const std::string& exportOption) override;
-	void ConvertToOBJ(const std::string& objFilePath);
-	void ConvertToGLB(const std::string& resourceName, const std::string& gltfFilePath, bool rotate);
+	void ConvertToOBJ(const std::string& outputPath);
+	void ConvertToGLB(const std::string& glbFilePath, bool rotate);
 
 private:
 	SPrimObjectHeader primObjectHeader;
-	std::vector<Mesh*> meshes;
+	std::vector<std::shared_ptr<Mesh>> meshes;
 	BoneRig* boneRig;
 	Physics* physics;
 };
