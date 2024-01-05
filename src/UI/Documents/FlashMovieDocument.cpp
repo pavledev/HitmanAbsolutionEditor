@@ -7,7 +7,6 @@
 #include <Editor.h>
 #include <Registry/ResourceInfoRegistry.h>
 #include <Utility/UI.h>
-#include <Utility/ResourceUtility.h>
 
 FlashMovieDocument::FlashMovieDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
