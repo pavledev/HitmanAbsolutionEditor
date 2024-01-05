@@ -1,5 +1,6 @@
 #include <format>
 #include <fstream>
+#include <thread>
 
 #include <IconsMaterialDesignIcons.h>
 
@@ -42,6 +43,7 @@
 #include "UI/Documents/PackageListDocument.h"
 #include "UI/Documents/ScatterDataDocument.h"
 #include "UI/Documents/FabricResourceEntityDocument.h"
+#include "UI/Documents/RenderPrimitiveDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -584,70 +586,66 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
     }
     else if (resourceInfo.type == "ChrT")
     {
-        std::shared_ptr<AnimationDatabaseDocument> animationDatabaseDocument = std::make_shared<AnimationDatabaseDocument>(resourceName.c_str(), ICON_MDI_DATABASE, Document::Type::AnimationDatabase, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<AnimationDatabaseDocument> animationDatabaseDocument = std::make_shared<AnimationDatabaseDocument>(resourceName.c_str(), ICON_MDI_DATABASE, Document::Type::AnimationDatabase, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(animationDatabaseDocument->GetAnimationDatabase());
         resourceDocument = std::static_pointer_cast<Document>(animationDatabaseDocument);
     }
     else if (resourceInfo.type == "SDEF")
     {
-        std::shared_ptr<SoundDefinitionsDocument> soundDefinitionsDocument = std::make_shared<SoundDefinitionsDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<SoundDefinitionsDocument> soundDefinitionsDocument = std::make_shared<SoundDefinitionsDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(soundDefinitionsDocument->GetSoundDefinitions());
         resourceDocument = std::static_pointer_cast<Document>(soundDefinitionsDocument);
     }
     else if (resourceInfo.type == "GIDX")
     {
-        std::shared_ptr<GlobalResourceIndexDocument> globalResourceIndexDocument = std::make_shared<GlobalResourceIndexDocument>(resourceName.c_str(), ICON_MDI_VIEW_LIST, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<GlobalResourceIndexDocument> globalResourceIndexDocument = std::make_shared<GlobalResourceIndexDocument>(resourceName.c_str(), ICON_MDI_VIEW_LIST, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(globalResourceIndexDocument->GetGlobalResourceIndex());
         resourceDocument = std::static_pointer_cast<Document>(globalResourceIndexDocument);
     }
     else if (resourceInfo.type == "AIBB")
     {
-        std::shared_ptr<BehaviorTreeEntityBlueprintDocument> behaviorTreeEntityBlueprintDocument = std::make_shared<BehaviorTreeEntityBlueprintDocument>(resourceName.c_str(), ICON_MDI_VIEW_LIST, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<BehaviorTreeEntityBlueprintDocument> behaviorTreeEntityBlueprintDocument = std::make_shared<BehaviorTreeEntityBlueprintDocument>(resourceName.c_str(), ICON_MDI_VIEW_LIST, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(behaviorTreeEntityBlueprintDocument->GetBehaviorTreeEntityBlueprint());
         resourceDocument = std::static_pointer_cast<Document>(behaviorTreeEntityBlueprintDocument);
     }
     else if (resourceInfo.type == "MUCB")
     {
-        std::shared_ptr<CompositionBlueprintDocument> compositionBlueprintDocument = std::make_shared<CompositionBlueprintDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<CompositionBlueprintDocument> compositionBlueprintDocument = std::make_shared<CompositionBlueprintDocument>(resourceName.c_str(), ICON_MDI_VOLUME_HIGH, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(compositionBlueprintDocument->GetCompositionBlueprint());
         resourceDocument = std::static_pointer_cast<Document>(compositionBlueprintDocument);
     }
     else if (resourceInfo.type == "PKGL")
     {
-        std::shared_ptr<PackageListDocument> packageListDocument = std::make_shared<PackageListDocument>(resourceName.c_str(), ICON_MDI_VIEW_LIST, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<PackageListDocument> packageListDocument = std::make_shared<PackageListDocument>(resourceName.c_str(), ICON_MDI_VIEW_LIST, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(packageListDocument->GetPackageList());
         resourceDocument = std::static_pointer_cast<Document>(packageListDocument);
     }
     else if (resourceInfo.type == "SCDA")
     {
-        std::shared_ptr<ScatterDataDocument> scatterDataDocument = std::make_shared<ScatterDataDocument>(resourceName.c_str(), ICON_MDI_GRASS, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<ScatterDataDocument> scatterDataDocument = std::make_shared<ScatterDataDocument>(resourceName.c_str(), ICON_MDI_GRASS, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(scatterDataDocument->GetScatterData());
         resourceDocument = std::static_pointer_cast<Document>(scatterDataDocument);
     }
     else if (resourceInfo.type == "CLOT")
     {
-        std::shared_ptr<FabricResourceEntityDocument> fabricResourceEntityDocument = std::make_shared<FabricResourceEntityDocument>(resourceName.c_str(), ICON_MDI_TSHIRT_CREW, Document::Type::SoundDefinitions, resourceInfo.hash, true, defaultDockID);
+        std::shared_ptr<FabricResourceEntityDocument> fabricResourceEntityDocument = std::make_shared<FabricResourceEntityDocument>(resourceName.c_str(), ICON_MDI_TSHIRT_CREW, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(fabricResourceEntityDocument->GetFabricResourceEntity());
         resourceDocument = std::static_pointer_cast<Document>(fabricResourceEntityDocument);
     }
     else if (resourceInfo.type == "PRIM")
     {
-        /*resource = std::make_shared<RenderPrimitive>();
-        std::shared_ptr<RenderPrimitive> renderPrimitive = std::static_pointer_cast<RenderPrimitive>(resource);
+        std::shared_ptr<RenderPrimitiveDocument> renderPrimitiveDocument = std::make_shared<RenderPrimitiveDocument>(resourceName.c_str(), ICON_MDI_TSHIRT_CREW, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
 
-        resourceDocument = std::make_shared<Document>(resourceName.c_str(), ICON_MDI_FILE_DOCUMENT, Document::Type::RenderPrimitive, true, false);
-
-        resourceDocument->AddPanel(std::make_shared<SceneHierarchyPanel2>("Scene Hierarchy", ICON_MDI_VIEW_LIST, renderPrimitive));
-        resourceDocument->AddPanel(std::make_shared<BoneHierarchyPanel>("Bone Hierarchy", ICON_MDI_VIEW_LIST, renderPrimitive));
-        resourceDocument->AddPanel(std::make_shared<ComponentPropertiesPanel>("Properties", ICON_MDI_WRENCH));*/
+        resource = std::static_pointer_cast<Resource>(renderPrimitiveDocument->GetRenderPrimitive());
+        resourceDocument = std::static_pointer_cast<Document>(renderPrimitiveDocument);
     }
 
     resource->SetHash(resourceInfo.hash);
