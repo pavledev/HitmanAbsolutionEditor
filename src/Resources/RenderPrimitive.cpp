@@ -701,6 +701,7 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 
 	std::ofstream objFile = std::ofstream(objFilePath);
 	size_t vertexCount = 1;
+	std::unordered_map<unsigned int, std::string> materialIndicesToResourceNames;
 
 	for (size_t i = 0; i < meshes.size(); ++i)
 	{
@@ -713,18 +714,17 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 
 		std::vector<Vertex>& vertices = meshes[i]->GetVertices();
 
-		//objFile << "o Mesh " << i << std::endl;
+		objFile << "o Mesh " << i << std::endl;
 
 		for (size_t j = 0; j < vertices.size(); ++j)
 		{
 			objFile << std::format("v {} {} {}\n", vertices[j].position.x, vertices[j].position.y, vertices[j].position.z);
-			//objFile << std::format("v {} {} {}\n", vertices[j].position.x, vertices[j].position.z, -vertices[j].position.y);
 		}
 
-		/*for (size_t j = 0; j < vertices.size(); ++j)
+		for (size_t j = 0; j < vertices.size(); ++j)
 		{
 			objFile << std::format("vn {} {} {}\n", vertices[j].normal.x, vertices[j].normal.y, vertices[j].normal.z);
-		}*/
+		}
 
 		if (vertices[0].uv.size() > 0)
 		{
@@ -735,65 +735,79 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 				objFile << std::format("vt {} {}\n", uv[0].x, -1 * uv[0].y + 1);
 			}
 
-			std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
 			const unsigned int matiReferenceIndex = meshes[i]->GetMaterialID();
-			std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
+			std::string materialResourceName;
+			std::string mtlFileName;
 
-			const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
-			std::vector<RenderMaterialInstance::Texture> textures;
-
-			matiReference->SetHeaderLibraries(&matiReferenceInfo.headerLibraries);
-			matiReference->LoadResource(0, matiReferenceInfo.headerLibraries[0].chunkIndex, matiReferenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-			matiReference->Deserialize();
-			matiReference->GetTextures(matiReference, textures);
-
-			std::string materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
-			std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
-
-			for (size_t j = 0; j < textures.size(); ++j)
+			if (!materialIndicesToResourceNames.contains(matiReferenceIndex))
 			{
-				unsigned int textureReferenceIndex = textures[j].textureReferenceIndex;
-				std::string textureResourceID = matiReferences[textureReferenceIndex]->GetResourceID();
-				std::string textureResourceName = ResourceUtility::GetResourceName(textureResourceID);
-				std::shared_ptr<Texture> textReference = std::static_pointer_cast<Texture>(matiReferences[textures[j].textureReferenceIndex]);
-				const ResourceInfoRegistry::ResourceInfo& textReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(textReference->GetHash());
+				std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
+				std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
 
-				textures[j].name = std::format("{}\\{}_{}.tga", outputPath, textureResourceName, matiReferenceIndex);
+				const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
+				std::vector<RenderMaterialInstance::Texture> textures;
 
-				textReference->SetHeaderLibraries(&textReferenceInfo.headerLibraries);
-				textReference->LoadResource(0, textReferenceInfo.headerLibraries[0].chunkIndex, textReferenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
-				textReference->Deserialize();
-				textReference->ConvertTextureToTGA(textures[j].name);
-				textReference->DeleteResourceData();
+				matiReference->SetHeaderLibraries(&matiReferenceInfo.headerLibraries);
+				matiReference->LoadResource(0, matiReferenceInfo.headerLibraries[0].chunkIndex, matiReferenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+				matiReference->Deserialize();
+				matiReference->GetTextures(matiReference, textures);
+
+				materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
+				std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
+
+				for (size_t j = 0; j < textures.size(); ++j)
+				{
+					const unsigned int textureReferenceIndex = textures[j].textureReferenceIndex;
+					const std::string textureResourceID = matiReferences[textureReferenceIndex]->GetResourceID();
+					const std::string textureResourceName = ResourceUtility::GetResourceName(textureResourceID);
+					const std::shared_ptr<Texture> textReference = std::static_pointer_cast<Texture>(matiReferences[textures[j].textureReferenceIndex]);
+					const ResourceInfoRegistry::ResourceInfo& textReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(textReference->GetHash());
+
+					textures[j].name = std::format("{}\\{}_{}.tga", outputPath, textureResourceName, matiReferenceIndex);
+
+					textReference->SetHeaderLibraries(&textReferenceInfo.headerLibraries);
+					textReference->LoadResource(0, textReferenceInfo.headerLibraries[0].chunkIndex, textReferenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
+					textReference->Deserialize();
+					textReference->ConvertTextureToTGA(textures[j].name);
+					textReference->DeleteResourceData();
+				}
+
+				matiReference->DeleteResourceData();
+
+				mtlFileName = std::format("{}.mtl", materialResourceName);
+				const std::string mtlFilePath = std::format("{}\\{}", outputPath, mtlFileName);
+				std::ofstream mtlFile = std::ofstream(mtlFilePath);
+
+				mtlFile << "newmtl " << materialResourceName << std::endl;
+				mtlFile << "Ka 1.000 1.000 1.000\nKd 1.000 1.000 1.000\nKs 0.000 0.000 0.000\nNs 1.0\nd 1.0\nillum 2\n";
+
+				for (size_t j = 0; j < textures.size(); ++j)
+				{
+					if (textures[j].type == RenderMaterialInstance::Texture::Type::Diffuse)
+					{
+						mtlFile << "map_Kd " << textures[j].name << std::endl;
+					}
+					else if (textures[j].type == RenderMaterialInstance::Texture::Type::Normal)
+					{
+						mtlFile << "map_Bump " << textures[j].name << std::endl;
+					}
+					else if (textures[j].type == RenderMaterialInstance::Texture::Type::Specular)
+					{
+						mtlFile << "map_Ks " << textures[j].name << std::endl;
+					}
+				}
+
+				mtlFile.close();
+
+				materialIndicesToResourceNames.insert(std::make_pair(matiReferenceIndex, materialResourceName));
 			}
-
-			matiReference->DeleteResourceData();
-
-			std::string mtlFileName = std::format("{}.mtl", materialResourceName);
-			std::string mtlFilePath = std::format("{}\\{}", outputPath, mtlFileName);
-			std::ofstream mtlFile = std::ofstream(mtlFilePath);
+			else
+			{
+				materialResourceName = materialIndicesToResourceNames[matiReferenceIndex];
+				mtlFileName = std::format("{}.mtl", materialResourceName);
+			}
 
 			objFile << "mtllib " << mtlFileName << std::endl;
-
-			mtlFile << "newmtl " << materialResourceName << std::endl;
-			mtlFile << "Ka 1.000 1.000 1.000\nKd 1.000 1.000 1.000\nKs 0.000 0.000 0.000\nNs 1.0\nd 1.0\nillum 2\n";
-
-			for (size_t j = 0; j < textures.size(); ++j)
-			{
-				if (textures[j].type == RenderMaterialInstance::Texture::Type::Diffuse)
-				{
-					mtlFile << "map_Kd " << textures[j].name << std::endl;
-				}
-				else if (textures[j].type == RenderMaterialInstance::Texture::Type::Normal)
-				{
-					mtlFile << "map_Bump " << textures[j].name << std::endl;
-				}
-				else if (textures[j].type == RenderMaterialInstance::Texture::Type::Specular)
-				{
-					mtlFile << "map_Ks " << textures[j].name << std::endl;
-				}
-			}
-
 			objFile << "usemtl " << materialResourceName << std::endl;
 			objFile << "s 1" << std::endl;
 
@@ -807,8 +821,6 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 
 				objFile << std::format("f {}/{} {}/{} {}/{}\n", vertexIndex, vertexIndex, vertexIndex2, vertexIndex2, vertexIndex3, vertexIndex3);
 			}
-
-			mtlFile.close();
 		}
 		else
 		{
