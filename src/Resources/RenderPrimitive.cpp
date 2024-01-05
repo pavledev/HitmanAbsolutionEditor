@@ -955,6 +955,12 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 		}
 
 		const unsigned int matiReferenceIndex = meshes[i]->GetMaterialID();
+
+		if (materialIDs.contains(matiReferenceIndex))
+		{
+			continue;
+		}
+
 		std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
 
 		const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
@@ -965,7 +971,11 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 		matiReference->Deserialize();
 		matiReference->GetTextures(matiReference, textures);
 
+		std::string materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
 		std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
+		Microsoft::glTF::Material material;
+
+		material.name = materialResourceName;
 
 		for (size_t j = 0; j < textures.size(); ++j)
 		{
@@ -981,9 +991,9 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 			textReference->Deserialize();
 			textReference->ConvertTextureToPNG(&blob);
 
-			Microsoft::glTF::Material material;
-
-			if (textures[j].type == RenderMaterialInstance::Texture::Type::Normal)
+			if (textures[j].type == RenderMaterialInstance::Texture::Type::Normal ||
+				textures[j].type == RenderMaterialInstance::Texture::Type::Diffuse ||
+				textures[j].type == RenderMaterialInstance::Texture::Type::Emissive)
 			{
 				Microsoft::glTF::Image image;
 				Microsoft::glTF::Texture gltfTexture;
@@ -997,47 +1007,29 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 
 				std::string textureID = document.textures.Append(std::move(gltfTexture), Microsoft::glTF::AppendIdPolicy::GenerateOnEmpty).id;
 
-				material.normalTexture.textureId = textureID;
-			}
-			else if (textures[j].type == RenderMaterialInstance::Texture::Type::Diffuse)
-			{
-				Microsoft::glTF::Image image;
-				Microsoft::glTF::Texture gltfTexture;
-
-				image.bufferViewId = bufferBuilder.AddBufferView(blob.GetBufferPointer(), blob.GetBufferSize()).id;
-				image.mimeType = "image/png";
-
-				std::string imageID = document.images.Append(std::move(image), Microsoft::glTF::AppendIdPolicy::GenerateOnEmpty).id;
-
-				gltfTexture.imageId = imageID;
-
-				std::string textureID = document.textures.Append(std::move(gltfTexture), Microsoft::glTF::AppendIdPolicy::GenerateOnEmpty).id;
-
-				material.metallicRoughness.baseColorTexture.textureId = textureID;
-			}
-			else if (textures[j].type == RenderMaterialInstance::Texture::Type::Emissive)
-			{
-				Microsoft::glTF::Image image;
-				Microsoft::glTF::Texture gltfTexture;
-
-				image.bufferViewId = bufferBuilder.AddBufferView(blob.GetBufferPointer(), blob.GetBufferSize()).id;
-				image.mimeType = "image/png";
-
-				std::string imageID = document.images.Append(std::move(image), Microsoft::glTF::AppendIdPolicy::GenerateOnEmpty).id;
-
-				gltfTexture.imageId = imageID;
-
-				std::string textureID = document.textures.Append(std::move(gltfTexture), Microsoft::glTF::AppendIdPolicy::GenerateOnEmpty).id;
-
-				material.emissiveTexture.textureId = textureID;
+				if (textures[j].type == RenderMaterialInstance::Texture::Type::Normal)
+				{
+					material.normalTexture.textureId = textureID;
+				}
+				else if (textures[j].type == RenderMaterialInstance::Texture::Type::Diffuse)
+				{
+					material.metallicRoughness.baseColorTexture.textureId = textureID;
+				}
+				else if (textures[j].type == RenderMaterialInstance::Texture::Type::Emissive)
+				{
+					material.emissiveTexture.textureId = textureID;
+				}
 			}
 
+			textReference->DeleteResourceData();
+		}
+
+		if (textures.size() > 0)
+		{
 			material.metallicRoughness.metallicFactor = 0.0f;
 			material.metallicRoughness.roughnessFactor = 0.0f;
 
-			materialIDs[meshes[i]->GetMaterialID()] = document.materials.Append(std::move(material), Microsoft::glTF::AppendIdPolicy::GenerateOnEmpty).id;
-
-			textReference->DeleteResourceData();
+			materialIDs[matiReferenceIndex] = document.materials.Append(std::move(material), Microsoft::glTF::AppendIdPolicy::GenerateOnEmpty).id;
 		}
 
 		matiReference->DeleteResourceData();
@@ -1094,6 +1086,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 			continue;
 		}
 
+		const unsigned int matiReferenceIndex = meshes[i]->GetMaterialID();
 		Microsoft::glTF::MeshPrimitive meshPrimitive;
 
 		bufferBuilder.AddBufferView(Microsoft::glTF::BufferViewTarget::ELEMENT_ARRAY_BUFFER);
@@ -1110,15 +1103,18 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 		meshPrimitive.attributes["NORMAL"] = bufferBuilder.AddAccessor(meshes[i]->GetNormals(),
 			{ Microsoft::glTF::TYPE_VEC3, Microsoft::glTF::COMPONENT_FLOAT }).id;
 
-		std::vector<std::vector<float>> uvs = meshes[i]->GetUVs();
-
-		for (size_t uv = 0; uv < uvs.size(); uv++)
+		if (materialIDs.contains(matiReferenceIndex))
 		{
-			std::string label = ("TEXCOORD_" + std::to_string(unsigned(uv)));
+			std::vector<std::vector<float>> uvs = meshes[i]->GetUVs();
 
-			bufferBuilder.AddBufferView(Microsoft::glTF::BufferViewTarget::ARRAY_BUFFER);
-			meshPrimitive.attributes[label] = bufferBuilder.AddAccessor(uvs[uv],
-				{ Microsoft::glTF::TYPE_VEC2, Microsoft::glTF::COMPONENT_FLOAT }).id;
+			for (size_t uv = 0; uv < uvs.size(); uv++)
+			{
+				std::string label = ("TEXCOORD_" + std::to_string(unsigned(uv)));
+
+				bufferBuilder.AddBufferView(Microsoft::glTF::BufferViewTarget::ARRAY_BUFFER);
+				meshPrimitive.attributes[label] = bufferBuilder.AddAccessor(uvs[uv],
+					{ Microsoft::glTF::TYPE_VEC2, Microsoft::glTF::COMPONENT_FLOAT }).id;
+			}
 		}
 
 		if (meshes[i]->IsWeighted())
@@ -1263,7 +1259,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 			}
 		}
 
-		auto it = materialIDs.find(meshes[i]->GetMaterialID());
+		auto it = materialIDs.find(matiReferenceIndex);
 
 		if (it != materialIDs.end())
 		{
