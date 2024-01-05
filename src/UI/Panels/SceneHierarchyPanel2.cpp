@@ -44,11 +44,11 @@ void SceneHierarchyPanel2::CreateEntities()
     std::shared_ptr<Entity> cameraEntity = std::make_shared<Entity>(cameraEntityName);
     std::shared_ptr<Entity> gridEntity = std::make_shared<Entity>(gridEntityName);
 
-    rootEntity.get()->Initialize();
-    modelEntity.get()->Initialize();
-    pointLightEntity.get()->Initialize();
-    cameraEntity.get()->Initialize();
-    gridEntity.get()->Initialize();
+    rootEntity->Initialize();
+    modelEntity->Initialize();
+    pointLightEntity->Initialize();
+    cameraEntity->Initialize();
+    gridEntity->Initialize();
 
     modelEntity->AddComponent<Model>("Model", ICON_MDI_SHAPE);
     pointLightEntity->AddComponent<PointLight>("Point Light", ICON_MDI_LIGHTBULB);
@@ -67,7 +67,7 @@ void SceneHierarchyPanel2::CreateEntities()
     pointLightEntity->GetComponent<PointLight>()->SetMesh(pointLightMeshEntity->GetComponent<Mesh>());
     pointLightEntity->AddChild(pointLightMeshEntity);
 
-    const std::vector<RenderPrimitive::Mesh*>& meshes = renderPrimitive->GetMeshes();
+    const std::vector<std::shared_ptr<RenderPrimitive::Mesh>>& meshes = renderPrimitive->GetMeshes();
 
     for (size_t i = 0; i < meshes.size(); ++i)
     {
@@ -156,11 +156,6 @@ void SceneHierarchyPanel2::Render()
         End();
 
         return;
-    }
-
-    if (!rootEntity)
-    {
-        CreateEntities();
     }
 
     static ImGuiTableFlags tableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
@@ -302,4 +297,9 @@ void SceneHierarchyPanel2::RenderTree(std::shared_ptr<Entity> parentEntity)
     }
 
     ImGui::PopID();
+}
+
+void SceneHierarchyPanel2::OnResourceLoaded()
+{
+    CreateEntities();
 }
