@@ -5,8 +5,9 @@
 #include "Rendering/Scene/Transform.h"
 #include "Rendering/Scene/SceneRenderer.h"
 
-ComponentPropertiesPanel::ComponentPropertiesPanel(const char* name, const char* icon) : BasePanel(name, icon)
+ComponentPropertiesPanel::ComponentPropertiesPanel(const char* name, const char* icon, std::shared_ptr<RenderPrimitive> renderPrimitive) : BasePanel(name, icon)
 {
+	this->renderPrimitive = renderPrimitive;
 }
 
 void ComponentPropertiesPanel::Render()
