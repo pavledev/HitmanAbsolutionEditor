@@ -11,11 +11,11 @@ Model::Model(const char* name, const char* icon, std::weak_ptr<Entity> entity) :
 
 void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
 {
-    const std::vector<RenderPrimitive::Mesh*>& meshes = renderPrimitive->GetMeshes();
+    const std::vector<std::shared_ptr<RenderPrimitive::Mesh>>& meshes = renderPrimitive->GetMeshes();
 
     for (size_t i = 0; i < meshes.size(); ++i)
     {
-        RenderPrimitive::Mesh* mesh = meshes[i];
+        std::shared_ptr<RenderPrimitive::Mesh> mesh = meshes[i];
         std::vector<std::shared_ptr<Resource>>& primReferences = renderPrimitive->GetReferences();
 
         const unsigned int matiReferenceIndex = mesh->GetMaterialID();
