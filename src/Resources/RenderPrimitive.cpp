@@ -861,7 +861,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 		}
 	}
 
-	if (!boneRig->IsResourceLoaded())
+	if (boneRig && !boneRig->IsResourceLoaded())
 	{
 		const ResourceInfoRegistry::ResourceInfo& borgResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(boneRig->GetHash());
 
