@@ -207,7 +207,13 @@ void Resource::SetResourceDataSize(const unsigned int resourceDataSize)
 
 void Resource::LoadResourceData()
 {
-	const std::string resourceFilePath = ResourceUtility::ConvertResourceIDToFilePath(resourceID);
+	std::string resourceFilePath = ResourceUtility::ConvertResourceIDToFilePath(resourceID);
+
+	if (!std::filesystem::exists(resourceFilePath))
+	{
+		resourceFilePath = ResourceUtility::FindDLCFilePath(resourceID);
+	}
+
 	BinaryReader resourceBinaryReader = BinaryReader(resourceFilePath);
 
 	resourceHeaderHeader = resourceBinaryReader.Read<SResourceHeaderHeader>();
