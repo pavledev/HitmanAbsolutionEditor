@@ -13,6 +13,7 @@ class ResourceUtility
 {
 public:
 	static std::string ConvertResourceIDToFilePath(const std::string& resourceID);
+	static std::string FindDLCFilePath(const std::string& resourceID);
 	static std::string ConvertResourceReferenceFlagsToString(const EResourceReferenceFlags resourceReferenceFlags);
 	static std::string ConvertHeaderLibraryChunkFlagsToString(const HeaderLibraryChunkFlags headerLibraryChunkFlags);
 	static std::string GetResourceName(const std::string& resourceID);

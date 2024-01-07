@@ -291,6 +291,12 @@ void Resource::LoadResource(const unsigned int headerLibraryIndex, const unsigne
 
 			isResourceLoaded = false;
 			headerLibraryFilePath = ResourceUtility::ConvertResourceIDToFilePath(headerLibraryResourceID);
+
+			if (!std::filesystem::exists(headerLibraryFilePath))
+			{
+				headerLibraryFilePath = ResourceUtility::FindDLCFilePath(headerLibraryResourceID);
+			}
+
 			this->indexInLibrary = indexInLibrary;
 
 			BinaryReader headerLibraryBinaryReader = BinaryReader(headerLibraryFilePath);
@@ -316,6 +322,11 @@ void Resource::LoadResource(const unsigned int headerLibraryIndex, const unsigne
 			headerLibraryChunkResourceID = headerLibraryBinaryReader.ReadString(static_cast<size_t>(resourceIDLength - 1));
 
 			resourceLibraryFilePath = ResourceUtility::ConvertResourceIDToFilePath(headerLibraryChunkResourceID);
+
+			if (!std::filesystem::exists(resourceLibraryFilePath))
+			{
+				resourceLibraryFilePath = ResourceUtility::FindDLCFilePath(headerLibraryChunkResourceID);
+			}
 
 			headerLibraryBinaryReader.Seek(chunkOffset + 0x44, SeekOrigin::Begin);
 

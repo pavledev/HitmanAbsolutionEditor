@@ -34,6 +34,11 @@ bool HeaderLibrary::ParseHeaderLibrary(std::string& resourceID)
 {
 	filePath = ResourceUtility::ConvertResourceIDToFilePath(resourceID);
 
+	if (!std::filesystem::exists(filePath))
+	{
+		filePath = ResourceUtility::FindDLCFilePath(resourceID);
+	}
+
 	references.clear();
 	chunkResourceIDs.clear();
 	externalResourceIDs.clear();
@@ -234,6 +239,11 @@ HeaderLibrary::HeaderLibraryChunk HeaderLibrary::ParseHeaderLibraryChunk(const i
 		}
 
 		result.filePath = ResourceUtility::ConvertResourceIDToFilePath(chunkResourceIDs[index]);
+
+		if (!std::filesystem::exists(result.filePath))
+		{
+			result.filePath = ResourceUtility::FindDLCFilePath(chunkResourceIDs[index]);
+		}
 
 		if (std::filesystem::exists(result.filePath))
 		{

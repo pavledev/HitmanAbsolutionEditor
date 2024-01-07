@@ -79,6 +79,32 @@ std::string ResourceUtility::ConvertResourceIDToFilePath(const std::string& reso
     return std::format("{}/{}.{}", folderPath, fileName, extension);
 }
 
+std::string ResourceUtility::FindDLCFilePath(const std::string& resourceID)
+{
+    const std::string extension = resourceID.substr(resourceID.find_last_of('.') + 1);
+    std::string resourceID2 = StringUtility::ToLowerCase(resourceID);
+    resourceID2 = resourceID2.substr(0, resourceID2.find_last_of('.') + 1);
+
+    Hash::MD5Hash md5Hash = Hash::MD5(resourceID2);
+    std::string fileName = Hash::ConvertMD5ToString(md5Hash);
+    const std::string dlcFolderPath = std::format("{}\\DLC", Settings::GetInstance().GetRuntimeFolderPath());
+
+    for (auto& p : std::filesystem::recursive_directory_iterator(dlcFolderPath))
+    {
+        if (!p.path().string().ends_with(extension))
+        {
+            continue;
+        }
+
+        if (p.path().string().contains(fileName))
+        {
+            return p.path().string();
+        }
+    }
+
+    return "";
+}
+
 std::string ResourceUtility::ConvertResourceReferenceFlagsToString(const EResourceReferenceFlags resourceReferenceFlags)
 {
     std::string flags;
