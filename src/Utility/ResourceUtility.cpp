@@ -56,10 +56,10 @@
 std::string ResourceUtility::ConvertResourceIDToFilePath(const std::string& resourceID)
 {
     std::string resourceID2 = StringUtility::ToLowerCase(resourceID);
-    std::string extension = resourceID2.substr(resourceID2.find_last_of('.') + 1);
-    int index = static_cast<int>(resourceID2.find(':'));
-    int index2 = static_cast<int>(resourceID2.find('?'));
-    int index3 = static_cast<int>(resourceID2.find(']'));
+    const std::string extension = resourceID2.substr(resourceID2.find_last_of('.') + 1);
+    const int index = static_cast<int>(resourceID2.find(':'));
+    const int index2 = static_cast<int>(resourceID2.find('?'));
+    const int index3 = static_cast<int>(resourceID2.find(']'));
     std::string folderPath = Settings::GetInstance().GetRuntimeFolderPath();
 
     if (index2 != -1 && index < index2)
