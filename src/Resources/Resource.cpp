@@ -207,7 +207,7 @@ void Resource::SetResourceDataSize(const unsigned int resourceDataSize)
 
 void Resource::LoadResourceData()
 {
-	std::string resourceFilePath = ResourceUtility::ConvertResourceIDToFilePath(resourceID);
+	const std::string resourceFilePath = ResourceUtility::ConvertResourceIDToFilePath(resourceID);
 	BinaryReader resourceBinaryReader = BinaryReader(resourceFilePath);
 
 	resourceHeaderHeader = resourceBinaryReader.Read<SResourceHeaderHeader>();
