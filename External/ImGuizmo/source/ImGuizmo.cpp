@@ -2496,9 +2496,20 @@ namespace ImGuizmo
             }
             if (visible)
             {
-               ImU32 col = IM_COL32(0x80, 0x80, 0x80, 0xFF);
-               col = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? IM_COL32(0x90, 0x90, 0x90, 0xFF) : col;
-               col = (fabsf(f) < FLT_EPSILON) ? IM_COL32(0x40, 0x40, 0x40, 0xFF): col;
+                ImU32 col = IM_COL32(0x54, 0x54, 0x54, 0xFF);
+                col = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? IM_COL32(0x64, 0x64, 0x64, 0xFF) : col;
+
+                if ((fabsf(f) < FLT_EPSILON) && ((dir == 0) || (dir == 1)))
+                {
+                    if (dir == 0) //X axis
+                    {
+                        col = IM_COL32(0x8B, 0xDC, 0x00, 0xFF);
+                    }
+                    else if (dir == 1) //Y axis
+                    {
+                        col = IM_COL32(0xFF, 0x33, 0x52, 0xFF);
+                    }
+                }
 
                float thickness = 1.f;
                thickness = (fmodf(fabsf(f), 10.f) < FLT_EPSILON) ? 1.5f : thickness;
