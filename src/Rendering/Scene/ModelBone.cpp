@@ -1,5 +1,5 @@
 #include "Rendering/Scene/ModelBone.h"
-#include "Rendering/Scene/SceneRenderer.h"
+//#include "Rendering/Scene/SceneRenderer.h"
 #include "Rendering/Scene/Transform.h"
 #include "Rendering/DirectXRenderer.h"
 #include "Rendering/RHIStaticStates.h"
@@ -22,9 +22,9 @@ void ModelBone::Initialize(const VirtualNode* virtualNode, EditBone& editBone)
     std::shared_ptr<Mesh> tail = meshes[1];
     std::shared_ptr<Mesh> bone = meshes[2];
 
-    head->Initialize(sphereVertices, sphereIndices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector3(0.721f, 0.709f, 0.709f));
-    tail->Initialize(sphereVertices, sphereIndices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector3(0.721f, 0.709f, 0.709f));
-    bone->Initialize(boneVertices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector3(0.721f, 0.709f, 0.709f));
+    //head->Initialize(sphereVertices, sphereIndices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector3(0.721f, 0.709f, 0.709f));
+    //tail->Initialize(sphereVertices, sphereIndices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector3(0.721f, 0.709f, 0.709f));
+    //bone->Initialize(boneVertices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector3(0.721f, 0.709f, 0.709f));
 
     editBone.headPosition = virtualNode->armatureMatrix * SVector3(0, 0, 0);
     editBone.tailPosition = virtualNode->armatureMatrix * SVector3(0, 1, 0);

@@ -2,7 +2,7 @@
 
 #include <UI/Documents/RenderPrimitiveDocument.h>
 #include <UI/Panels/SceneHierarchyPanel2.h>
-#include <UI/Panels/SceneViewportPanel2.h>
+#include <UI/Panels/ModelViewerPanel.h>
 #include <UI/Panels/ComponentPropertiesPanel.h>
 #include <UI/Panels/ResourceInfoPanel.h>
 #include <UI/Panels/HexViewerPanel.h>
@@ -15,25 +15,36 @@ RenderPrimitiveDocument::RenderPrimitiveDocument(const char* name, const char* i
 
     std::shared_ptr<SceneHierarchyPanel2> sceneHierarchyPanel = std::make_shared<SceneHierarchyPanel2>("Scene Hierarchy", ICON_MDI_VIEW_LIST, renderPrimitive);
     std::shared_ptr<ComponentPropertiesPanel> componentPropertiesPanel = std::make_shared<ComponentPropertiesPanel>("Properties", ICON_MDI_WRENCH, renderPrimitive);
-    std::shared_ptr<SceneViewportPanel2> sceneViewportPanel = std::make_shared<SceneViewportPanel2>("Scene ViewportPanel", ICON_MDI_MONITOR, renderPrimitive);
+    std::shared_ptr<ModelViewerPanel> modelViewerPanel = std::make_shared<ModelViewerPanel>("Model Viewer", ICON_MDI_MONITOR);
     std::shared_ptr<ResourceInfoPanel> resourceInfoPanel = std::make_shared<ResourceInfoPanel>("Resource Info", ICON_MDI_INFORMATION, renderPrimitive);
     std::shared_ptr<HexViewerPanel> headerLibraryHexViewerPanel = std::make_shared<HexViewerPanel>("Header Library Hex Viewer", ICON_MDI_MEMORY, false, renderPrimitive);
     std::shared_ptr<HexViewerPanel> resourceLibraryhexViewerPanel = std::make_shared<HexViewerPanel>("Resource Library Hex Viewer", ICON_MDI_MEMORY, true, renderPrimitive);
 
     AddPanel(sceneHierarchyPanel);
     AddPanel(componentPropertiesPanel);
-    AddPanel(sceneViewportPanel);
+    AddPanel(modelViewerPanel);
     AddPanel(resourceInfoPanel);
     AddPanel(headerLibraryHexViewerPanel);
     AddPanel(resourceLibraryhexViewerPanel);
 
+    sceneHierarchyPanel->SetRenderer3D(modelViewerPanel->GetRenderer3D());
+
     std::weak_ptr<SceneHierarchyPanel2> sceneHierarchyPanel2 = sceneHierarchyPanel;
+    std::weak_ptr<ModelViewerPanel> modelViewerPanel2 = modelViewerPanel;
     std::weak_ptr<ResourceInfoPanel> resourceInfoPanel2 = resourceInfoPanel;
 
-    renderPrimitive->SetResourceLoadedCallback([sceneHierarchyPanel2, resourceInfoPanel2, this]()
+    renderPrimitive->SetResourceLoadedCallback([sceneHierarchyPanel2, modelViewerPanel2, resourceInfoPanel2, this]()
     {
         std::shared_ptr<SceneHierarchyPanel2> sceneHierarchyPanel3 = sceneHierarchyPanel2.lock();
+        std::shared_ptr<ModelViewerPanel> modelViewerPanel3 = modelViewerPanel2.lock();
         std::shared_ptr<ResourceInfoPanel> resourceInfoPanel3 = resourceInfoPanel2.lock();
+
+        OnResourceLoaded();
+
+        if (modelViewerPanel3)
+        {
+            modelViewerPanel3->OnResourceLoaded();
+        }
 
         if (sceneHierarchyPanel3)
         {
@@ -44,8 +55,6 @@ RenderPrimitiveDocument::RenderPrimitiveDocument(const char* name, const char* i
         {
             resourceInfoPanel3->OnResourceLoaded();
         }
-
-        OnResourceLoaded();
     });
 }
 

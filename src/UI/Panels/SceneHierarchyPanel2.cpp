@@ -6,57 +6,51 @@
 #include "Rendering/Scene/PointLight.h"
 #include "Rendering/Scene/Camera.h"
 #include "Rendering/Scene/Grid.h"
-#include "Rendering/Scene/SceneRenderer.h"
 #include "Rendering/Scene/Skeleton.h"
 
-SceneHierarchyPanel2::SceneHierarchyPanel2(const char* name, const char* icon, std::shared_ptr<RenderPrimitive> renderPrimitive) : BasePanel(name, icon)
+SceneHierarchyPanel2::SceneHierarchyPanel2(const char* name, const char* icon, std::shared_ptr<Resource> resource) : BasePanel(name, icon)
 {
-    this->renderPrimitive = renderPrimitive;
+    this->resource = resource;
     rootEntity = nullptr;
     hoveredEntity = nullptr;
     selectedEntity = nullptr;
 }
 
-std::shared_ptr<Entity> SceneHierarchyPanel2::GetRootEntity()
+void SceneHierarchyPanel2::OnSelectedEntityTreeNode(std::shared_ptr<Entity> selectedEntity)
 {
-    return rootEntity;
-}
-
-void SceneHierarchyPanel2::SetSelectedEntity(std::shared_ptr<Entity> entity)
-{
-    selectedEntity = entity;
+    this->selectedEntity = selectedEntity;
 }
 
 void SceneHierarchyPanel2::CreateEntities()
 {
     std::string rootEntityName = std::format("{} Scene", ICON_MDI_VIEW_LIST);
-    std::string modelEntityName = std::format("{} {}", ICON_MDI_SHAPE, renderPrimitive->GetName());
-    std::string pointLightEntityName = std::format("{} Point Light", ICON_MDI_LIGHTBULB, renderPrimitive->GetName());
-    std::string cameraEntityName = std::format("{} Camera", ICON_MDI_CAMERA, renderPrimitive->GetName());
-    std::string gridEntityName = std::format("{} Grid", ICON_MDI_GRID, renderPrimitive->GetName());
-    std::string skeletonEntityName = std::format("{} Skeleton", ICON_MDI_BONE, renderPrimitive->GetName());
-    std::string pointLightMeshEntityName = std::format("{} Mesh", ICON_MDI_SHAPE, renderPrimitive->GetName());
-    std::string collisionEntityName = std::format("{} Collision", ICON_MDI_SHAPE, renderPrimitive->GetName());
+    std::string pointLightEntityName = std::format("{} Point Light", ICON_MDI_LIGHTBULB);
+    std::string cameraEntityName = std::format("{} Camera", ICON_MDI_CAMERA);
+    std::string gridEntityName = std::format("{} Grid", ICON_MDI_GRID);
+    std::string skeletonEntityName = std::format("{} Skeleton", ICON_MDI_BONE);
+    std::string pointLightMeshEntityName = std::format("{} Mesh", ICON_MDI_SHAPE);
+    std::string collisionEntityName = std::format("{} Collision", ICON_MDI_SHAPE);
 
     rootEntity = std::make_shared<Entity>(rootEntityName);
-    std::shared_ptr<Entity> modelEntity = std::make_shared<Entity>(modelEntityName);
+    const std::vector<std::shared_ptr<Entity>>& children = rootEntity->GetChildren();
     std::shared_ptr<Entity> pointLightEntity = std::make_shared<Entity>(pointLightEntityName);
     std::shared_ptr<Entity> cameraEntity = std::make_shared<Entity>(cameraEntityName);
     std::shared_ptr<Entity> gridEntity = std::make_shared<Entity>(gridEntityName);
 
     rootEntity->Initialize();
-    modelEntity->Initialize();
     pointLightEntity->Initialize();
     cameraEntity->Initialize();
     gridEntity->Initialize();
 
-    modelEntity->AddComponent<Model>("Model", ICON_MDI_SHAPE);
     pointLightEntity->AddComponent<PointLight>("Point Light", ICON_MDI_LIGHTBULB);
+
     cameraEntity->AddComponent<Camera>("Camera", ICON_MDI_CAMERA);
+    cameraEntity->GetComponent<Camera>()->Initialize(75.f, 0.f, 0.1f, 3000.0f);
+
     gridEntity->AddComponent<Grid>("Grid", ICON_MDI_GRID);
+    gridEntity->GetComponent<Grid>()->Initialize();
 
     rootEntity->AddChild(gridEntity);
-    rootEntity->AddChild(modelEntity);
     rootEntity->AddChild(pointLightEntity);
     rootEntity->AddChild(cameraEntity);
 
@@ -65,83 +59,107 @@ void SceneHierarchyPanel2::CreateEntities()
     pointLightMeshEntity->Initialize();
     pointLightMeshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
     pointLightEntity->GetComponent<PointLight>()->SetMesh(pointLightMeshEntity->GetComponent<Mesh>());
+    pointLightEntity->GetComponent<PointLight>()->Initialize();
     pointLightEntity->AddChild(pointLightMeshEntity);
 
-    const std::vector<std::shared_ptr<RenderPrimitive::Mesh>>& meshes = renderPrimitive->GetMeshes();
-
-    for (size_t i = 0; i < meshes.size(); ++i)
+    if (resource->GetResourceHeaderHeader().m_type == 'PRIM')
     {
-        std::string meshName = std::format("{} Mesh {}", ICON_MDI_SHAPE, i + 1);
-        std::shared_ptr<Entity> meshEntity = std::make_shared<Entity>(meshName);
+        std::shared_ptr<RenderPrimitive> renderPrimitive = std::static_pointer_cast<RenderPrimitive>(resource);
 
-        meshEntity->Initialize();
-        meshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
-        modelEntity->GetComponent<Model>()->AddMesh(meshEntity->GetComponent<Mesh>());
-        modelEntity->AddChild(meshEntity);
-    }
+        std::string modelEntityName = std::format("{} {}", ICON_MDI_SHAPE, renderPrimitive->GetName());
+        std::shared_ptr<Entity> modelEntity = std::make_shared<Entity>(modelEntityName);
 
-    const BoneRig* boneRig = renderPrimitive->GetBoneRig();
+        modelEntity->Initialize();
+        modelEntity->AddComponent<Model>("Model", ICON_MDI_SHAPE);
+        rootEntity->AddChild(modelEntity);
 
-    if (boneRig)
-    {
-        std::shared_ptr<Entity> skeletonEntity = std::make_shared<Entity>(skeletonEntityName);
-        const std::vector<SBoneDefinition>& boneDefinitions = boneRig->GetBoneDefinitions();
+        const std::vector<std::shared_ptr<RenderPrimitive::Mesh>>& meshes = renderPrimitive->GetMeshes();
 
-        skeletonEntity->Initialize();
-        skeletonEntity->AddComponent<Skeleton>("Skeleton", ICON_MDI_BONE);
-        modelEntity->GetComponent<Model>()->SetSkeleton(skeletonEntity->GetComponent<Skeleton>());
-
-        for (size_t i = 0; i < boneDefinitions.size(); ++i)
+        for (size_t i = 0; i < meshes.size(); ++i)
         {
-            std::string boneName = std::format("{} {}", ICON_MDI_BONE, boneDefinitions[i].Name);
-            std::shared_ptr<Entity> modelBoneEntity = std::make_shared<Entity>(boneName);
-
-            modelBoneEntity->Initialize();
-            modelBoneEntity->AddComponent<ModelBone>("Model Bone", ICON_MDI_BONE);
-
-            for (unsigned int j = 0; j < 3; ++j)
-            {
-                std::string meshName = std::format("{} Mesh {}", ICON_MDI_SHAPE, j + 1);
-                std::shared_ptr<Entity> meshEntity = std::make_shared<Entity>(meshName);
-
-                meshEntity->Initialize();
-                meshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
-                modelBoneEntity->GetComponent<ModelBone>()->AddMesh(meshEntity->GetComponent<Mesh>());
-                modelBoneEntity->AddChild(meshEntity);
-            }
-
-            skeletonEntity->GetComponent<Skeleton>()->AddModelBone(modelBoneEntity->GetComponent<ModelBone>());
-            skeletonEntity->AddChild(modelBoneEntity);
-        }
-
-        modelEntity->AddChild(skeletonEntity);
-    }
-
-    const Physics* physics = renderPrimitive->GetPhysics();
-
-    if (physics)
-    {
-        std::shared_ptr<Entity> collisionEntity = std::make_shared<Entity>(collisionEntityName);
-        const std::vector<G2NxShapeDesc*>& shapeDescriptors = physics->GetCollisionShape().GetShapeDescriptors();
-
-        collisionEntity->Initialize();
-        collisionEntity->AddComponent<Collision>("Collision", ICON_MDI_SHAPE);
-        modelEntity->GetComponent<Model>()->SetCollision(collisionEntity->GetComponent<Collision>());
-
-        for (size_t i = 0; i < shapeDescriptors.size(); ++i)
-        {
-            std::string shapeType = G2NxShapeDesc::ConvertShapeTypeToString(shapeDescriptors[i]->m_pDesc->getType());
-            std::string meshName = std::format("{} {} Shape {}", ICON_MDI_SHAPE, shapeType, i + 1);
+            std::string meshName = std::format("{} Mesh {}", ICON_MDI_SHAPE, i + 1);
             std::shared_ptr<Entity> meshEntity = std::make_shared<Entity>(meshName);
 
             meshEntity->Initialize();
             meshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
-            collisionEntity->GetComponent<Collision>()->AddMesh(meshEntity->GetComponent<Mesh>());
-            collisionEntity->AddChild(meshEntity);
+            meshEntity->GetComponent<Mesh>()->SetRenderer3D(renderer3D);
+            modelEntity->GetComponent<Model>()->AddMesh(meshEntity->GetComponent<Mesh>());
+            modelEntity->AddChild(meshEntity);
         }
 
-        modelEntity->AddChild(collisionEntity);
+        children[children.size() - 1]->GetComponent<Model>()->Initialize(renderPrimitive);
+
+        const BoneRig* boneRig = renderPrimitive->GetBoneRig();
+
+        if (boneRig)
+        {
+            std::shared_ptr<Entity> skeletonEntity = std::make_shared<Entity>(skeletonEntityName);
+            const std::vector<SBoneDefinition>& boneDefinitions = boneRig->GetBoneDefinitions();
+
+            skeletonEntity->Initialize();
+            skeletonEntity->AddComponent<Skeleton>("Skeleton", ICON_MDI_BONE);
+            modelEntity->GetComponent<Model>()->SetSkeleton(skeletonEntity->GetComponent<Skeleton>());
+
+            for (size_t i = 0; i < boneDefinitions.size(); ++i)
+            {
+                std::string boneName = std::format("{} {}", ICON_MDI_BONE, boneDefinitions[i].Name);
+                std::shared_ptr<Entity> modelBoneEntity = std::make_shared<Entity>(boneName);
+
+                modelBoneEntity->Initialize();
+                modelBoneEntity->AddComponent<ModelBone>("Model Bone", ICON_MDI_BONE);
+
+                for (unsigned int j = 0; j < 3; ++j)
+                {
+                    std::string meshName = std::format("{} Mesh {}", ICON_MDI_SHAPE, j + 1);
+                    std::shared_ptr<Entity> meshEntity = std::make_shared<Entity>(meshName);
+
+                    meshEntity->Initialize();
+                    meshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
+                    modelBoneEntity->GetComponent<ModelBone>()->AddMesh(meshEntity->GetComponent<Mesh>());
+                    modelBoneEntity->AddChild(meshEntity);
+                }
+
+                skeletonEntity->GetComponent<Skeleton>()->AddModelBone(modelBoneEntity->GetComponent<ModelBone>());
+                skeletonEntity->AddChild(modelBoneEntity);
+            }
+
+            modelEntity->AddChild(skeletonEntity);
+        }
+
+        const Physics* physics = renderPrimitive->GetPhysics();
+
+        if (physics)
+        {
+            std::shared_ptr<Entity> collisionEntity = std::make_shared<Entity>(collisionEntityName);
+            const std::vector<G2NxShapeDesc*>& shapeDescriptors = physics->GetCollisionShape().GetShapeDescriptors();
+
+            collisionEntity->Initialize();
+            collisionEntity->AddComponent<Collision>("Collision", ICON_MDI_SHAPE);
+            modelEntity->GetComponent<Model>()->SetCollision(collisionEntity->GetComponent<Collision>());
+
+            for (size_t i = 0; i < shapeDescriptors.size(); ++i)
+            {
+                std::string shapeType = G2NxShapeDesc::ConvertShapeTypeToString(shapeDescriptors[i]->m_pDesc->getType());
+                std::string meshName = std::format("{} {} Shape {}", ICON_MDI_SHAPE, shapeType, i + 1);
+                std::shared_ptr<Entity> meshEntity = std::make_shared<Entity>(meshName);
+
+                meshEntity->Initialize();
+                meshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
+                collisionEntity->GetComponent<Collision>()->AddMesh(meshEntity->GetComponent<Mesh>());
+                collisionEntity->AddChild(meshEntity);
+            }
+
+            modelEntity->AddChild(collisionEntity);
+        }
     }
+
+    renderer3D->SetCamera(cameraEntity->GetComponent<Camera>());
+    renderer3D->SetRootEntity(rootEntity);
+
+    renderer3D->SetSelectedEntityCallback([this](std::shared_ptr<Entity> selectedEntity)
+    {
+        OnSelectedEntityTreeNode(selectedEntity);
+    });
 }
 
 void SceneHierarchyPanel2::Render()
@@ -151,7 +169,14 @@ void SceneHierarchyPanel2::Render()
         return;
     }
 
-    if (renderPrimitive->GetMeshes().size() == 0)
+    /*if (renderPrimitive->GetMeshes().size() == 0)
+    {
+        End();
+
+        return;
+    }*/
+
+    if (!rootEntity)
     {
         End();
 
@@ -223,7 +248,7 @@ void SceneHierarchyPanel2::RenderTree(std::shared_ptr<Entity> parentEntity)
         {
             selectedEntity = parentEntity;
 
-            SceneRenderer::GetCamera()->SetSelectedEntity(selectedEntity);
+            renderer3D->GetCamera()->SetSelectedEntity(selectedEntity);
         }
 
         ImGui::TableSetColumnIndex(1);
@@ -284,7 +309,7 @@ void SceneHierarchyPanel2::RenderTree(std::shared_ptr<Entity> parentEntity)
         {
             selectedEntity = parentEntity;
 
-            SceneRenderer::GetCamera()->SetSelectedEntity(selectedEntity);
+            renderer3D->GetCamera()->SetSelectedEntity(selectedEntity);
         }
 
         ImGui::TableSetColumnIndex(1);
@@ -302,4 +327,31 @@ void SceneHierarchyPanel2::RenderTree(std::shared_ptr<Entity> parentEntity)
 void SceneHierarchyPanel2::OnResourceLoaded()
 {
     CreateEntities();
+
+    const std::vector<std::shared_ptr<Entity>>& children = rootEntity->GetChildren();
+
+    for (size_t i = 0; i < children.size(); ++i)
+    {
+        if (children[i]->GetComponent<Camera>())
+        {
+            children[i]->GetComponent<Camera>()->SetRenderer3D(renderer3D);
+        }
+        else if (children[i]->GetComponent<Mesh>())
+        {
+            children[i]->GetComponent<Mesh>()->SetRenderer3D(renderer3D);
+        }
+        else if (children[i]->GetComponent<PointLight>())
+        {
+            children[i]->GetComponent<PointLight>()->SetRenderer3D(renderer3D);
+        }
+        else if (children[i]->GetComponent<Grid>())
+        {
+            children[i]->GetComponent<Grid>()->SetRenderer3D(renderer3D);
+        }
+    }
+}
+
+void SceneHierarchyPanel2::SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D)
+{
+    this->renderer3D = renderer3D;
 }

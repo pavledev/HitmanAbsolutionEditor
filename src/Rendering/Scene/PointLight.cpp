@@ -1,11 +1,11 @@
 #include "Utility/UI.h"
 #include "Rendering/Scene/PointLight.h"
 #include "Rendering/DirectXRenderer.h"
-#include "Rendering/Scene/SceneRenderer.h"
 #include "Rendering/Scene/Transform.h"
 #include "Rendering/RHIStaticStates.h"
 #include "Rendering/Scene/Geometry.h"
 #include "Editor.h"
+#include "Rendering/Renderer3D.h"
 
 PointLight::PointLight(const char* name, const char* icon, std::weak_ptr<Entity> entity) : Component(name, icon, entity)
 {
@@ -32,7 +32,7 @@ void PointLight::Initialize()
 
 	Geometry::CreateSphere(sphereVertices, sphereIndices);
 
-	mesh->Initialize(sphereVertices, sphereIndices, SceneRenderer::Shaders::SolidVertex, SceneRenderer::Shaders::SolidPixel, Vector3(0.721f, 0.709f, 0.709f));
+	mesh->Initialize(sphereVertices, sphereIndices, Renderer3D::Shaders::SolidVertex, Renderer3D::Shaders::SolidPixel, Vector3(0.721f, 0.709f, 0.709f));
 	mesh->GetTransform()->SetLocalScale(Vector3(0.1f, 0.1f, 0.1f));
 }
 
@@ -43,10 +43,10 @@ void PointLight::SetMesh(std::shared_ptr<Mesh> mesh)
 
 void PointLight::Render()
 {
-	PointLightConstantBuffer& pointLightConstantBufferCpu = SceneRenderer::GetPointLightConstantBufferCpu();
-	Matrix44 worldView = GetTransform()->GetWorldMatrix() * SceneRenderer::GetCamera()->GetView();
+	PointLightConstantBuffer& pointLightConstantBufferCpu = renderer3D->GetPointLightConstantBufferCpu();
+	Matrix44 worldView = GetTransform()->GetWorldMatrix() * renderer3D->GetCamera()->GetView();
 
-	pointLightConstantBufferCpu.transform = worldView * SceneRenderer::GetCamera()->GetProjection();
+	pointLightConstantBufferCpu.transform = worldView * renderer3D->GetCamera()->GetProjection();
 	pointLightConstantBufferCpu.viewLightPos = GetTransform()->GetWorldPosition();
 	pointLightConstantBufferCpu.ambientColor = ambientColor;
 	pointLightConstantBufferCpu.diffuseColor = diffuseColor;
@@ -55,7 +55,7 @@ void PointLight::Render()
 	pointLightConstantBufferCpu.attLin = linearAttenuation;
 	pointLightConstantBufferCpu.attQuad = quadraticAttenuation;
 
-	SceneRenderer::UpdateLightConstantBuffer();
+	renderer3D->UpdateLightConstantBuffer();
 
 	CommandList& commandList = Editor::GetInstance().GetDirectXRenderer()->GetCommandList();
 	static PipelineState pipelineState;
@@ -67,7 +67,7 @@ void PointLight::Render()
 	pipelineState.depthStencilState = TStaticDepthStencilState<true, DepthStencilState::CompareFunction::DepthNearOrEqual, false, DepthStencilState::CompareFunction::Always, DepthStencilState::StencilOp::Keep, DepthStencilState::StencilOp::Keep, DepthStencilState::StencilOp::Keep, true>::GetRHI();
 	pipelineState.primitiveType = PrimitiveType::TriangleList;
 
-	commandList.SetPipelineState(pipelineState, false);
+	commandList.SetPipelineState(pipelineState, renderer3D.get(), false);
 	commandList.SetVertexBuffer(mesh->GetVertexBuffer());
 	commandList.SetIndexBuffer(mesh->GetIndexBuffer());
 
@@ -104,4 +104,9 @@ void PointLight::RenderProperties()
 
 	//	ImGui::TreePop();
 	//}
+}
+
+void PointLight::SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D)
+{
+	this->renderer3D = renderer3D;
 }

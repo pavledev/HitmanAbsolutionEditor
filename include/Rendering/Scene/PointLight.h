@@ -4,6 +4,8 @@
 #include "SolidSphere.h"
 #include "Mesh.h"
 
+class Renderer3D;
+
 class PointLight : public Component
 {
 public:
@@ -14,6 +16,7 @@ public:
 	void SetMesh(std::shared_ptr<Mesh> mesh);
 	void Render() override;
 	void RenderProperties() override;
+	void SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D);
 
 private:
 	std::shared_ptr<Mesh> mesh;
@@ -23,4 +26,5 @@ private:
 	float constantAttenuation;
 	float linearAttenuation;
 	float quadraticAttenuation;
+	std::shared_ptr<Renderer3D> renderer3D;
 };

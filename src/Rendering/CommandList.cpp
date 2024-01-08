@@ -1,9 +1,9 @@
 #include "Rendering/CommandList.h"
 #include "Rendering/DirectXRenderer.h"
-#include "Rendering/Scene/SceneRenderer.h"
+#include "Rendering/Renderer3D.h"
 #include "Editor.h"
 
-void CommandList::SetPipelineState(PipelineState& pipelineState, bool setRenderTargets)
+void CommandList::SetPipelineState(PipelineState& pipelineState, Renderer3D* renderer3D, bool setRenderTargets)
 {
     //assert(pipelineState.IsValid() && "Pipeline state is invalid");
     this->pipelineState = pipelineState;
@@ -29,7 +29,7 @@ void CommandList::SetPipelineState(PipelineState& pipelineState, bool setRenderT
 
     ClearPipelineStateRenderTargets(pipelineState);
 
-    SceneRenderer::SetGlobalShaderResources();
+    renderer3D->SetGlobalShaderResources();
 }
 
 void CommandList::ClearPipelineStateRenderTargets(PipelineState& pipelineState)

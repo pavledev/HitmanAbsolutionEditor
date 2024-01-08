@@ -19,8 +19,7 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
         std::vector<std::shared_ptr<Resource>>& primReferences = renderPrimitive->GetReferences();
 
         const unsigned int matiReferenceIndex = mesh->GetMaterialID();
-        std::shared_ptr<Resource> matiReference = primReferences[matiReferenceIndex];
-
+        std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
         std::shared_ptr<Mesh> mesh2 = this->meshes[i];
 
         mesh2->Initialize(mesh, matiReference);

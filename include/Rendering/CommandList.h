@@ -9,13 +9,15 @@
 #include "ConstantBuffer.h"
 #include "RendererBindings.h"
 
+class Renderer3D;
+
 class CommandList
 {
 public:
     CommandList() = default;
     ~CommandList() = default;
 
-    void SetPipelineState(PipelineState& pipelineState, bool setRenderTargets = true);
+    void SetPipelineState(PipelineState& pipelineState, Renderer3D* renderer3D, bool setRenderTargets = true);
     void ClearPipelineStateRenderTargets(PipelineState& pipelineState);
     void ClearRenderTarget(
         RenderTexture* texture,

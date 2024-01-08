@@ -3,7 +3,7 @@
 #include "Utility/UI.h"
 #include "UI/Panels/ComponentPropertiesPanel.h"
 #include "Rendering/Scene/Transform.h"
-#include "Rendering/Scene/SceneRenderer.h"
+//#include "Rendering/Scene/SceneRenderer.h"
 
 ComponentPropertiesPanel::ComponentPropertiesPanel(const char* name, const char* icon, std::shared_ptr<RenderPrimitive> renderPrimitive) : BasePanel(name, icon)
 {
@@ -17,7 +17,7 @@ void ComponentPropertiesPanel::Render()
 		return;
 	}
 
-	std::shared_ptr<Camera> camera = SceneRenderer::GetCamera();
+	/*std::shared_ptr<Camera> camera = SceneRenderer::GetCamera();
 
 	if (!camera)
 	{
@@ -40,7 +40,7 @@ void ComponentPropertiesPanel::Render()
 	for (size_t i = 0; i < components.size(); ++i)
 	{
 		UI::RenderComponentProperties(components[i].get());
-	}
+	}*/
 
 	End();
 }

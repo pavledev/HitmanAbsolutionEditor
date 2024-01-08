@@ -9,6 +9,8 @@
 #include "Math/Ray.h"
 #include "Math/Matrix44.h"
 
+class Renderer3D;
+
 class Camera : public Component
 {
 public:
@@ -34,6 +36,7 @@ public:
 	Vector3 ScreenToWorldCoordinates(const Vector2& screenPosition, const float z) const;
 	void Render() override;
 	void RenderProperties() override;
+	void SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D);
 
 private:
 	Matrix44 view;
@@ -48,4 +51,5 @@ private:
 	float speed;
 	float sensitivity;
 	std::shared_ptr<Entity> selectedEntity;
+	std::shared_ptr<Renderer3D> renderer3D;
 };

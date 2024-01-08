@@ -29,7 +29,7 @@ Mesh::Mesh(const char* name, const char* icon, std::weak_ptr<Entity> entity) : C
     specularGloss = 8.0f;
 }
 
-void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<Resource> matiReference)
+void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiReference)
 {
     lodMask = mesh->GetLODMask();
 
@@ -133,16 +133,24 @@ Shader* Mesh::GetPixelShader() const
     return pixelShader.get();
 }
 
-const BoundingBox& Mesh::GetAABB()
+const BoundingBox& Mesh::GetBoundingBox(const BoundingBoxType type)
 {
-    // Updated if dirty
-    if (lastTransform != GetTransform()->GetWorldMatrix() || !aabb.Defined())
+    if (previousTransform != GetTransform()->GetWorldMatrix())
     {
-        aabb = boundingBox.Transform(GetTransform()->GetWorldMatrix());
-        lastTransform = GetTransform()->GetWorldMatrix();
+        Matrix44 transform = GetTransform()->GetWorldMatrix();
+
+        boundingBox = boundingBoxUntransformed.Transform(transform);
+        previousTransform = transform;
     }
 
-    return aabb;
+    if (type == BoundingBoxType::Untransformed)
+    {
+        return boundingBoxUntransformed;
+    }
+    else if (type == BoundingBoxType::Transformed)
+    {
+        return boundingBox;
+    }
 }
 
 const unsigned char Mesh::GetLODMask() const
@@ -170,6 +178,11 @@ const PrimitiveType Mesh::GetPrimitiveType() const
     return primitiveType;
 }
 
+void Mesh::SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D)
+{
+    this->renderer3D = renderer3D;
+}
+
 void Mesh::CreateGpuBuffers(std::shared_ptr<RenderPrimitive::Mesh> mesh)
 {
     mesh->CreateVertexBuffer();
@@ -186,20 +199,19 @@ void Mesh::CreateBoundingBox(const std::shared_ptr<RenderPrimitive::Mesh> mesh)
     const Vector3 boundingBoxMin = mesh->GetBoundingBoxMin();
     const Vector3 boundingBoxMax = mesh->GetBoundingBoxMax();
 
-    boundingBox = BoundingBox(boundingBoxMin, boundingBoxMax);
+    boundingBoxUntransformed = BoundingBox(boundingBoxMin, boundingBoxMax);
+    boundingBox = boundingBoxUntransformed.Transform(GetTransform()->GetWorldMatrix());
 }
 
-void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<Resource> matiResource)
+void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiResource)
 {
     const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiResource->GetHash());
-    RenderMaterialInstance renderMaterialInstance;
     std::vector<RenderMaterialInstance::Texture> textures;
 
     matiResource->SetHeaderLibraries(&referenceInfo.headerLibraries);
     matiResource->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-
-    //renderMaterialInstance.Deserialize(matiResource->GetResourceData(), matiResource->GetResourceDataSize());
-    renderMaterialInstance.GetTextures(matiResource, textures);
+    matiResource->Deserialize();
+    matiResource->GetTextures(matiResource, textures);
 
     std::string materialResourceName = ResourceUtility::GetResourceName(matiResource->GetResourceID());
     material = Material(materialResourceName);
@@ -211,17 +223,16 @@ void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std
         unsigned int textureReferenceIndex = textures[i].textureReferenceIndex;
         std::string textureResourceID = matiReferences[textureReferenceIndex]->GetResourceID();
         std::string textureResourceName = ResourceUtility::GetResourceName(textureResourceID);
-        std::shared_ptr<Resource> textReference = matiReferences[textures[i].textureReferenceIndex];
+        std::shared_ptr<Texture> textReference = std::static_pointer_cast<Texture>(matiReferences[textures[i].textureReferenceIndex]);
         const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(textReference->GetHash());
-        Texture texture;
 
         textures[i].blob = new DirectX::Blob();
         textures[i].name = std::format("{}.dds", textureResourceName);
 
         textReference->SetHeaderLibraries(&referenceInfo.headerLibraries);
         textReference->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, false, false, true);
-        //texture.Deserialize(textReference->GetResourceData(), textReference->GetResourceDataSize());
-        texture.ConvertTextureToDDS(textures[i].blob);
+        textReference->Deserialize();
+        textReference->ConvertTextureToDDS(textures[i].blob);
 
         textReference->DeleteResourceData();
 
@@ -250,20 +261,25 @@ void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std
 
 void Mesh::Render()
 {
+    if (!renderer3D)
+    {
+        return;
+    }
+
     if (!isLODInRange)
     {
         return;
     }
 
-    UberConstantBuffer& uberConstantBufferCpu = SceneRenderer::GetUberConstantBufferCpu();
-    Matrix44 worldView = GetTransform()->GetWorldMatrix() * SceneRenderer::GetCamera()->GetView();
+    UberConstantBuffer& uberConstantBufferCpu = renderer3D->GetUberConstantBufferCpu();
+    Matrix44 worldView = GetTransform()->GetWorldMatrix() * renderer3D->GetCamera()->GetView();
     //Quaternion rotation = Quaternion::FromEulerAngles(-90.f, 0.f, 0.f);
     //Matrix44 worldView = (GetTransform()->GetWorldMatrix() * Matrix44(Vector3(0.f, 0.f, 0.f), rotation, Vector3(1.f, 1.f, 1.f))) * SceneRenderer::GetCamera()->GetView();
 
     uberConstantBufferCpu.model = GetTransform()->GetWorldMatrix();
     uberConstantBufferCpu.modelView = worldView;
-    uberConstantBufferCpu.modelViewProjection = worldView * SceneRenderer::GetCamera()->GetProjection();
-    uberConstantBufferCpu.projection = SceneRenderer::GetCamera()->GetProjection();
+    uberConstantBufferCpu.modelViewProjection = worldView * renderer3D->GetCamera()->GetProjection();
+    uberConstantBufferCpu.projection = renderer3D->GetCamera()->GetProjection();
     uberConstantBufferCpu.sphereMatrix = worldView.Inverted();
     uberConstantBufferCpu.useGlossAlpha = useGlossAlpha;
     uberConstantBufferCpu.useSpecularMap = useSpecularMap;
@@ -274,7 +290,7 @@ void Mesh::Render()
     uberConstantBufferCpu.specularGloss = specularGloss;
     uberConstantBufferCpu.normalMapWeight = normalMapWeight;
 
-    SceneRenderer::UpdateUberConstantBuffer();
+    renderer3D->UpdateUberConstantBuffer();
 
     CommandList& commandList = Editor::GetInstance().GetDirectXRenderer()->GetCommandList();
     static PipelineState pipelineState;
@@ -317,7 +333,7 @@ void Mesh::Render()
     pipelineState.depthStencilState = TStaticDepthStencilState<true, DepthStencilState::CompareFunction::DepthNearOrEqual, true>::GetRHI();
     pipelineState.primitiveType = primitiveType;
 
-    commandList.SetPipelineState(pipelineState, false);
+    commandList.SetPipelineState(pipelineState, renderer3D.get(), false);
     commandList.SetVertexBuffer(vertexBuffer.get());
 
     if (indices)

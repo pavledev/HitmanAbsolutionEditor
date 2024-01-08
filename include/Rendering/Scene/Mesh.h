@@ -9,16 +9,23 @@
 #include "Math/BoundingBox.h"
 #include "Resources/RenderPrimitive.h"
 #include "Component.h"
-#include "Rendering/Scene/SceneRenderer.h"
+#include "Rendering/ConstantBuffers.h"
+#include "Rendering/Renderer3D.h"
 
 class Mesh : public Component
 {
 public:
+    enum class BoundingBoxType
+    {
+        Untransformed,            // the bounding box of the mesh
+        Transformed              // the transformed bounding box of the mesh
+    };
+
     Mesh(const char* name, const char* icon, std::weak_ptr<Entity> entity);
-    void Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<Resource> matiResource);
+    void Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiResource);
 
     template <typename T>
-    void Initialize(const std::vector<T>& vertices, const SceneRenderer::Shaders vertexShader, const SceneRenderer::Shaders pixelShader, Vector3 color, PrimitiveType primitiveType = PrimitiveType::TriangleList)
+    void Initialize(const std::vector<T>& vertices, const Renderer3D::Shaders vertexShader, const Renderer3D::Shaders pixelShader, Vector3 color, PrimitiveType primitiveType = PrimitiveType::TriangleList)
     {
         for (size_t i = 0; i < vertices.size(); ++i)
         {
@@ -30,8 +37,8 @@ public:
         }
 
         indices = nullptr;
-        this->vertexShader = SceneRenderer::GetShader(vertexShader);
-        this->pixelShader = SceneRenderer::GetShader(pixelShader);
+        this->vertexShader = Renderer3D::GetShader(vertexShader);
+        this->pixelShader = Renderer3D::GetShader(pixelShader);
         this->materialColor = color;
         this->primitiveType = primitiveType;
 
@@ -40,7 +47,7 @@ public:
     }
 
     template <typename T>
-    void Initialize(const std::vector<T>& vertices, const std::vector<unsigned short>& indices, const SceneRenderer::Shaders vertexShader, const SceneRenderer::Shaders pixelShader, Vector3 color, PrimitiveType primitiveType = PrimitiveType::TriangleList)
+    void Initialize(const std::vector<T>& vertices, const std::vector<unsigned short>& indices, const Renderer3D::Shaders vertexShader, const Renderer3D::Shaders pixelShader, Vector3 color, PrimitiveType primitiveType = PrimitiveType::TriangleList)
     {
         for (size_t i = 0; i < vertices.size(); ++i)
         {
@@ -52,8 +59,8 @@ public:
         }
 
         this->indices = &indices;
-        this->vertexShader = SceneRenderer::GetShader(vertexShader);
-        this->pixelShader = SceneRenderer::GetShader(pixelShader);
+        this->vertexShader = Renderer3D::GetShader(vertexShader);
+        this->pixelShader = Renderer3D::GetShader(pixelShader);
         this->materialColor = color;
         this->primitiveType = primitiveType;
 
@@ -67,12 +74,13 @@ public:
     const IndexBuffer* GetIndexBuffer() const;
     Shader* GetVertexShader() const;
     Shader* GetPixelShader() const;
-    const BoundingBox& GetAABB();
+    const BoundingBox& GetBoundingBox(const BoundingBoxType type);
     const unsigned char GetLODMask() const;
     const float GetBlurRadius() const;
     const float GetBlurSigma() const;
     const Vector4& GetOutlineColor() const;
     const PrimitiveType GetPrimitiveType() const;
+    void SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D);
 
     void CreateGpuBuffers(std::shared_ptr<RenderPrimitive::Mesh> mesh);
 
@@ -101,7 +109,7 @@ public:
         boundingBox = BoundingBox(vertices);
     }
 
-    void CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<Resource> matiResource);
+    void CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiResource);
     void Render() override;
     void RenderProperties() override;
     void SetWireframe(const bool wireframe);
@@ -115,10 +123,11 @@ private:
     std::shared_ptr<Shader> vertexShader;
     std::shared_ptr<Shader> pixelShader;
     Material material;
-    Matrix44 lastTransform = Matrix44::Identity;
+    Matrix44 previousTransform = Matrix44::Identity;
+    BoundingBox boundingBoxUntransformed;
     BoundingBox boundingBox;
-    BoundingBox aabb;
     PrimitiveType primitiveType;
+    std::shared_ptr<Renderer3D> renderer3D;
 
     bool useGlossAlpha;
     bool useSpecularMap;

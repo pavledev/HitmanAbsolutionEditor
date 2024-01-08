@@ -417,11 +417,11 @@ bool RenderTexture::CreateRenderTargetView()
 
 void RenderTexture::Release()
 {
-	D3D11Utility::Release(texture);
 	D3D11Utility::Release(shaderResourceView);
 	D3D11Utility::Release(unorderedAccessView);
 	D3D11Utility::Release(depthStencilView);
 	D3D11Utility::Release(renderTargetView);
+	D3D11Utility::Release(texture);
 }
 
 void RenderTexture::SetAsRendererTarget()

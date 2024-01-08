@@ -642,7 +642,7 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
     }
     else if (resourceInfo.type == "PRIM")
     {
-        std::shared_ptr<RenderPrimitiveDocument> renderPrimitiveDocument = std::make_shared<RenderPrimitiveDocument>(resourceName.c_str(), ICON_MDI_TSHIRT_CREW, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
+        std::shared_ptr<RenderPrimitiveDocument> renderPrimitiveDocument = std::make_shared<RenderPrimitiveDocument>(resourceName.c_str(), ICON_MDI_SHAPE, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
 
         resource = std::static_pointer_cast<Resource>(renderPrimitiveDocument->GetRenderPrimitive());
         resourceDocument = std::static_pointer_cast<Document>(renderPrimitiveDocument);

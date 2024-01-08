@@ -1,6 +1,6 @@
 #include "Rendering/Scene/TransformGizmo.h"
-#include "Rendering/Scene/SceneRenderer.h"
 #include "Rendering/Scene/Transform.h"
+#include "Rendering/Scene/Camera.h"
 #include "Rendering/DirectXRenderer.h"
 #include "Utility/Math.h"
 #include "Editor.h"
@@ -15,8 +15,6 @@ TransformGizmo::TransformGizmo()
 
 void TransformGizmo::Tick()
 {
-    std::shared_ptr<Camera> camera = SceneRenderer::GetCamera();
-
     if (!camera)
     {
         return;
@@ -49,8 +47,8 @@ void TransformGizmo::Tick()
         }
     }
 
-    const Matrix44& viewMatrix = SceneRenderer::GetCamera()->GetView().Transposed();
-    const Matrix44& projectionMatrix = SceneRenderer::GetCamera()->GetProjection().Transposed();
+    const Matrix44& viewMatrix = camera->GetView().Transposed();
+    const Matrix44& projectionMatrix = camera->GetProjection().Transposed();
     std::shared_ptr<Transform> transform = selectedEntity->GetComponent<Transform>();
 
     Vector3 worldPosition = transform->GetWorldPosition();
@@ -83,4 +81,9 @@ void TransformGizmo::Update()
 bool TransformGizmo::IsPickingAllowed()
 {
     return !ImGuizmo::IsOver() && !ImGuizmo::IsUsing();
+}
+
+void TransformGizmo::SetCamera(std::shared_ptr<Camera> camera)
+{
+    this->camera = camera;
 }

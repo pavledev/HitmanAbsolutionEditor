@@ -7,7 +7,7 @@
 class Viewport
 {
 public:
-	Viewport() = default;
+	Viewport();
 	Viewport(const Vector2& size, const Vector2& positon);
 	D3D11_VIEWPORT& GetD3DViewport();
 	const Vector2& GetSize() const;

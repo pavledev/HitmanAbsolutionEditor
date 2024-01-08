@@ -63,7 +63,7 @@ void Collision::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
             }*/
             default:
             {
-                Logger::GetInstance().Log(Logger::Level::Error, "Shape type isn't supported!");
+                //Logger::GetInstance().Log(Logger::Level::Error, "Shape type isn't supported!");
 
                 break;
             }
@@ -103,7 +103,7 @@ void Collision::CreateBoxMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh
     //Geometry::CreateCube(cubeVertices, cubeIndices, Vector4(255.f, 0.f, 0.f, 1.f), boxShapeDescriptor->localPose.t, boxShapeDescriptor->dimensions);
     Geometry::CreateCube(cubeVertices, cubeIndices, Vector4(255.f, 0.f, 0.f, 1.f));
 
-    boxMesh->Initialize(cubeVertices, cubeIndices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector4(255.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
+    //boxMesh->Initialize(cubeVertices, cubeIndices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector4(255.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
 
     /*Vector3 v1 = Vector3(-0.0308475010, -0.0361977108, 0.0404765755);
     Vector3 v2 = Vector3(-0.0308475010, -0.0361977108, 0.221976563);
@@ -184,7 +184,7 @@ void Collision::CreateCapsuleMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<
     Geometry::CreateWireCapsule(vertices, capsuleShapeDescriptor->localPose.t, Vector3(1.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4(255.f, 0.f, 0.f, 1.f),
         capsuleShapeDescriptor->radius, capsuleShapeDescriptor->height / 2, capsuleSides);
 
-    capsuleMesh->Initialize(vertices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector4(255.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
+    //capsuleMesh->Initialize(vertices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector4(255.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
 
     NxQuat rotation;
 

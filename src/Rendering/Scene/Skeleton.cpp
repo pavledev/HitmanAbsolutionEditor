@@ -1,5 +1,5 @@
 #include "Rendering/Scene/Skeleton.h"
-#include "Rendering/Scene/SceneRenderer.h"
+//#include "Rendering/Scene/SceneRenderer.h"
 
 Skeleton::Skeleton(const char* name, const char* icon, std::weak_ptr<Entity> entity) : Component(name, icon, entity)
 {

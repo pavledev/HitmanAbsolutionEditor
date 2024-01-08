@@ -6,7 +6,6 @@
 #include "Rendering/DirectXRenderer.h"
 #include "Math/Vector4.h"
 #include "Math/RayHit.h"
-#include "Rendering/Scene/SceneRenderer.h"
 #include "Rendering/Scene/Model.h"
 #include "Editor.h"
 
@@ -201,11 +200,11 @@ const Ray Camera::ComputePickingRay()
 
 void Camera::Pick()
 {
-	Ray ray = ComputePickingRay();
+	const Ray ray = ComputePickingRay();
 
 	// Traces ray against all AABBs in the world
 	std::vector<RayHit> hits;
-	const std::vector<std::shared_ptr<Entity>>& entities = SceneRenderer::GetRootEntity()->GetChildren();
+	const std::vector<std::shared_ptr<Entity>>& entities = renderer3D->GetRootEntity()->GetChildren();
 
 	for (size_t i = 0; i < entities.size(); ++i)
 	{
@@ -219,10 +218,10 @@ void Camera::Pick()
 		for (size_t j = 0; j < children.size(); ++j)
 		{
 			// Get object oriented bounding box
-			const BoundingBox& aabb = children[j]->GetComponent<Mesh>()->GetAABB();
+			const BoundingBox& aabb = children[j]->GetComponent<Mesh>()->GetBoundingBox(Mesh::BoundingBoxType::Transformed);
 
 			// Compute hit distance
-			float distance = ray.HitDistance(aabb);
+			const float distance = ray.HitDistance(aabb);
 
 			// Don't store hit data if there was no hit
 			if (distance == std::numeric_limits<float>::infinity())
@@ -251,13 +250,13 @@ void Camera::Pick()
 
 	if (hits.size() == 1)
 	{
-		selectedEntity = nullptr;
+		selectedEntity = hits.front().entity;
 
 		return;
 	}
 
 	// If there are more hits, perform triangle intersection
-	float distance_min = std::numeric_limits<float>::max();
+	float minDistance = std::numeric_limits<float>::max();
 
 	for (RayHit& hit : hits)
 	{
@@ -284,10 +283,10 @@ void Camera::Pick()
 
 			float distance = ray.HitDistance(p1World, p2World, p3World);
 
-			if (distance < distance_min)
+			if (distance < minDistance)
 			{
 				selectedEntity = hit.entity;
-				distance_min = distance;
+				minDistance = distance;
 			}
 		}
 	}
@@ -306,6 +305,7 @@ Vector3 Camera::ScreenToWorldCoordinates(const Vector2& screenPosition, const fl
 	// Compute world space position
 	Matrix44 invertedViewProjection = (view * projection).Inverted();
 	Vector4 worldPosition = Vector4(clipPosition, 1.0f) * invertedViewProjection;
+
 	return Vector3(worldPosition) / worldPosition.w;
 }
 
@@ -322,4 +322,9 @@ void Camera::RenderProperties()
 	UI::Property("Sensitivity", sensitivity);
 
 	UI::EndProperties();*/
+}
+
+void Camera::SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D)
+{
+	this->renderer3D = renderer3D;
 }
