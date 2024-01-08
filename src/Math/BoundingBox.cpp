@@ -1,6 +1,6 @@
 #include "Math/BoundingBox.h"
 
-const BoundingBox BoundingBox::Zero(Vector3::Zero, Vector3::Zero);
+const BoundingBox BoundingBox::Undefined(Vector3::Infinity, Vector3::InfinityNeg);
 
 BoundingBox::BoundingBox()
 {
@@ -31,6 +31,11 @@ BoundingBox::BoundingBox(const Vector3* points, const unsigned int pointCount)
     }
 }
 
+bool BoundingBox::operator==(const BoundingBox& other) const
+{
+    return GetMin() == other.GetMin() && GetMax() == other.GetMax();
+}
+
 Vector3 BoundingBox::GetCenter() const
 {
     return (max + min) * 0.5f;
@@ -48,7 +53,7 @@ Vector3 BoundingBox::GetExtents() const
     return (max - min) * 0.5f;
 }
 
-Intersection BoundingBox::IsInside(const Vector3& point) const
+Intersection BoundingBox::Intersects(const Vector3& point) const
 {
     if (point.x < min.x || point.x > max.x ||
         point.y < min.y || point.y > max.y ||
@@ -62,7 +67,7 @@ Intersection BoundingBox::IsInside(const Vector3& point) const
     }
 }
 
-Intersection BoundingBox::IsInside(const BoundingBox& box) const
+Intersection BoundingBox::Intersects(const BoundingBox& box) const
 {
     if (box.max.x < min.x || box.min.x > max.x ||
         box.max.y < min.y || box.min.y > max.y ||
@@ -115,15 +120,4 @@ const Vector3& BoundingBox::GetMin() const
 const Vector3& BoundingBox::GetMax() const
 {
     return max;
-}
-
-void BoundingBox::Undefine()
-{
-    min = Vector3::InfinityNeg;
-    max = Vector3::Infinity;
-}
-
-bool BoundingBox::Defined() const
-{
-    return min.x != INFINITY;
 }
