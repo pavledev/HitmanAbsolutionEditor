@@ -42,7 +42,8 @@ public:
     ~BoundingBox() = default;
 
     // Assign from bounding box
-    BoundingBox& operator =(const BoundingBox& rhs) = default;
+    BoundingBox& operator=(const BoundingBox& rhs) = default;
+    bool operator==(const BoundingBox& other) const;
 
     // Returns the center
     Vector3 GetCenter() const;
@@ -54,10 +55,10 @@ public:
     Vector3 GetExtents() const;
 
     // Test if a point is inside
-    Intersection IsInside(const Vector3& point) const;
+    Intersection Intersects(const Vector3& point) const;
 
     // Test if a bounding box is inside
-    Intersection IsInside(const BoundingBox& box) const;
+    Intersection Intersects(const BoundingBox& box) const;
 
     // Returns a transformed bounding box
     BoundingBox Transform(const Matrix44& transform) const;
@@ -68,10 +69,7 @@ public:
     const Vector3& GetMin() const;
     const Vector3& GetMax() const;
 
-    void Undefine();
-    bool Defined() const;
-
-    static const BoundingBox Zero;
+    static const BoundingBox Undefined;
 
 private:
     Vector3 min;
