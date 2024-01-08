@@ -10,12 +10,16 @@ Ray::Ray(const Vector3& start, const Vector3& direction)
 float Ray::HitDistance(const BoundingBox& box) const
 {
     // If undefined, no hit (infinite distance)
-    if (!box.Defined())
+    if (box == BoundingBox::Undefined)
+    {
         return std::numeric_limits<float>::infinity();
+    }
 
     // Check for ray origin being inside the box
-    if (box.IsInside(origin) == Intersection::Inside)
+    if (box.Intersects(origin) == Intersection::Inside)
+    {
         return 0.0f;
+    }
 
     float distance = std::numeric_limits<float>::infinity();
 
