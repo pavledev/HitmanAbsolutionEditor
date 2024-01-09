@@ -1,10 +1,4 @@
 #include <filesystem>
-#include <DirectXColors.h>
-
-#include "directxtk/DirectXHelpers.h"
-#include "directxtk/DDSTextureLoader.h"
-#include "directxtk/SimpleMath.h"
-#include "directxtk/WICTextureLoader.h"
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
@@ -16,14 +10,9 @@
 #include "Rendering/Renderer3D.h"
 #include "Rendering/DirectXRenderer.h"
 #include "Utility/Math.h"
-#include "Rendering/Scene/PointLight.h"
+#include "Rendering/Scene/Mesh.h"
 #include "Rendering/Scene/Transform.h"
-#include "Rendering/Scene/Grid.h"
-#include "UI/Panels/SceneHierarchyPanel2.h"
-#include <directxtk/ScreenGrab.h>
-#include <wincodec.h>
 #include "Rendering/RHIStaticStates.h"
-#include "Rendering/Scene/Model.h"
 #include "Editor.h"
 
 void Renderer3D::Initialize()
