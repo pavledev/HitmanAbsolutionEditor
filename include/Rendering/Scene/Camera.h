@@ -7,7 +7,7 @@
 #include "Component.h"
 #include "Entity.h"
 #include "Math/Ray.h"
-#include "Math/Matrix44.h"
+#include "Math/Matrix.h"
 
 class Renderer3D;
 
@@ -21,10 +21,10 @@ public:
 	const float GetHorizontalFovDeg() const;
 	const float GetVerticalFovRad() const;
 	std::shared_ptr<Entity> GetSelectedEntity() const;
-	const Matrix44& GetProjection() const;
-	const Matrix44& GetView() const;
-	Matrix44& GetProjection();
-	Matrix44& GetView();
+	const Matrix& GetProjection() const;
+	const Matrix& GetView() const;
+	Matrix& GetProjection();
+	Matrix& GetView();
 	void SetPosition(const Vector3 position);
 	void SetSelectedEntity(std::shared_ptr<Entity> selectedEntity);
 	void SetAspectRatio(const float aspectRatio);
@@ -34,13 +34,14 @@ public:
 	const Ray ComputePickingRay();
 	void Pick();
 	Vector3 ScreenToWorldCoordinates(const Vector2& screenPosition, const float z) const;
+	Vector2 WorldToScreenCoordinates(const Vector3& worldPosition) const;
 	void Render() override;
 	void RenderProperties() override;
 	void SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D);
 
 private:
-	Matrix44 view;
-	Matrix44 projection;
+	Matrix view;
+	Matrix projection;
 	POINT previousMousePosition;
 	float aspectRatio;
 	float horizontalFov;
