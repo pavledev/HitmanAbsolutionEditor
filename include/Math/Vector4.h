@@ -127,77 +127,33 @@ public:
 
     void Normalize()
     {
-        float length;
+        const float squaredLength = SquaredLength();
 
-        Normalize(length);
-    }
-
-    void Normalize(float& length)
-    {
-        Vector4& vector = *this;
-        float squaredLength = Dot(vector, vector);
-
-        //A larger value causes normalize errors in a scaled down models with camera extreme close.
-        if (squaredLength > 1.0e-35f)
+        if (!Math::Equals(squaredLength, 1.0f) && squaredLength > 0.0f)
         {
-            length = Math::Sqrt(squaredLength);
-            vector *= 1.f / length;
-        }
-        else
-        {
-            //Either the vector is small or one of it's values contained `nan`.
-            length = 0.f;
+            const float invertedLength = 1.0f / Math::Sqrt(squaredLength);
+
+            x *= invertedLength;
+            y *= invertedLength;
+            z *= invertedLength;
+            w *= invertedLength;
         }
     }
 
     Vector4 Normalized() const
     {
-        Vector4 vector = *this;
+        const float squaredLength = SquaredLength();
 
-        vector.Normalize();
+        if (!Math::Equals(squaredLength, 1.0f) && squaredLength > 0.0f)
+        {
+            const float invertedLength = 1.0f / Math::Sqrt(squaredLength);
 
-        return vector;
-    }
-
-    Vector4 Normalized(float& length) const
-    {
-        Vector4 vector = *this;
-
-        vector.Normalize(length);
-
-        return vector;
-    }
-
-    static Vector4 Normalize(const Vector4& vector)
-    {
-        return vector.Normalized();
-    }
-
-    static Vector4 Normalize(const Vector4& vector, float& length)
-    {
-        return vector.Normalized(length);
-    }
-
-    bool IsNormalized() const
-    {
-        const float testUnit = SquaredLength();
-
-        return fabs(testUnit - 1.f) < UNIT_EPSILON || fabs(testUnit) < UNIT_EPSILON;
-    }
-
-    float Dot(const Vector4& other) const
-    {
-        return x * other.x + y * other.y + z * other.z; //Fix
-    }
-
-    static float Dot(const Vector4& vector, const Vector4& vector2)
-    {
-        return vector.x * vector2.x + vector.y * vector2.y + vector.z * vector2.z; //Fix
-    }
-
-    static const unsigned int ComponentCount()
-    {
-        return 4;
+            return (*this) * invertedLength;
+        }
+        else
+        {
+            return *this;
+        }
     }
 
     union
