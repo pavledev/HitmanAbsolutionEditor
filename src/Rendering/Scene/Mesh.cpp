@@ -137,7 +137,7 @@ const BoundingBox& Mesh::GetBoundingBox(const BoundingBoxType type)
 {
     if (previousTransform != GetTransform()->GetWorldMatrix())
     {
-        Matrix44 transform = GetTransform()->GetWorldMatrix();
+        Matrix transform = GetTransform()->GetWorldMatrix();
 
         boundingBox = boundingBoxUntransformed.Transform(transform);
         previousTransform = transform;
@@ -272,9 +272,9 @@ void Mesh::Render()
     }
 
     UberConstantBuffer& uberConstantBufferCpu = renderer3D->GetUberConstantBufferCpu();
-    Matrix44 worldView = GetTransform()->GetWorldMatrix() * renderer3D->GetCamera()->GetView();
+    Matrix worldView = GetTransform()->GetWorldMatrix() * renderer3D->GetCamera()->GetView();
     //Quaternion rotation = Quaternion::FromEulerAngles(-90.f, 0.f, 0.f);
-    //Matrix44 worldView = (GetTransform()->GetWorldMatrix() * Matrix44(Vector3(0.f, 0.f, 0.f), rotation, Vector3(1.f, 1.f, 1.f))) * SceneRenderer::GetCamera()->GetView();
+    //Matrix worldView = (GetTransform()->GetWorldMatrix() * Matrix(Vector3(0.f, 0.f, 0.f), rotation, Vector3(1.f, 1.f, 1.f))) * SceneRenderer::GetCamera()->GetView();
 
     uberConstantBufferCpu.model = GetTransform()->GetWorldMatrix();
     uberConstantBufferCpu.modelView = worldView;
