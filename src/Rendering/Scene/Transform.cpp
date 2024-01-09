@@ -4,14 +4,14 @@
 
 Transform::Transform(const char* name, const char* icon, std::weak_ptr<Entity> entity) : Component(name, icon, entity)
 {
-	localMatrix = Matrix44::Identity;
+	localMatrix = Matrix::Identity;
 	localScale = { 1.0f, 1.0f, 1.0f };
-	worldMatrix = Matrix44::Identity;
+	worldMatrix = Matrix::Identity;
 	worldScale = { 1.0f, 1.0f, 1.0f };
 	isDirty = true;
 }
 
-Transform::Transform(const Matrix44& matrix)
+Transform::Transform(const Matrix& matrix)
 {
 	localPosition = matrix.GetTranslation();
 	localRotation = matrix.GetRotation();
@@ -81,22 +81,22 @@ Vector3& Transform::GetWorldScale()
 	return worldScale;
 }
 
-const Matrix44& Transform::GetLocalMatrix() const
+const Matrix& Transform::GetLocalMatrix() const
 {
 	return localMatrix;
 }
 
-Matrix44& Transform::GetLocalMatrix()
+Matrix& Transform::GetLocalMatrix()
 {
 	return localMatrix;
 }
 
-const Matrix44& Transform::GetWorldMatrix() const
+const Matrix& Transform::GetWorldMatrix() const
 {
 	return worldMatrix;
 }
 
-Matrix44& Transform::GetWorldMatrix()
+Matrix& Transform::GetWorldMatrix()
 {
 	return worldMatrix;
 }
@@ -223,7 +223,7 @@ void Transform::Tick()
 
 void Transform::UpdateTransform()
 {
-	localMatrix = Matrix44(localPosition, localRotation, localScale);
+	localMatrix = Matrix(localPosition, localRotation, localScale);
 
 	Transform* parent = this->parent.lock().get();
 
