@@ -88,7 +88,7 @@ Intersection BoundingBox::Intersects(const BoundingBox& box) const
     }
 }
 
-BoundingBox BoundingBox::Transform(const Matrix44& transform) const
+BoundingBox BoundingBox::Transform(const Matrix& transform) const
 {
     const Vector3 centerNew = GetCenter() * transform;
     const Vector3 extentOld = GetExtents();
