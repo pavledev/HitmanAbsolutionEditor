@@ -25,7 +25,7 @@ void Skeleton::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
         virtualNodes[i].bindRotation = SQuaternion(x, y, z, w);
     }
 
-    virtualNodes[0].baseScale = Vector3(1.0f, 1.0f, 1.0f);
+    virtualNodes[0].baseScale = SVector3(1.0f, 1.0f, 1.0f);
 
     //glTF Y-Up space --> Blender Z-up space
     //X, Y, Z-- > X, -Z, Y
@@ -303,7 +303,7 @@ void Skeleton::CalculateBoneMatrices(VirtualNode* virtualNode)
 
 void Skeleton::ConvertPosition(SVector3& vector)
 {
-    const Vector3 tempTranslation = vector;
+    const SVector3 tempTranslation = vector;
 
     vector.x = tempTranslation.x;
     vector.y = -tempTranslation.z;
