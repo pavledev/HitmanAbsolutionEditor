@@ -4,14 +4,14 @@
 #include <DirectXMath.h>
 
 #include "Component.h"
-#include "Math/Matrix44.h"
+#include "Math/Matrix.h"
 
 class Transform : public Component
 {
 public:
 	Transform() = default;
 	Transform(const char* name, const char* icon, std::weak_ptr<Entity> entity);
-	explicit Transform(const Matrix44& matrix);
+	explicit Transform(const Matrix& matrix);
 	const Vector3& GetLocalPosition() const;
 	const Quaternion& GetLocalRotation() const;
 	const Vector3& GetLocalScale() const;
@@ -24,10 +24,10 @@ public:
 	Vector3& GetWorldPosition();
 	Quaternion& GetWorldRotation();
 	Vector3& GetWorldScale();
-	const Matrix44& GetLocalMatrix() const;
-	Matrix44& GetLocalMatrix();
-	const Matrix44& GetWorldMatrix() const;
-	Matrix44& GetWorldMatrix();
+	const Matrix& GetLocalMatrix() const;
+	Matrix& GetLocalMatrix();
+	const Matrix& GetWorldMatrix() const;
+	Matrix& GetWorldMatrix();
 	const Vector3 GetRight() const;
 	const Vector3 GetUp() const;
 	const Vector3 GetForward() const;
@@ -45,12 +45,12 @@ public:
 	void RenderProperties() override;
 
 private:
-	Matrix44 localMatrix;
+	Matrix localMatrix;
 	Vector3 localPosition;
 	Quaternion localRotation;
 	Vector3 localScale;
 
-	Matrix44 worldMatrix;
+	Matrix worldMatrix;
 	Vector3 worldPosition;
 	Quaternion worldRotation;
 	Vector3 worldScale;
