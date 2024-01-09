@@ -44,7 +44,7 @@ void PointLight::SetMesh(std::shared_ptr<Mesh> mesh)
 void PointLight::Render()
 {
 	PointLightConstantBuffer& pointLightConstantBufferCpu = renderer3D->GetPointLightConstantBufferCpu();
-	Matrix44 worldView = GetTransform()->GetWorldMatrix() * renderer3D->GetCamera()->GetView();
+	Matrix worldView = GetTransform()->GetWorldMatrix() * renderer3D->GetCamera()->GetView();
 
 	pointLightConstantBufferCpu.transform = worldView * renderer3D->GetCamera()->GetProjection();
 	pointLightConstantBufferCpu.viewLightPos = GetTransform()->GetWorldPosition();
