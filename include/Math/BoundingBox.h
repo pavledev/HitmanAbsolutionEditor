@@ -5,7 +5,7 @@
 #include "Math.h"
 #include "Intersection.h"
 #include "Rendering/Vertex.h"
-#include "Matrix44.h"
+#include "Matrix.h"
 #include "Utility/Math.h"
 
 class BoundingBox
@@ -61,7 +61,7 @@ public:
     Intersection Intersects(const BoundingBox& box) const;
 
     // Returns a transformed bounding box
-    BoundingBox Transform(const Matrix44& transform) const;
+    BoundingBox Transform(const Matrix& transform) const;
 
     // Merge with another bounding box
     void Merge(const BoundingBox& box);
