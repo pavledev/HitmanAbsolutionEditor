@@ -1,14 +1,15 @@
 #pragma once
 
-#include "Math/Matrix44.h"
+#include "Math/Matrix.h"
+#include "Math/Vector2.h"
 
 struct UberConstantBuffer
 {
-    Matrix44 model;
-    Matrix44 modelView;
-    Matrix44 modelViewProjection;
-    Matrix44 projection;
-    Matrix44 sphereMatrix;
+    Matrix model;
+    Matrix modelView;
+    Matrix modelViewProjection;
+    Matrix projection;
+    Matrix sphereMatrix;
 
     float blurRadius = 5.0f;
     float blurSigma = 0.0f;
@@ -39,7 +40,7 @@ struct UberConstantBuffer
 
 struct PointLightConstantBuffer
 {
-    Matrix44 transform;
+    Matrix transform;
 
     Vector3 viewLightPos;
 	float padding;
