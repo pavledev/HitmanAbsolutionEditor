@@ -55,88 +55,61 @@ public:
 
     void Normalize()
     {
-        float length;
+        const float squaredLength = SquaredLength();
 
-        Normalize(length);
-    }
-
-    void Normalize(float& length)
-    {
-        Vector3& vector = *this;
-        float squaredLength = Dot(vector, vector);
-
-        //A larger value causes normalize errors in a scaled down models with camera extreme close.
-        if (squaredLength > 1.0e-35f)
+        if (!Math::Equals(squaredLength, 1.0f) && squaredLength > 0.0f)
         {
-            length = Math::Sqrt(squaredLength);
-            vector *= 1.f / length;
-        }
-        else
-        {
-            //Either the vector is small or one of it's values contained `nan`.
-            length = 0.f;
+            const float invertedLength = 1.0f / Math::Sqrt(squaredLength);
+
+            x *= invertedLength;
+            y *= invertedLength;
+            z *= invertedLength;
         }
     }
 
     Vector3 Normalized() const
     {
-        Vector3 vector = *this;
+        Vector3 v = *this;
 
-        vector.Normalize();
+        v.Normalize();
 
-        return vector;
+        return v;
     }
 
-    Vector3 Normalized(float& length) const
+    static Vector3 Normalize(const Vector3& v)
     {
-        Vector3 vector = *this;
-
-        vector.Normalize(length);
-
-        return vector;
-    }
-
-    static Vector3 Normalize(const Vector3& vector)
-    {
-        return vector.Normalized();
-    }
-
-    static Vector3 Normalize(const Vector3& vector, float& length)
-    {
-        return vector.Normalized(length);
+        return v.Normalized();
     }
 
     bool IsNormalized() const
     {
-        const float testUnit = SquaredLength();
+        static constexpr float normalizedVectorThreshold = 0.01f;
 
-        return fabs(testUnit - 1.f) < UNIT_EPSILON || fabs(testUnit) < UNIT_EPSILON;
+        return (Math::Abs(1.f - SquaredLength()) < normalizedVectorThreshold);
     }
 
-    float Dot(const Vector3& other) const
+    static float Dot(const Vector3& v1, const Vector3& v2)
     {
-        return x * other.x + y * other.y + z * other.z;
+        return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
     }
 
-    static float Dot(const Vector3& vector, const Vector3& vector2)
+    float Dot(const Vector3& rhs) const
     {
-        return vector.x * vector2.x + vector.y * vector2.y + vector.z * vector2.z;
+        return x * rhs.x + y * rhs.y + z * rhs.z;
     }
 
-    static Vector3 Cross(const Vector3& vector, const Vector3& vector2)
+    static Vector3 Cross(const Vector3& v1, const Vector3& v2)
     {
-        Vector3 result;
-
-        result.x = vector.y * vector2.z - vector.z * vector2.y;
-        result.y = vector.z * vector2.x - vector.x * vector2.z;
-        result.z = vector.x * vector2.y - vector.y * vector2.x;
-
-        return result;
+        return Vector3(
+            v1.y * v2.z - v2.y * v1.z,
+            -(v1.x * v2.z - v2.x * v1.z),
+            v1.x * v2.y - v2.x * v1.y
+        );
     }
 
-    Vector3 Cross(const Vector3& other) const
+    Vector3 Cross(const Vector3& v2) const
     {
-        return Cross(*this, other);
+        return Cross(*this, v2);
     }
 
     float Length() const
@@ -267,89 +240,6 @@ public:
     float& operator[](const unsigned int index)
     {
         return v[index];
-    }
-
-    static const unsigned int ComponentCount()
-    {
-        return 3;
-    }
-
-    static float NormalizedAngle(const Vector3& vector, const Vector3& vector2)
-    {
-        /* double check they are normalized */
-        assert(vector.IsNormalized());
-        assert(vector2.IsNormalized());
-
-        /* this is the same as acos(Dot(v1, v2)), but more accurate */
-        if (Dot(vector, vector2) >= 0.0f)
-        {
-            return 2.0f * Math::ASin(Length(vector, vector2) / 2.0f);
-        }
-
-        return static_cast<float>(M_PI) - 2.0f * Math::ASin(Length(vector, Negate(vector2)) / 2.0f);
-    }
-
-    static Vector3 Ortho(const Vector3& vector)
-    {
-        Vector3 result = {};
-        const int axis = DominantAxis(vector);
-
-        assert(result != vector);
-
-        switch (axis)
-        {
-            case 0:
-                result.x = -vector.y - vector.z;
-                result.y = vector.x;
-                result.z = vector.x;
-                break;
-            case 1:
-                result.x = vector.y;
-                result.y = -vector.x - vector.z;
-                result.z = vector.y;
-                break;
-            case 2:
-                result.x = vector.z;
-                result.y = vector.z;
-                result.z = -vector.x - vector.y;
-                break;
-        }
-
-        return result;
-    }
-
-    static int DominantAxis(const Vector3& vector)
-    {
-        const float x = fabsf(vector.x);
-        const float y = fabsf(vector.y);
-        const float z = fabsf(vector.z);
-
-        return ((x > y) ? ((x > z) ? 0 : 2) : ((y > z) ? 1 : 2));
-    }
-
-    static Vector3 ProjectNormalized(const Vector3& p, const Vector3& proj)
-    {
-        return proj * Dot(p, proj);
-    }
-
-    static float Angle(const Vector3& vector, const Vector3& vector2)
-    {
-        const Vector3 normalizedVector = Vector3::Normalize(vector);
-        const Vector3 normalizedVector2 = Vector3::Normalize(vector2);
-
-        return NormalizedAngle(normalizedVector, normalizedVector2);
-    }
-
-    static Vector3 Negate(const Vector3& vector)
-    {
-        return Vector3(-vector.x, -vector.y, -vector.z);
-    }
-
-    void Negate()
-    {
-        x = -x;
-        y = -y;
-        z = -z;
     }
 
     union
