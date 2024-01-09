@@ -4,6 +4,9 @@
 #include <cmath>
 #include <DirectXMath.h>
 
+#undef min
+#undef max
+
 struct SVector3;
 struct SVector4;
 struct SMatrix33;
@@ -37,7 +40,16 @@ class Quaternion;
 class Math
 {
 public:
-	static float CotF(float x) { return cosf(x) / sinf(x); }
+	static constexpr float SMALL_FLOAT = std::numeric_limits<float>::min();
+	static constexpr float EPSILON = std::numeric_limits<float>::epsilon();
+	static constexpr float PI = 3.14159265359f;
+	static constexpr float DEG_TO_RAD = PI / 180.0f;
+	static constexpr float RAD_TO_DEG = 180.0f / PI;
+
+	static float CotF(float x)
+	{
+		return cosf(x) / sinf(x);
+	}
 
 	template <typename T>
 	static constexpr T Sqrt(T x)
@@ -144,6 +156,19 @@ public:
 	static constexpr T Log(T x)
 	{
 		return log(x);
+	}
+
+	template <typename T>
+	static constexpr T Abs(T value)
+	{
+		return value >= static_cast<T>(0) ? value : -value;
+	}
+
+	// Check for equality but allow for a small error
+	template <typename T>
+	static constexpr bool Equals(T lhs, T rhs, T error = std::numeric_limits<T>::epsilon())
+	{
+		return lhs + error >= rhs && lhs - error <= rhs;
 	}
 
 	// Divides two integers and rounds to nearest
