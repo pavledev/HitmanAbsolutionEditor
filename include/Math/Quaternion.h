@@ -9,7 +9,6 @@
 
 #include "Math.h"
 #include "Math/Vector3.h"
-#include "Math/Matrix33.h"
 
 class Quaternion
 {
@@ -46,10 +45,51 @@ public:
         w = quaternion.w;
     }
 
-    //Creates a new Quaternion from the specified yaw, pitch and roll angles.
-    //Yaw around the y axis in radians.
-    //Pitch around the x axis in radians.
-    //Roll around the z axis in radians.
+    // Creates a new Quaternion from the specified axis and angle.
+    // The angle in radians.
+    // The axis of rotation.
+    static Quaternion FromAngleAxis(float angle, const Vector3& axis)
+    {
+        const float half = angle * 0.5f;
+        const float sin = sinf(half);
+        const float cos = cosf(half);
+
+        return Quaternion(axis.x * sin, axis.y * sin, axis.z * sin, cos);
+    }
+
+    void FromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
+
+    void ToAngleAxis(float& angle, Vector3& axis) const
+    {
+        // Normalize the quaternion to prevent inaccuracies
+        Quaternion q = this->Normalized();
+
+        // Calculate the angle
+        angle = 2.0f * std::acos(q.w) * 180.0f / 3.14159265358979323846f;
+
+        // Calculate the axis
+        float s = std::sqrt(1.0f - q.w * q.w);
+
+        if (s < 0.001f)
+        {
+            // If s is close to zero, the axis is not well-defined and
+            // we can choose any arbitrary axis
+            axis.x = q.x;
+            axis.y = q.y;
+            axis.z = q.z;
+        }
+        else
+        {
+            axis.x = q.x / s;
+            axis.y = q.y / s;
+            axis.z = q.z / s;
+        }
+    }
+
+    // Creates a new Quaternion from the specified yaw, pitch and roll angles.
+    // Yaw around the y axis in radians.
+    // Pitch around the x axis in radians.
+    // Roll around the z axis in radians.
     static Quaternion FromYawPitchRoll(float yaw, float pitch, float roll)
     {
         const float halfRoll = roll * 0.5f;
@@ -71,122 +111,162 @@ public:
         );
     }
 
-    static Quaternion Multiply(const Quaternion& quaternionA, const Quaternion& quaternionB)
+    static Quaternion FromToRotation(const Vector3& start, const Vector3& end)
+    {
+        const Vector3 normStart = start.Normalized();
+        const Vector3 normEnd = end.Normalized();
+        const float d = normStart.Dot(normEnd);
+
+        if (d > -1.0f + Math::EPSILON)
+        {
+            const Vector3 c = normStart.Cross(normEnd);
+            const float s = sqrtf((1.0f + d) * 2.0f);
+            const float invS = 1.0f / s;
+
+            return Quaternion(
+                c.x * invS,
+                c.y * invS,
+                c.z * invS,
+                0.5f * s);
+        }
+        else
+        {
+            Vector3 axis = Vector3::Right.Cross(normStart);
+
+            if (axis.Length() < Math::EPSILON)
+            {
+                axis = Vector3::Up.Cross(normStart);
+            }
+
+            return FromAngleAxis(180.0f * Math::DEG_TO_RAD, axis);
+        }
+    }
+
+    static Quaternion FromLookRotation(const Vector3& direction, const Vector3& up_direction = Vector3::Up)
     {
         Quaternion result;
+        const Vector3 forward = direction.Normalized();
+        Vector3 v = forward.Cross(up_direction);
 
-        /*result[0] = quaternionA[3] * quaternionB[0] + quaternionA[0] * quaternionB[3] + quaternionA[1] * quaternionB[2] - quaternionA[2] * quaternionB[1];
-        result[1] = quaternionA[3] * quaternionB[1] - quaternionA[0] * quaternionB[2] + quaternionA[1] * quaternionB[3] + quaternionA[2] * quaternionB[0];
-        result[2] = quaternionA[3] * quaternionB[2] + quaternionA[0] * quaternionB[1] - quaternionA[1] * quaternionB[0] + quaternionA[2] * quaternionB[3];
-        result[3] = quaternionA[3] * quaternionB[3] - quaternionA[0] * quaternionB[0] - quaternionA[1] * quaternionB[1] - quaternionA[2] * quaternionB[2];*/
-
-        result[0] = quaternionA[3] * quaternionB[0] + quaternionA[0] * quaternionB[3] + quaternionA[1] * quaternionB[2] - quaternionA[2] * quaternionB[1];
-        result[1] = quaternionA[3] * quaternionB[1] + quaternionA[1] * quaternionB[3] + quaternionA[2] * quaternionB[0] - quaternionA[0] * quaternionB[2];
-        result[2] = quaternionA[3] * quaternionB[2] + quaternionA[2] * quaternionB[3] + quaternionA[0] * quaternionB[1] - quaternionA[1] * quaternionB[0];
-        result[3] = quaternionA[3] * quaternionB[3] - quaternionA[0] * quaternionB[0] - quaternionA[1] * quaternionB[1] - quaternionA[2] * quaternionB[2];
+        if (v.SquaredLength() >= Math::SMALL_FLOAT)
+        {
+            v.Normalize();
+            const Vector3 up = v.Cross(forward);
+            const Vector3 right = up.Cross(forward);
+            result.FromAxes(right, up, forward);
+        }
+        else
+        {
+            result = Quaternion::FromToRotation(Vector3::Forward, forward);
+        }
 
         return result;
     }
 
-    Quaternion Conjugated() const
+    static Quaternion FromToRotation(const Quaternion& start, const Quaternion& end)
     {
-        return Conjugate(*this);
+        return start.Inverse() * end;
     }
 
-    static Quaternion Conjugate(const Quaternion& quaternion)
+    static Quaternion Lerp(const Quaternion& a, const Quaternion& b, const float t)
     {
-        return Quaternion(-quaternion.x, -quaternion.y, -quaternion.z, quaternion.w);
-    }
+        Quaternion quaternion;
 
-    void Conjugate()
-    {
-        x = -x;
-        y = -y;
-        z = -z;
-    }
-
-    void Negate()
-    {
-        x = -x;
-        y = -y;
-        z = -z;
-        w = -w;
-    }
-
-    float SquaredLength() const
-    {
-        return x * x + y * y + z * z + w * w;
-    }
-
-    void Normalize()
-    {
-        float length;
-
-        Normalize(length);
-    }
-
-    void Normalize(float& length)
-    {
-        Quaternion& quaternion = *this;
-        length = sqrtf(Dot(quaternion, quaternion));
-
-        if (length != 0.0f)
+        if (Dot(a, b) >= 0)
         {
-            quaternion *= (1.0f / length);
+            quaternion = a * (1 - t) + b * t;
         }
         else
         {
-            quaternion.x = 0.f;
-            quaternion.y = 0.f;
-            quaternion.z = 0.f;
-            quaternion.w = 1.f;
+            quaternion = a * (1 - t) - b * t;
+        }
+
+        return quaternion.Normalized();
+    }
+
+    static Quaternion Multiply(const Quaternion& Qa, const Quaternion& Qb)
+    {
+        const float x = Qa.x;
+        const float y = Qa.y;
+        const float z = Qa.z;
+        const float w = Qa.w;
+        const float num4 = Qb.x;
+        const float num3 = Qb.y;
+        const float num2 = Qb.z;
+        const float num = Qb.w;
+        const float num12 = (y * num2) - (z * num3);
+        const float num11 = (z * num4) - (x * num2);
+        const float num10 = (x * num3) - (y * num4);
+        const float num9 = ((x * num4) + (y * num3)) + (z * num2);
+
+        return Quaternion(
+            ((x * num) + (num4 * w)) + num12,
+            ((y * num) + (num3 * w)) + num11,
+            ((z * num) + (num2 * w)) + num10,
+            (w * num) - num9
+        );
+    }
+
+    Quaternion Conjugate() const
+    {
+        return Quaternion(-x, -y, -z, w);
+    }
+
+    float LengthSquared() const
+    {
+        return (x * x) + (y * y) + (z * z) + (w * w);
+    }
+
+    // Normalizes the quaternion
+    void Normalize()
+    {
+        const float squaredLength = LengthSquared();
+
+        if (!Math::Equals(squaredLength, 1.0f) && squaredLength > 0.0f)
+        {
+            const float invertedLength = 1.0f / Math::Sqrt(squaredLength);
+
+            x *= invertedLength;
+            y *= invertedLength;
+            z *= invertedLength;
+            w *= invertedLength;
         }
     }
 
     Quaternion Normalized() const
     {
-        Quaternion quaternion = *this;
+        const float squaredLength = LengthSquared();
 
-        quaternion.Normalize();
-
-        return quaternion;
-    }
-
-    Quaternion Normalized(float& length) const
-    {
-        Quaternion quaternion = *this;
-
-        quaternion.Normalize(length);
-
-        return quaternion;
-    }
-
-    static Quaternion Normalize(const Quaternion& quaternion)
-    {
-        return quaternion.Normalized();
-    }
-
-    static Quaternion Normalize(const Quaternion& quaternion, float& length)
-    {
-        return quaternion.Normalized(length);
+        if (!Math::Equals(squaredLength, 1.0f) && squaredLength > 0.0f)
+        {
+            const float invertedLength = 1.0f / Math::Sqrt(squaredLength);
+            return (*this) * invertedLength;
+        }
+        else
+        {
+            return *this;
+        }
     }
 
     Quaternion Inverse() const
     {
-        const float squaredLength = SquaredLength();
+        const float squaredLength = LengthSquared();
 
         if (squaredLength == 1.0f)
         {
-            return Conjugate(*this);
+            return Conjugate();
         }
-        else if (squaredLength >= std::numeric_limits<float>::epsilon())
+        else if (squaredLength >= Math::SMALL_FLOAT)
         {
-            return Conjugate(*this) * (1.0f / squaredLength);
+            return Conjugate() * (1.0f / squaredLength);
         }
-
-        return Identity;
+        else
+        {
+            return Identity;
+        }
     }
 
+    // Returns Euler angles in degrees
     Vector3 ToEulerAngles() const
     {
         // Derivation from http://www.geometrictools.com/Documentation/EulerAngles.pdf
@@ -199,7 +279,7 @@ public:
             (
                 -90.0f,
                 0.0f,
-                DirectX::XMConvertToDegrees(-atan2f(2.0f * (x * z - w * y), 1.0f - 2.0f * (y * y + z * z)))
+                -atan2f(2.0f * (x * z - w * y), 1.0f - 2.0f * (y * y + z * z)) * Math::RAD_TO_DEG
             );
         }
 
@@ -209,31 +289,50 @@ public:
             (
                 90.0f,
                 0.0f,
-                DirectX::XMConvertToDegrees(atan2f(2.0f * (x * z - w * y), 1.0f - 2.0f * (y * y + z * z)))
+                atan2f(2.0f * (x * z - w * y), 1.0f - 2.0f * (y * y + z * z)) * Math::RAD_TO_DEG
             );
         }
 
         return Vector3
         (
-            DirectX::XMConvertToDegrees(asinf(check)),
-            DirectX::XMConvertToDegrees(atan2f(2.0f * (x * z + w * y), 1.0f - 2.0f * (x * x + y * y))),
-            DirectX::XMConvertToDegrees(atan2f(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z)))
+            asinf(check) * Math::RAD_TO_DEG,
+            atan2f(2.0f * (x * z + w * y), 1.0f - 2.0f * (x * x + y * y)) * Math::RAD_TO_DEG,
+            atan2f(2.0f * (x * y + w * z), 1.0f - 2.0f * (x * x + z * z)) * Math::RAD_TO_DEG
         );
     }
 
+    // Euler angles to quaternion (input in degrees)
     static Quaternion FromEulerAngles(const Vector3& rotation)
     {
-        return FromYawPitchRoll(DirectX::XMConvertToRadians(rotation.y), DirectX::XMConvertToRadians(rotation.x), DirectX::XMConvertToRadians(rotation.z));
+        return FromYawPitchRoll(rotation.y * Math::DEG_TO_RAD, rotation.x * Math::DEG_TO_RAD, rotation.z * Math::DEG_TO_RAD);
     }
 
     static Quaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ)
     {
-        return FromYawPitchRoll(DirectX::XMConvertToRadians(rotationY), DirectX::XMConvertToRadians(rotationX), DirectX::XMConvertToRadians(rotationZ));
+        return FromYawPitchRoll(rotationY * Math::DEG_TO_RAD, rotationX * Math::DEG_TO_RAD, rotationZ * Math::DEG_TO_RAD);
     }
 
-    float Dot(const Quaternion& other) const
+    // Returns yaw in degrees
+    float Yaw() const
     {
-        return w * other.w + x * other.x + y * other.y + z * other.z;
+        return ToEulerAngles().y;
+    }
+
+    // Returns pitch in degrees
+    float Pitch() const
+    {
+        return ToEulerAngles().x;
+    }
+
+    // Returns roll in degrees
+    float Roll() const
+    {
+        return ToEulerAngles().z;
+    }
+
+    float Dot(const Quaternion& rhs) const
+    {
+        return w * rhs.w + x * rhs.x + y * rhs.y + z * rhs.z;
     }
 
     static float Dot(const Quaternion& a, const Quaternion& b)
@@ -241,14 +340,16 @@ public:
         return a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
-    Quaternion operator+(const Quaternion& other) const
+    Quaternion& operator=(const Quaternion& rhs) = default;
+
+    Quaternion operator+(const Quaternion& rhs) const
     {
-        return Quaternion(x + other.x, y + other.y, z + other.z, w + other.w);
+        return Quaternion(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w);
     }
 
-    Quaternion operator-(const Quaternion& other) const
+    Quaternion operator-(const Quaternion& rhs) const
     {
-        return Quaternion(x - other.x, y - other.y, z - other.z, w - other.w);
+        return Quaternion(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w);
     }
 
     Quaternion operator-() const
@@ -256,177 +357,53 @@ public:
         return Quaternion(-x, -y, -z, -w);
     }
 
-    Quaternion operator*(const Quaternion& other) const
+    Quaternion operator*(const Quaternion& rhs) const
     {
-        return Multiply(*this, other);
+        return Multiply(*this, rhs);
     }
 
-    void operator*=(const Quaternion& other)
+    void operator*=(const Quaternion& rhs)
     {
-        *this = Multiply(*this, other);
+        *this = Multiply(*this, rhs);
     }
 
-    Vector3 operator*(const Vector3& other) const
+    Vector3 operator*(const Vector3& rhs) const
     {
         const Vector3 qVec(x, y, z);
-        const Vector3 cross1(qVec.Cross(other));
+        const Vector3 cross1(qVec.Cross(rhs));
         const Vector3 cross2(qVec.Cross(cross1));
 
-        return other + 2.0f * (cross1 * w + cross2);
+        return rhs + 2.0f * (cross1 * w + cross2);
     }
 
-    Quaternion& operator*=(float other)
+    Quaternion& operator*=(float rhs)
     {
-        x *= other;
-        y *= other;
-        z *= other;
-        w *= other;
+        x *= rhs;
+        y *= rhs;
+        z *= rhs;
+        w *= rhs;
 
         return *this;
     }
 
-    Quaternion operator*(float other) const
+    Quaternion operator*(float rhs) const
     {
-        return Quaternion(x * other, y * other, z * other, w * other);
+        return Quaternion(x * rhs, y * rhs, z * rhs, w * rhs);
     }
 
-    bool operator==(const Quaternion& other) const
+    bool operator==(const Quaternion& rhs) const
     {
-        return x == other.x && y == other.y && z == other.z && w == other.w;
+        return x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w;
     }
 
-    bool operator!=(const Quaternion& other) const
+    bool operator!=(const Quaternion& rhs) const
     {
-        return !(*this == other);
+        return !(*this == rhs);
     }
 
-    const float& operator[](const unsigned int index) const
+    bool Equals(const Quaternion& rhs) const
     {
-        return v[index];
-    }
-
-    float& operator[](const unsigned int index)
-    {
-        return v[index];
-    }
-
-    static Quaternion RotationBetweenVectorsToQuaternion(const Vector3& vector, const Vector3& vector2)
-    {
-        Quaternion quaternion;
-        Vector3 axis = Vector3::Cross(vector, vector2);
-        float length = 0.f;
-
-        axis.Normalize(length);
-
-        if (length > FLT_EPSILON)
-        {
-            float angle = Vector3::NormalizedAngle(vector, vector2);
-            quaternion = NormalizedAxisAngleToQuaternion(axis, angle);
-        }
-        else
-        {
-            /* degenerate case */
-
-            if (Vector3::Dot(vector, vector2) > 0.0f)
-            {
-                /* Same vectors, zero rotation... */
-                quaternion = Unit();
-            }
-            else
-            {
-                /* Colinear but opposed vectors, 180 rotation... */
-                axis = Vector3::Ortho(vector);
-                quaternion = AxisAngleToQuaternion(axis, static_cast<float>(M_PI));
-            }
-        }
-
-        return quaternion;
-    }
-
-    static Quaternion AxisAngleToQuaternion(const Vector3& axis, const float angle)
-    {
-        Quaternion quaternion;
-        float length = 0.f;
-        Vector3 normalizedAxis = Vector3::Normalize(axis, length);
-
-        if (length != 0.0f)
-        {
-            quaternion = NormalizedAxisAngleToQuaternion(normalizedAxis, angle);
-        }
-        else
-        {
-            quaternion = Unit();
-        }
-
-        return quaternion;
-    }
-
-    static Quaternion NormalizedAxisAngleToQuaternion(const Vector3& axis, const float angle)
-    {
-        Quaternion quaternion;
-        const float phi = 0.5f * angle;
-        const float si = sinf(phi);
-        const float co = cosf(phi);
-
-        quaternion[3] = co;
-        quaternion[0] = axis.x * si;
-        quaternion[1] = axis.y * si;
-        quaternion[2] = axis.z * si;
-
-        return quaternion;
-    }
-
-    static Quaternion Unit()
-    {
-        Quaternion result;
-
-        result.w = 1.0f;
-        result.x = result.y = result.z = 0.0f;
-
-        return result;
-    }
-
-    static Quaternion RotationDifference(const Vector3& vector, const Vector3& vector2)
-    {
-        const Vector3 vector3 = Vector3::Normalize(vector);
-        const Vector3 vector4 = Vector3::Normalize(vector2);
-
-        return RotationBetweenVectorsToQuaternion(vector3, vector4);
-    }
-
-    Matrix33 ToMatrix() const
-    {
-        Matrix33 result;
-        double q0, q1, q2, q3, qda, qdb, qdc, qaa, qab, qac, qbb, qbc, qcc;
-
-        q0 = M_SQRT2 * (double)w;
-        q1 = M_SQRT2 * (double)x;
-        q2 = M_SQRT2 * (double)y;
-        q3 = M_SQRT2 * (double)z;
-
-        qda = q0 * q1;
-        qdb = q0 * q2;
-        qdc = q0 * q3;
-        qaa = q1 * q1;
-        qab = q1 * q2;
-        qac = q1 * q3;
-        qbb = q2 * q2;
-        qbc = q2 * q3;
-        qcc = q3 * q3;
-
-        return Matrix33(
-            (float)(1.0 - qbb - qcc),
-            (float)(qdc + qab),
-            (float)(-qdb + qac),
-
-            (float)(-qdc + qab),
-            (float)(1.0 - qaa - qcc),
-            (float)(qda + qbc),
-
-            (float)(qdb + qac),
-            (float)(-qda + qbc),
-            (float)(1.0 - qaa - qbb)
-        );
+        return Math::Equals(x, rhs.x) && Math::Equals(y, rhs.y) && Math::Equals(z, rhs.z) && Math::Equals(w, rhs.w);
     }
 
     union
