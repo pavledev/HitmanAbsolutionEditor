@@ -47,14 +47,14 @@ void TransformGizmo::Tick()
         }
     }
 
-    const Matrix44& viewMatrix = camera->GetView().Transposed();
-    const Matrix44& projectionMatrix = camera->GetProjection().Transposed();
+    const Matrix& viewMatrix = camera->GetView().Transposed();
+    const Matrix& projectionMatrix = camera->GetProjection().Transposed();
     std::shared_ptr<Transform> transform = selectedEntity->GetComponent<Transform>();
 
     Vector3 worldPosition = transform->GetWorldPosition();
     Quaternion worldRotation = transform->GetWorldRotation();
     Vector3 worldScale = transform->GetWorldScale();
-    Matrix44 transformMatrix = Matrix44::GenerateRowFirst(worldPosition, worldRotation, worldScale);
+    Matrix transformMatrix = Matrix::GenerateRowFirst(worldPosition, worldRotation, worldScale);
 
     ImGuizmo::SetDrawlist();
     ImGuizmo::Manipulate(&viewMatrix.m00, &projectionMatrix.m00, transformOperation, transformSpace, &transformMatrix.m00, nullptr, nullptr);
