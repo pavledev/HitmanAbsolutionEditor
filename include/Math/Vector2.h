@@ -141,11 +141,6 @@ public:
         return ImVec2(x, y);
     }
 
-    static const unsigned int ComponentCount()
-    {
-        return 2;
-    }
-
     union
     {
         struct
