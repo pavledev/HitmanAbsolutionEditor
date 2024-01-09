@@ -48,7 +48,7 @@ const float Camera::GetVerticalFovRad() const
 	return 2 * std::atan(std::tan(horizontalFov / 2.0f) * (viewportHeight / viewportWidth));
 }
 
-const Matrix44& Camera::GetProjection() const
+const Matrix& Camera::GetProjection() const
 {
 	return projection;
 }
@@ -58,17 +58,17 @@ std::shared_ptr<Entity> Camera::GetSelectedEntity() const
 	return selectedEntity;
 }
 
-const Matrix44& Camera::GetView() const
+const Matrix& Camera::GetView() const
 {
 	return view;
 }
 
-Matrix44& Camera::GetProjection()
+Matrix& Camera::GetProjection()
 {
 	return projection;
 }
 
-Matrix44& Camera::GetView()
+Matrix& Camera::GetView()
 {
 	return view;
 }
@@ -176,12 +176,12 @@ void Camera::UpdateView()
 	const Vector3& lookAt = GetTransform()->GetWorldPosition() + GetTransform()->GetForward();
 	const Vector3& up = GetTransform()->GetUp();
 
-	view = Matrix44::CreateLookAtRH(position, lookAt, up);
+	view = Matrix::CreateLookAtRH(position, lookAt, up);
 }
 
 void Camera::UpdateProjection()
 {
-	projection = Matrix44::CreatePerspectiveFieldOfViewRH(horizontalFov, aspectRatio, nearPlane, farPlane);
+	projection = Matrix::CreatePerspectiveFieldOfViewRH(horizontalFov, aspectRatio, nearPlane, farPlane);
 }
 
 void Camera::SetSelectedEntity(std::shared_ptr<Entity> selectedEntity)
@@ -268,11 +268,12 @@ void Camera::Pick()
 		if (indices.empty() || vertexPositions.empty())
 		{
 			Logger::GetInstance().Log(Logger::Level::Error, "Failed to get geometry of entity {}, skipping intersection test.", hit.entity->GetName());
+
 			continue;
 		}
 
 		// Compute matrix which can transform vertices to view space
-		Matrix44 vertexTransform = hit.entity->GetComponent<Transform>()->GetWorldMatrix();
+		Matrix vertexTransform = hit.entity->GetComponent<Transform>()->GetWorldMatrix();
 
 		// Go through each face
 		for (unsigned short i = 0; i < indices.size(); i += 3)
@@ -303,10 +304,25 @@ Vector3 Camera::ScreenToWorldCoordinates(const Vector2& screenPosition, const fl
 	clipPosition.z = std::clamp(z, 0.0f, 1.0f);
 
 	// Compute world space position
-	Matrix44 invertedViewProjection = (view * projection).Inverted();
+	Matrix invertedViewProjection = (view * projection).Inverted();
 	Vector4 worldPosition = Vector4(clipPosition, 1.0f) * invertedViewProjection;
 
 	return Vector3(worldPosition) / worldPosition.w;
+}
+
+Vector2 Camera::WorldToScreenCoordinates(const Vector3& worldPosition) const
+{
+	const D3D11_VIEWPORT& viewport = Editor::GetInstance().GetDirectXRenderer()->GetViewport().GetD3DViewport();
+
+	// Convert world space position to clip space position
+	const Vector3 clipPosition = worldPosition * view * projection;
+
+	// Convert clip space position to screen space position
+	Vector2 screenPosition;
+	screenPosition.x = (clipPosition.x / clipPosition.z) * (0.5f * viewport.Width) + (0.5f * viewport.Width);
+	screenPosition.y = (clipPosition.y / clipPosition.z) * -(0.5f * viewport.Height) + (0.5f * viewport.Height);
+
+	return screenPosition;
 }
 
 void Camera::Render()
