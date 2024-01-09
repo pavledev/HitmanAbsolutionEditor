@@ -123,7 +123,7 @@ private:
     std::shared_ptr<Shader> vertexShader;
     std::shared_ptr<Shader> pixelShader;
     Material material;
-    Matrix44 previousTransform = Matrix44::Identity;
+    Matrix previousTransform = Matrix::Identity;
     BoundingBox boundingBoxUntransformed;
     BoundingBox boundingBox;
     PrimitiveType primitiveType;
