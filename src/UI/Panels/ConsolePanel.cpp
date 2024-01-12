@@ -381,12 +381,12 @@ void ConsolePanel::RenderTable(const std::vector<Logger::Message>& messages)
 			}
 		}
 
-		ImGui::EndTable();
-
 		if (showAutoScrollButtonBorder && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
 		{
 			ImGui::SetScrollHereY(1.0f);
 		}
+
+		ImGui::EndTable();
 	}
 }
 
