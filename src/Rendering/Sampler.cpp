@@ -70,42 +70,14 @@ void Sampler::CreateResource()
 {
     D3D11_SAMPLER_DESC samplerDesc = {};
 
+    samplerDesc.Filter = static_cast<D3D11_FILTER>(filter);
     samplerDesc.AddressU = addressU;
     samplerDesc.AddressV = addressV;
     samplerDesc.AddressW = addressW;
     samplerDesc.MipLODBias = mipLodBias;
     samplerDesc.MaxAnisotropy = maxAnisotropy;
     samplerDesc.MinLOD = 0;
-    samplerDesc.MaxLOD = FLT_MAX;
-
-    // Determine whether we should use one of the comparison modes
-    isComparisonEnabled = comparisonFunction != D3D11_COMPARISON_NEVER;
-
-    switch (filter)
-    {
-        case Filter::AnisotropicLinear:
-        case Filter::AnisotropicPoint:
-            if (maxAnisotropy == 1)
-            {
-                samplerDesc.Filter = isComparisonEnabled ? D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-            }
-            else
-            {
-                // D3D11 doesn't allow using point filtering for mip filter when using anisotropic filtering
-                samplerDesc.Filter = isComparisonEnabled ? D3D11_FILTER_COMPARISON_ANISOTROPIC : D3D11_FILTER_ANISOTROPIC;
-            }
-
-            break;
-        case Filter::Trilinear:
-            samplerDesc.Filter = isComparisonEnabled ? D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR : D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-            break;
-        case Filter::Bilinear:
-            samplerDesc.Filter = isComparisonEnabled ? D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT : D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-            break;
-        case Filter::Point:
-            samplerDesc.Filter = isComparisonEnabled ? D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT : D3D11_FILTER_MIN_MAG_MIP_POINT;
-            break;
-    }
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
     const LinearColor LinearBorderColor = Color(borderColor);
     samplerDesc.BorderColor[0] = LinearBorderColor.r;
