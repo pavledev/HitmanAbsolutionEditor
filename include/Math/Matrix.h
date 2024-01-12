@@ -44,16 +44,6 @@ public:
         m30 = translation.x;                 m31 = translation.y;                 m32 = translation.z;                 m33 = 1.0f;
     }
 
-    const Vector4& operator[](const unsigned int index) const
-    {
-        return m[index];
-    }
-
-    Vector4& operator[](const unsigned int index)
-    {
-        return m[index];
-    }
-
     static Matrix GenerateRowFirst(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
     {
         const Matrix rotationMatrix = CreateRotation(rotation).Transposed();
