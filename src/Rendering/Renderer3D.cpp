@@ -65,11 +65,13 @@ void Renderer3D::CreateRenderTextures(const float width, const float height)
 
 void Renderer3D::CreateConstantBuffers()
 {
-    uberConstantBufferGpu = std::make_shared<ConstantBuffer>();
-    pointLightConstantBufferGpu = std::make_shared<ConstantBuffer>();
+    cameraConstantBufferGpu = std::make_shared<ConstantBuffer>();
+    meshConstantBufferGpu = std::make_shared<ConstantBuffer>();
+    lightConstantBufferGpu = std::make_shared<ConstantBuffer>();
 
-    uberConstantBufferGpu->Create<UberConstantBuffer>(30000);
-    pointLightConstantBufferGpu->Create<PointLightConstantBuffer>(30000);
+    cameraConstantBufferGpu->Create<CameraConstantBuffer>(1);
+    meshConstantBufferGpu->Create<MeshConstantBuffer>(1);
+    lightConstantBufferGpu->Create<LightConstantBuffer>(1);
 }
 
 void Renderer3D::CreateShaders()
@@ -85,7 +87,7 @@ void Renderer3D::CreateShaders()
     shaders[Shaders::OutlineCompute] = std::make_shared<Shader>();
     shaders[Shaders::OutlineCompute]->Compile(Shader::Type::Compute, "assets/shaders/Outline.hlsl");
 
-    shaders[Shaders::SimpleElementVertex] = std::make_shared<Shader>();
+    /*shaders[Shaders::SimpleElementVertex] = std::make_shared<Shader>();
     shaders[Shaders::SimpleElementVertex]->Compile(Shader::Type::Vertex, "assets/shaders/SimpleElementVertexShader.hlsl", VertexType::PosUvCol);
     shaders[Shaders::SimpleElementPixel] = std::make_shared<Shader>();
     shaders[Shaders::SimpleElementPixel]->Compile(Shader::Type::Pixel, "assets/shaders/SimpleElementPixelShader.hlsl");
@@ -128,7 +130,12 @@ void Renderer3D::CreateShaders()
     shaders[Shaders::PhongDiffuseSpecularNormalVertex] = std::make_shared<Shader>();
     shaders[Shaders::PhongDiffuseSpecularNormalVertex]->Compile(Shader::Type::Vertex, "assets/shaders/PhongDifSpcNrm_VS.hlsl", VertexType::PosUvNorTan);
     shaders[Shaders::PhongDiffuseSpecularNormalPixel] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseSpecularNormalPixel]->Compile(Shader::Type::Pixel, "assets/shaders/PhongDifSpcNrm_PS.hlsl");
+    shaders[Shaders::PhongDiffuseSpecularNormalPixel]->Compile(Shader::Type::Pixel, "assets/shaders/PhongDifSpcNrm_PS.hlsl");*/
+
+    shaders[Shaders::MeshDefaultVertex] = std::make_shared<Shader>();
+    shaders[Shaders::MeshDefaultVertex]->Compile(Shader::Type::Vertex, "assets/shaders/MeshDefault_VS.hlsl", VertexType::PosUvNorTan);
+    shaders[Shaders::MeshBlinnPhongPixel] = std::make_shared<Shader>();
+    shaders[Shaders::MeshBlinnPhongPixel]->Compile(Shader::Type::Pixel, "assets/shaders/MeshBlinnPhong_PS.hlsl");
 }
 
 void Renderer3D::CreateDepthStencilStates()
@@ -152,25 +159,23 @@ void Renderer3D::CreateBlendStates()
 
 void Renderer3D::CreateSamplers()
 {
-    TStaticSamplerState<Sampler::Filter::Bilinear>::InitRHI();
-    TStaticSamplerState<Sampler::Filter::AnisotropicLinear, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap>::InitRHI();
-    TStaticSamplerState<Sampler::Filter::Point, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap>::InitRHI();
+    TStaticSamplerState<Sampler::Filter::MinMagLinearMipPoint, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Clamp, 0.f, 0>::InitRHI();
+    TStaticSamplerState<Sampler::Filter::MinMagLinearMipPoint>::InitRHI();
 }
 
 void Renderer3D::SetGlobalShaderResources()
 {
     CommandList& commandList = Editor::GetInstance().GetDirectXRenderer()->GetCommandList();
 
-    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Uber, Shader::Type::Vertex | Shader::Type::Pixel | Shader::Type::Compute, uberConstantBufferGpu.get());
-    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Light, Shader::Type::Vertex | Shader::Type::Pixel, pointLightConstantBufferGpu.get());
+    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Camera, Shader::Type::Vertex | Shader::Type::Pixel | Shader::Type::Compute, cameraConstantBufferGpu.get());
+    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Mesh, Shader::Type::Vertex | Shader::Type::Pixel | Shader::Type::Compute, meshConstantBufferGpu.get());
+    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Light, Shader::Type::Vertex | Shader::Type::Pixel, lightConstantBufferGpu.get());
 
-    Sampler* bilinearClampSampler = TStaticSamplerState<Sampler::Filter::Bilinear>::GetRHI();
-    Sampler* anisotropicWrapSampler = TStaticSamplerState<Sampler::Filter::AnisotropicLinear, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap>::GetRHI();
-    Sampler* pointWrapSampler = TStaticSamplerState<Sampler::Filter::Point, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap>::GetRHI();
+    Sampler* surfaceSampler = TStaticSamplerState<Sampler::Filter::MinMagLinearMipPoint, Sampler::AddressMode::Wrap, Sampler::AddressMode::Wrap, Sampler::AddressMode::Clamp, 0.f, 0>::GetRHI();
+    Sampler* bilinearClampSampler = TStaticSamplerState<Sampler::Filter::MinMagLinearMipPoint>::GetRHI();
 
+    commandList.SetSampler(SamplerRendererBindings::Surface, surfaceSampler);
     commandList.SetSampler(SamplerRendererBindings::BilinearClamp, bilinearClampSampler);
-    commandList.SetSampler(SamplerRendererBindings::AnisotropicWrap, anisotropicWrapSampler);
-    commandList.SetSampler(SamplerRendererBindings::PointWrap, pointWrapSampler);
 }
 
 void Renderer3D::OnViewportSizeChanged(const float width, const float height)
@@ -205,8 +210,9 @@ void Renderer3D::Render()
     }
 
     CommandList& commandList = Editor::GetInstance().GetDirectXRenderer()->GetCommandList();
-    uberConstantBufferGpu->ResetOffset();
-    pointLightConstantBufferGpu->ResetOffset();
+    cameraConstantBufferGpu->ResetOffset();
+    meshConstantBufferGpu->ResetOffset();
+    lightConstantBufferGpu->ResetOffset();
 
     ID3D11DeviceContext* d3dContext = Editor::GetInstance().GetDirectXRenderer()->GetD3D11DeviceContext();
     D3D11_VIEWPORT& viewport = Editor::GetInstance().GetDirectXRenderer()->GetViewport().GetD3DViewport();
@@ -279,7 +285,7 @@ void Renderer3D::OutlinePass(RenderTexture* outputTexture)
     pso.pixelShader = pixelShader;
     pso.rasterizerState = TStaticRasterizerState<RasterizerState::FillMode::Solid, RasterizerState::CullMode::CounterClockwise>::GetRHI();
     pso.blendState = TStaticBlendState<>::GetRHI();
-    pso.depthStencilState = TStaticDepthStencilState<true, DepthStencilState::CompareFunction::DepthNearOrEqual, true>::GetRHI();
+    pso.depthStencilState = TStaticDepthStencilState<true, DepthStencilState::CompareFunction::Less>::GetRHI();
     pso.renderTargetColorTextures[0] = outlineTexture;
     pso.clearColor[0] = clearColor;
     pso.primitiveType = mesh->GetPrimitiveType();
@@ -287,13 +293,14 @@ void Renderer3D::OutlinePass(RenderTexture* outputTexture)
     commandList.SetPipelineState(pso, this);
 
     std::shared_ptr<Transform> transform = selectedEntity->GetComponent<Transform>();
-    uberConstantBufferCpu.modelViewProjection = transform->GetWorldMatrix() * (camera->GetView() * camera->GetProjection());
-    uberConstantBufferCpu.blurRadius = mesh->GetBlurRadius();
-    uberConstantBufferCpu.blurSigma = mesh->GetBlurSigma();
-    uberConstantBufferCpu.outlineColor = mesh->GetOutlineColor();
-    uberConstantBufferCpu.renderTargetResolution = Vector2(static_cast<float>(outlineTexture->GetWidth()), static_cast<float>(outlineTexture->GetHeight()));
+    meshConstantBufferCpu.world = transform->GetWorldMatrix();
+    meshConstantBufferCpu.modelViewProjection = transform->GetWorldMatrix() * (camera->GetView() * camera->GetProjection());
+    meshConstantBufferCpu.blurRadius = mesh->GetBlurRadius();
+    meshConstantBufferCpu.blurSigma = mesh->GetBlurSigma();
+    meshConstantBufferCpu.outlineColor = mesh->GetOutlineColor();
+    meshConstantBufferCpu.renderTargetResolution = Vector2(static_cast<float>(outlineTexture->GetWidth()), static_cast<float>(outlineTexture->GetHeight()));
 
-    UpdateUberConstantBuffer();
+    UpdateMeshConstantBuffer();
 
     commandList.SetVertexBuffer(mesh->GetVertexBuffer());
 
@@ -350,9 +357,9 @@ void Renderer3D::GaussianBlurPass(RenderTexture* inputTexture)
 
         commandList.SetPipelineState(pso, this);
 
-        uberConstantBufferCpu.blurDirection = Vector2(pixelStride, 0.0f);
+        meshConstantBufferCpu.blurDirection = Vector2(pixelStride, 0.0f);
 
-        UpdateUberConstantBuffer();
+        UpdateMeshConstantBuffer();
 
         commandList.SetTexture(UnorderedAccessViewRendererBindings::Texture, blurTexture);
         commandList.SetTexture(ShaderResourceViewRendererBindings::Texture, inputTexture);
@@ -367,9 +374,9 @@ void Renderer3D::GaussianBlurPass(RenderTexture* inputTexture)
 
         commandList.SetPipelineState(pso, this);
 
-        uberConstantBufferCpu.blurDirection = Vector2(0.0f, pixelStride);
+        meshConstantBufferCpu.blurDirection = Vector2(0.0f, pixelStride);
 
-        UpdateUberConstantBuffer();
+        UpdateMeshConstantBuffer();
 
         commandList.UnbindTexture(ShaderResourceViewRendererBindings::Texture);
 
@@ -380,34 +387,49 @@ void Renderer3D::GaussianBlurPass(RenderTexture* inputTexture)
     }
 }
 
-void Renderer3D::UpdateUberConstantBuffer()
+void Renderer3D::UpdateCameraConstantBuffer()
 {
     CommandList& commandList = Editor::GetInstance().GetDirectXRenderer()->GetCommandList();
 
-    uberConstantBufferGpu->Update(&uberConstantBufferCpu);
+    cameraConstantBufferGpu->Update(&cameraConstantBufferCpu);
 
     // Bind because the offset just changed
-    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Uber, Shader::Type::Vertex | Shader::Type::Pixel | Shader::Type::Compute, uberConstantBufferGpu.get());
+    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Camera, Shader::Type::Vertex | Shader::Type::Pixel | Shader::Type::Compute, cameraConstantBufferGpu.get());
+}
+
+void Renderer3D::UpdateMeshConstantBuffer()
+{
+    CommandList& commandList = Editor::GetInstance().GetDirectXRenderer()->GetCommandList();
+
+    meshConstantBufferGpu->Update(&meshConstantBufferCpu);
+
+    // Bind because the offset just changed
+    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Mesh, Shader::Type::Vertex | Shader::Type::Pixel | Shader::Type::Compute, meshConstantBufferGpu.get());
 }
 
 void Renderer3D::UpdateLightConstantBuffer()
 {
     CommandList& commandList = Editor::GetInstance().GetDirectXRenderer()->GetCommandList();
 
-    pointLightConstantBufferGpu->Update(&pointLightConstantBufferCpu);
+    lightConstantBufferGpu->Update(&lightConstantBufferCpu);
 
     // Bind because the offset just changed
-    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Light, Shader::Type::Vertex | Shader::Type::Pixel, pointLightConstantBufferGpu.get());
+    commandList.SetConstantBuffer(ConstantBufferRendererBindings::Light, Shader::Type::Vertex | Shader::Type::Pixel, lightConstantBufferGpu.get());
 }
 
-UberConstantBuffer& Renderer3D::GetUberConstantBufferCpu()
+CameraConstantBuffer& Renderer3D::GetCameraConstantBufferCpu()
 {
-    return uberConstantBufferCpu;
+    return cameraConstantBufferCpu;
 }
 
-PointLightConstantBuffer& Renderer3D::GetPointLightConstantBufferCpu()
+MeshConstantBuffer& Renderer3D::GetMeshConstantBufferCpu()
 {
-    return pointLightConstantBufferCpu;
+    return meshConstantBufferCpu;
+}
+
+LightConstantBuffer& Renderer3D::GetLightConstantBufferCpu()
+{
+    return lightConstantBufferCpu;
 }
 
 std::shared_ptr<Shader> Renderer3D::GetShader(const Shaders shader)
