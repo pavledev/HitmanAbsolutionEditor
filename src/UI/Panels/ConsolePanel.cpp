@@ -71,15 +71,7 @@ void ConsolePanel::Render()
 	std::vector<Logger::Message> filteredMessages;
 
 	FilterMessages(messages, filteredMessages);
-
-	if (filteredMessages.size() > 0)
-	{
-		RenderTable(filteredMessages);
-	}
-	else
-	{
-		RenderTable(messages);
-	}
+	RenderTable(filteredMessages);
 
 	ImGui::PopFont();
 
@@ -392,6 +384,8 @@ void ConsolePanel::RenderTable(const std::vector<Logger::Message>& messages)
 
 void ConsolePanel::FilterMessages(const std::vector<Logger::Message>& messages, std::vector<Logger::Message>& filteredMessages)
 {
+	const std::string currentType = this->currentType;
+
 	for (size_t i = 0; i < messages.size(); ++i)
 	{
 		std::string type = Logger::TypeToString(messages[i].type);
