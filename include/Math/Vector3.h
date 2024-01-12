@@ -143,8 +143,7 @@ public:
         z *= other.z;
     }
 
-    template <typename U = float>
-    Vector3 operator*(const U value) const
+    Vector3 operator*(const float value) const
     {
         return Vector3(
             x * value,
@@ -153,8 +152,7 @@ public:
         );
     }
 
-    template <typename U = float>
-    void operator*=(const U value)
+    void operator*=(const float value)
     {
         x *= value;
         y *= value;
@@ -166,8 +164,7 @@ public:
         return Vector3(x + other.x, y + other.y, z + other.z);
     }
 
-    template <typename U = float>
-    Vector3 operator+(const U value) const
+    Vector3 operator+(const float value) const
     {
         return Vector3(x + value, y + value, z + value);
     }
@@ -179,8 +176,7 @@ public:
         z += other.z;
     }
 
-    template <typename U = float>
-    void operator+=(const U value)
+    void operator+=(const float value)
     {
         x += value;
         y += value;
@@ -192,10 +188,14 @@ public:
         return Vector3(x - other.x, y - other.y, z - other.z);
     }
 
-    template <typename U = float>
-    Vector3 operator-(const U value) const
+    Vector3 operator-(const float value) const
     {
         return Vector3(x - value, y - value, z - value);
+    }
+
+    Vector3 operator-() const
+    {
+        return Vector3(-x, -y, -z);
     }
 
     void operator-=(const Vector3& other)
