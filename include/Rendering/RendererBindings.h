@@ -2,7 +2,8 @@
 
 enum class ConstantBufferRendererBindings
 {
-    Uber,
+    Camera,
+    Mesh,
     Light
 };
 
@@ -11,6 +12,8 @@ enum class ShaderResourceViewRendererBindings
     DiffuseTexture,
     NormalTexture,
     SpecularTexture,
+    Emissive,
+    Alpha,
     Texture
 };
 
@@ -21,7 +24,6 @@ enum class UnorderedAccessViewRendererBindings
 
 enum class SamplerRendererBindings
 {
-    BilinearClamp,
-    AnisotropicWrap,
-    PointWrap
+    Surface,
+    BilinearClamp
 };
