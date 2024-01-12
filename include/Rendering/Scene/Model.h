@@ -24,7 +24,7 @@ private:
 	std::vector<std::shared_ptr<Mesh>> meshes;
 	bool wireframe;
 	unsigned int lod;
-	std::set<unsigned char> lodMasks;
+	std::set<unsigned char> lods;
 	std::vector<std::string> names;
 	std::vector<bool> flags;
 	bool renderBones;
