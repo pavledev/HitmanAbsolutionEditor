@@ -3,7 +3,8 @@
 #include "UI/Panels/SceneHierarchyPanel2.h"
 #include "Utility/StringUtility.h"
 #include "Rendering/Scene/Model.h"
-#include "Rendering/Scene/PointLight.h"
+#include "Rendering/Scene/DirectionalLight.h"
+#include "Rendering/Scene/AmbientLight.h"
 #include "Rendering/Scene/Camera.h"
 #include "Rendering/Scene/Grid.h"
 #include "Rendering/Scene/Skeleton.h"
@@ -28,21 +29,23 @@ void SceneHierarchyPanel2::CreateEntities()
     std::string cameraEntityName = std::format("{} Camera", ICON_MDI_CAMERA);
     std::string gridEntityName = std::format("{} Grid", ICON_MDI_GRID);
     std::string skeletonEntityName = std::format("{} Skeleton", ICON_MDI_BONE);
-    std::string pointLightMeshEntityName = std::format("{} Mesh", ICON_MDI_SHAPE);
+    std::string directionalLightEntityName = std::format("{} Directional Light", ICON_MDI_SUN_WIRELESS);
+    std::string ambientLightEntityName = std::format("{} Ambient Light", ICON_MDI_WALL_SCONCE_FLAT);
     std::string collisionEntityName = std::format("{} Collision", ICON_MDI_SHAPE);
 
     rootEntity = std::make_shared<Entity>(rootEntityName);
     const std::vector<std::shared_ptr<Entity>>& children = rootEntity->GetChildren();
-    std::shared_ptr<Entity> pointLightEntity = std::make_shared<Entity>(pointLightEntityName);
+    std::shared_ptr<Entity> directionalLightEntity = std::make_shared<Entity>(directionalLightEntityName);
+    std::shared_ptr<Entity> ambientLightEntity = std::make_shared<Entity>(ambientLightEntityName);
     std::shared_ptr<Entity> cameraEntity = std::make_shared<Entity>(cameraEntityName);
     std::shared_ptr<Entity> gridEntity = std::make_shared<Entity>(gridEntityName);
 
     rootEntity->Initialize();
-    pointLightEntity->Initialize();
     cameraEntity->Initialize();
     gridEntity->Initialize();
 
-    pointLightEntity->AddComponent<PointLight>("Point Light", ICON_MDI_LIGHTBULB);
+    directionalLightEntity->AddComponent<DirectionalLight>("Directional Light", ICON_MDI_LIGHTBULB);
+    ambientLightEntity->AddComponent<AmbientLight>("Ambient Light", ICON_MDI_LIGHTBULB);
 
     cameraEntity->AddComponent<Camera>("Camera", ICON_MDI_CAMERA);
     cameraEntity->GetComponent<Camera>()->Initialize(75.f, 0.f, 0.1f, 3000.0f);
@@ -51,16 +54,12 @@ void SceneHierarchyPanel2::CreateEntities()
     gridEntity->GetComponent<Grid>()->Initialize();
 
     rootEntity->AddChild(gridEntity);
-    rootEntity->AddChild(pointLightEntity);
+    rootEntity->AddChild(directionalLightEntity);
+    rootEntity->AddChild(ambientLightEntity);
     rootEntity->AddChild(cameraEntity);
 
-    std::shared_ptr<Entity> pointLightMeshEntity = std::make_shared<Entity>(pointLightMeshEntityName);
-
-    pointLightMeshEntity->Initialize();
-    pointLightMeshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
-    pointLightEntity->GetComponent<PointLight>()->SetMesh(pointLightMeshEntity->GetComponent<Mesh>());
-    pointLightEntity->GetComponent<PointLight>()->Initialize();
-    pointLightEntity->AddChild(pointLightMeshEntity);
+    directionalLightEntity->Initialize();
+    ambientLightEntity->Initialize();
 
     if (resource->GetResourceHeaderHeader().m_type == 'PRIM')
     {
@@ -344,9 +343,17 @@ void SceneHierarchyPanel2::OnResourceLoaded()
         {
             children[i]->GetComponent<Mesh>()->SetRenderer3D(renderer3D);
         }
-        else if (children[i]->GetComponent<PointLight>())
+        /*else if (children[i]->GetComponent<PointLight>())
         {
             children[i]->GetComponent<PointLight>()->SetRenderer3D(renderer3D);
+        }*/
+        else if (children[i]->GetComponent<DirectionalLight>())
+        {
+            children[i]->GetComponent<DirectionalLight>()->SetRenderer3D(renderer3D);
+        }
+        else if (children[i]->GetComponent<AmbientLight>())
+        {
+            children[i]->GetComponent<AmbientLight>()->SetRenderer3D(renderer3D);
         }
         else if (children[i]->GetComponent<Grid>())
         {
