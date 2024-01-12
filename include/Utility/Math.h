@@ -1,8 +1,11 @@
 #pragma once
 
 #include <numbers>
+#include <limits>
 #include <cmath>
 #include <DirectXMath.h>
+
+class Matrix;
 
 #undef min
 #undef max
@@ -261,6 +264,29 @@ public:
 	{
 		return RoundToInt64(F);
 	}
+
+	//
+	// Summary:
+	//     Performs a normal transformation using the matrix.
+	//
+	// Parameters:
+	//   normal:
+	//     The normal vector to transform.
+	//
+	//   transform:
+	//     The transformation SharpDX.Matrix.
+	//
+	//   result:
+	//     When the method completes, contains the transformed normal.
+	//
+	// Remarks:
+	//     A normal transform performs the transformation with the assumption that the w
+	//     component is zero. This causes the fourth row and fourth column of the matrix
+	//     to be unused. The end result is a vector that is not translated, but all other
+	//     transformation properties apply. This is often preferred for normal vectors as
+	//     normals purely represent direction rather than location because normal vectors
+	//     should not be translated.
+	static Vector3 TransformNormal(const Vector3& normal, const Matrix& transform);
 
 	static SVector3 NormalizeVector(const SVector4& vector);
 
