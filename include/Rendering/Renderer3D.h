@@ -40,6 +40,8 @@ public:
 		PhongDiffuseSpecularPixel,
 		PhongDiffuseSpecularNormalVertex,
 		PhongDiffuseSpecularNormalPixel,
+		MeshDefaultVertex,
+		MeshBlinnPhongPixel,
 		ShaderCount
 	};
 
@@ -73,10 +75,12 @@ public:
 	void PostProcessPass();
 	void OutlinePass(RenderTexture* outputTexture);
 	void GaussianBlurPass(RenderTexture* inputTexture);
-	void UpdateUberConstantBuffer();
+	void UpdateCameraConstantBuffer();
+	void UpdateMeshConstantBuffer();
 	void UpdateLightConstantBuffer();
-	UberConstantBuffer& GetUberConstantBufferCpu();
-	PointLightConstantBuffer& GetPointLightConstantBufferCpu();
+	CameraConstantBuffer& GetCameraConstantBufferCpu();
+	MeshConstantBuffer& GetMeshConstantBufferCpu();
+	LightConstantBuffer& GetLightConstantBufferCpu();
 	static std::shared_ptr<Shader> GetShader(const Shaders shader);
 	void SetSelectedEntityCallback(SelectedEntityCallback selectedEntityCallback);
 
@@ -87,10 +91,12 @@ private:
 	std::shared_ptr<Entity> rootEntity;
 	TransformGizmo transformGizmo;
 
-	UberConstantBuffer uberConstantBufferCpu;
-	PointLightConstantBuffer pointLightConstantBufferCpu;
-	std::shared_ptr<ConstantBuffer> uberConstantBufferGpu;
-	std::shared_ptr<ConstantBuffer> pointLightConstantBufferGpu;
+	CameraConstantBuffer cameraConstantBufferCpu;
+	MeshConstantBuffer meshConstantBufferCpu;
+	LightConstantBuffer lightConstantBufferCpu;
+	std::shared_ptr<ConstantBuffer> cameraConstantBufferGpu;
+	std::shared_ptr<ConstantBuffer> meshConstantBufferGpu;
+	std::shared_ptr<ConstantBuffer> lightConstantBufferGpu;
 	std::array<std::shared_ptr<RenderTexture>, 5> renderTargets;
 	inline static std::array<std::shared_ptr<Shader>, Shaders::ShaderCount> shaders;
 	const float threadGroupCount = 8.0f;
