@@ -28,6 +28,7 @@ RenderPrimitiveDocument::RenderPrimitiveDocument(const char* name, const char* i
     AddPanel(resourceLibraryhexViewerPanel);
 
     sceneHierarchyPanel->SetRenderer3D(modelViewerPanel->GetRenderer3D());
+    componentPropertiesPanel->SetRenderer3D(modelViewerPanel->GetRenderer3D());
 
     std::weak_ptr<SceneHierarchyPanel2> sceneHierarchyPanel2 = sceneHierarchyPanel;
     std::weak_ptr<ModelViewerPanel> modelViewerPanel2 = modelViewerPanel;
