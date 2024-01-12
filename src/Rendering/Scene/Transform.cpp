@@ -270,18 +270,25 @@ void Transform::RenderProperties()
 {
 	static constexpr ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed
 		| ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+	static std::vector<UI::TableColumn> tableColumns;
 
-	/*if (ImGui::TreeNodeEx("World Transform", treeNodeFlags))
+	if (tableColumns.empty())
 	{
-		UI::BeginProperties();
+		tableColumns.push_back({ "Name" , 0, 1.f });
+		tableColumns.push_back({ "Value" , ImGuiTableColumnFlags_WidthStretch, 0.f });
+	}
+
+	if (ImGui::TreeNodeEx("World Transform", treeNodeFlags))
+	{
+		UI::BeginProperties("WorldTransform", tableColumns, false);
 
 		Vector3 worldPosition = GetWorldPosition();
 		Vector3 worldRotation = GetWorldRotation().ToEulerAngles();
 		Vector3 worldScale = GetWorldScale();
 
-		UI::RenderVector3Control("Position", worldPosition);
-		UI::RenderVector3Control("Rotation", worldRotation);
-		UI::RenderVector3Control("Scale", worldScale, nullptr, 1.0f);
+		UI::Vector3Property("Position", worldPosition);
+		UI::Vector3Property("Rotation", worldRotation);
+		UI::Vector3Property("Scale", worldScale, nullptr, 1.0f);
 
 		SetWorldPosition(worldPosition);
 		SetWorldRotation(Quaternion::FromEulerAngles(worldRotation));
@@ -294,15 +301,15 @@ void Transform::RenderProperties()
 
 	if (ImGui::TreeNodeEx("Local Transform", treeNodeFlags))
 	{
-		UI::BeginProperties();
+		UI::BeginProperties("LocalTransform", tableColumns, false);
 
 		Vector3 localPosition = GetLocalPosition();
 		Vector3 localRotation = GetLocalRotation().ToEulerAngles();
 		Vector3 localScale = GetLocalScale();
 
-		UI::RenderVector3Control("Position", localPosition);
-		UI::RenderVector3Control("Rotation", localRotation);
-		UI::RenderVector3Control("Scale", localScale, nullptr, 1.0f);
+		UI::Vector3Property("Position", localPosition);
+		UI::Vector3Property("Rotation", localRotation);
+		UI::Vector3Property("Scale", localScale, nullptr, 1.0f);
 
 		Vector3 localRotation2 = Math::ConvertDegressToRadians(localRotation);
 
@@ -313,5 +320,5 @@ void Transform::RenderProperties()
 		UI::EndProperties();
 
 		ImGui::TreePop();
-	}*/
+	}
 }
