@@ -4,6 +4,12 @@
 
 #include "Utility/Math.h"
 #include "Math/Vector3.h"
+#include "Math/Matrix.h"
+
+Vector3 Math::TransformNormal(const Vector3& normal, const Matrix& transform)
+{
+	return Vector3(normal.x * transform.m00 + normal.y * transform.m10 + normal.z * transform.m20, normal.x * transform.m01 + normal.y * transform.m11 + normal.z * transform.m21, normal.x * transform.m02 + normal.y * transform.m12 + normal.z * transform.m22);
+}
 
 SVector3 Math::NormalizeVector(const SVector4& vector)
 {
