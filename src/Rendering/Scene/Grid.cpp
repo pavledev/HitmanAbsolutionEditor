@@ -62,11 +62,26 @@ void Grid::Render()
 
 void Grid::RenderProperties()
 {
-    /*UI::BeginProperties();
+    static constexpr ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed
+        | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+    static std::vector<UI::TableColumn> tableColumns;
 
-    UI::Property("Size", size);
+    if (tableColumns.empty())
+    {
+        tableColumns.push_back({ "Name" , 0, 1.f });
+        tableColumns.push_back({ "Value" , ImGuiTableColumnFlags_WidthStretch, 0.f });
+    }
 
-    UI::EndProperties();*/
+    if (ImGui::TreeNodeEx("Grid Properties", treeNodeFlags))
+    {
+        UI::BeginProperties("GridProperties", tableColumns, false);
+
+        UI::Property("Size", size);
+
+        UI::EndProperties();
+
+        ImGui::TreePop();
+    }
 }
 
 void Grid::SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D)
