@@ -30,13 +30,16 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
         lods.insert(mesh->GetLODMask());
     }
 
+    names.reserve(lods.size());
+    flags.reserve(lods.size());
+
     for (auto it = lods.begin(); it != lods.end(); ++it)
     {
         names.push_back(std::to_string(*it));
         flags.push_back(false);
     }
 
-    *flags.begin() = true;
+    flags[0] = true;
 
     UpdateLODVisibility();
 
