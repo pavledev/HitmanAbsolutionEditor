@@ -77,14 +77,15 @@ void* Shader::Compile()
         while (getline(ss, line, '\n'))
         {
             const auto isError = line.find("error") != std::string::npos;
+            const std::string message = std::format("{} {}", filePath, line.substr(line.find("(")));
 
             if (isError)
             {
-                Logger::GetInstance().Log(Logger::Level::Error, "(", StringUtility::GetStringAfterExpression(line, "("));
+                Logger::GetInstance().Log(Logger::Level::Error, message);
             }
             else
             {
-                Logger::GetInstance().Log(Logger::Level::Warning, "(", StringUtility::GetStringAfterExpression(line, "("));
+                Logger::GetInstance().Log(Logger::Level::Warning, message);
             }
         }
 
