@@ -19,8 +19,10 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-Texture2D diffuseTexture : register(t0);
-Texture2D normalTexture : register(t1);
-Texture2D specularTexture : register(t2);
-Texture2D tex : register(t3);
+Texture2D texDiffuseMap : register(t0);
+Texture2D texNormalMap : register(t1);
+Texture2D texSpecularMap : register(t2);
+Texture2D texEmissiveMap : register(t3);
+Texture2D texAlphaMap : register(t4);
+Texture2D tex : register(t5);
 RWTexture2D<float4> texUAV : register(u0);
