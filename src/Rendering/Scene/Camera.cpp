@@ -327,17 +327,43 @@ Vector2 Camera::WorldToScreenCoordinates(const Vector3& worldPosition) const
 
 void Camera::Render()
 {
+	CameraConstantBuffer& cameraConstantBufferCpu = renderer3D->GetCameraConstantBufferCpu();
+	Matrix worldView = GetTransform()->GetWorldMatrix() * renderer3D->GetCamera()->GetView();
+
+	cameraConstantBufferCpu.viewProjection = view * projection;
+	cameraConstantBufferCpu.eyePosition = GetTransform()->GetWorldPosition();
+
+	renderer3D->UpdateCameraConstantBuffer();
 }
 
 void Camera::RenderProperties()
 {
-	/*UI::BeginProperties();
+	static constexpr ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed
+		| ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+	static std::vector<UI::TableColumn> tableColumns;
 
-	UI::Property("Horizontal FOV", horizontalFov);
-	UI::Property("Speed", speed);
-	UI::Property("Sensitivity", sensitivity);
+	if (tableColumns.empty())
+	{
+		tableColumns.push_back({ "Name" , 0, 1.f });
+		tableColumns.push_back({ "Value" , ImGuiTableColumnFlags_WidthStretch, 0.f });
+	}
 
-	UI::EndProperties();*/
+	if (ImGui::TreeNodeEx("Camera", treeNodeFlags))
+	{
+		UI::BeginProperties("CameraProperties", tableColumns, false);
+
+		if (UI::Property("Horizontal FOV", horizontalFov))
+		{
+			UpdateProjection();
+		}
+
+		UI::Property("Speed", speed);
+		UI::Property("Sensitivity", sensitivity);
+
+		UI::EndProperties();
+
+		ImGui::TreePop();
+	}
 }
 
 void Camera::SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D)
