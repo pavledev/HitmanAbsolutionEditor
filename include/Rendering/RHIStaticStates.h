@@ -26,7 +26,7 @@ private:
 };
 
 template <
-	Sampler::Filter filter = Sampler::Filter::Point,
+	Sampler::Filter filter = Sampler::Filter::MinMagMipPoint,
 	Sampler::AddressMode addressU = Sampler::AddressMode::Clamp,
 	Sampler::AddressMode addressV = Sampler::AddressMode::Clamp,
 	Sampler::AddressMode addressW = Sampler::AddressMode::Clamp,
