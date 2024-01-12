@@ -7,6 +7,7 @@
 Model::Model(const char* name, const char* icon, std::weak_ptr<Entity> entity) : Component(name, icon, entity)
 {
     wireframe = false;
+    lod = 0;
 }
 
 void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
@@ -26,14 +27,18 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
         mesh2->GetTransform()->SetParent(GetTransform());
         GetTransform()->AddChild(mesh2->GetTransform());
 
-        lodMasks.insert(mesh->GetLODMask());
+        lods.insert(mesh->GetLODMask());
     }
 
-    for (auto it = lodMasks.begin(); it != lodMasks.end(); ++it)
+    for (auto it = lods.begin(); it != lods.end(); ++it)
     {
         names.push_back(std::to_string(*it));
-        flags.push_back(true);
+        flags.push_back(false);
     }
+
+    *flags.begin() = true;
+
+    UpdateLODVisibility();
 
     const BoneRig* boneRig = renderPrimitive->GetBoneRig();
 
@@ -82,8 +87,15 @@ void Model::RenderProperties()
 {
     static constexpr ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed
         | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+    static std::vector<UI::TableColumn> tableColumns;
 
-    /*UI::BeginProperties();
+    if (tableColumns.empty())
+    {
+        tableColumns.push_back({ "Name" , 0, 1.f });
+        tableColumns.push_back({ "Value" , ImGuiTableColumnFlags_WidthStretch, 0.f });
+    }
+
+    UI::BeginProperties("ModelProperties", tableColumns, false);
 
     if (UI::Property("Wireframe", wireframe))
     {
@@ -97,15 +109,16 @@ void Model::RenderProperties()
 
     if (ImGui::TreeNodeEx("Level Of Detail", treeNodeFlags))
     {
-        UI::BeginProperties();
+        UI::BeginProperties("LevelOfDetailProperties", tableColumns, false);
 
         if (UI::Property("Display LODs", lod, 0u, 7u))
         {
-            for (size_t i = 0; i < lodMasks.size(); ++i)
+            for (size_t i = 0; i < lods.size(); ++i)
             {
+                unsigned int lod = *std::next(lods.begin(), i);
                 bool isLODInRange = false;
 
-                for (unsigned int j = 0; j <= lod; ++j)
+                for (unsigned int j = this->lod; j <= 7; ++j)
                 {
                     unsigned int mask = (lod & (1 << j));
 
@@ -131,7 +144,7 @@ void Model::RenderProperties()
         UI::EndProperties();
 
         ImGui::TreePop();
-    }*/
+    }
 }
 
 void Model::UpdateLODVisibility()
@@ -140,10 +153,10 @@ void Model::UpdateLODVisibility()
     {
         for (size_t j = 0; j < flags.size(); ++j)
         {
-            unsigned int lodMask = *std::next(lodMasks.begin(), j);
+            unsigned int lod = *std::next(lods.begin(), j);
             bool isLODInRange = flags[j];
 
-            if (meshes[i]->GetLODMask() == lodMask)
+            if (meshes[i]->GetLODMask() == lod)
             {
                 meshes[i]->SetIsLODInRange(isLODInRange);
             }
