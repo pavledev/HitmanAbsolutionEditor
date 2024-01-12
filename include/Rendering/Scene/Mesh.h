@@ -17,8 +17,8 @@ class Mesh : public Component
 public:
     enum class BoundingBoxType
     {
-        Untransformed,            // the bounding box of the mesh
-        Transformed              // the transformed bounding box of the mesh
+        Untransformed, //The bounding box of the mesh
+        Transformed //The transformed bounding box of the mesh
     };
 
     Mesh(const char* name, const char* icon, std::weak_ptr<Entity> entity);
@@ -39,7 +39,7 @@ public:
         indices = nullptr;
         this->vertexShader = Renderer3D::GetShader(vertexShader);
         this->pixelShader = Renderer3D::GetShader(pixelShader);
-        this->materialColor = color;
+        //this->materialColor = color;
         this->primitiveType = primitiveType;
 
         CreateGpuBuffers(vertices);
@@ -61,7 +61,7 @@ public:
         this->indices = &indices;
         this->vertexShader = Renderer3D::GetShader(vertexShader);
         this->pixelShader = Renderer3D::GetShader(pixelShader);
-        this->materialColor = color;
+        //this->materialColor = color;
         this->primitiveType = primitiveType;
 
         CreateGpuBuffers(vertices, indices);
@@ -129,14 +129,11 @@ private:
     PrimitiveType primitiveType;
     std::shared_ptr<Renderer3D> renderer3D;
 
-    bool useGlossAlpha;
-    bool useSpecularMap;
-    bool useNormalMap;
-    Vector3 materialColor;
-    Vector3 specularColor;
-    float specularWeight;
-    float specularGloss;
-    float normalMapWeight;
+    bool hasDiffuseMap;
+    bool hasNormalMap;
+    bool hasSpecularMap;
+    bool hasEmissiveMap;
+    bool hasAlphaMap;
     unsigned char lodMask;
     bool isLODInRange;
     bool wireframe;
