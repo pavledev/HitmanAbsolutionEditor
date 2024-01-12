@@ -27,8 +27,8 @@ void Grid::Initialize()
 
 void Grid::Render()
 {
-    const Matrix& viewMatrix = renderer3D->GetCamera()->GetView().Transposed();
-    const Matrix& projectionMatrix = renderer3D->GetCamera()->GetProjection().Transposed();
+    const Matrix& viewMatrix = renderer3D->GetCamera()->GetView();
+    const Matrix& projectionMatrix = renderer3D->GetCamera()->GetProjection();
     const Matrix& worldMatrix = GetTransform()->GetWorldMatrix();
 
     drawList->_ResetForNewFrame();

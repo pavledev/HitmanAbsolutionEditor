@@ -47,8 +47,8 @@ void TransformGizmo::Tick()
         }
     }
 
-    const Matrix& viewMatrix = camera->GetView().Transposed();
-    const Matrix& projectionMatrix = camera->GetProjection().Transposed();
+    const Matrix& viewMatrix = camera->GetView();
+    const Matrix& projectionMatrix = camera->GetProjection();
     std::shared_ptr<Transform> transform = selectedEntity->GetComponent<Transform>();
 
     Vector3 worldPosition = transform->GetWorldPosition();
