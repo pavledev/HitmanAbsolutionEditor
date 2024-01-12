@@ -19,14 +19,11 @@ Mesh::Mesh(const char* name, const char* icon, std::weak_ptr<Entity> entity) : C
     blurSigma = 32.f;
     outlineColor = Vector4(0.96f, 0.6f, 0.0f, 1.f);
 
-    useGlossAlpha = false;
-    useSpecularMap = false;
-    useNormalMap = false;
-    normalMapWeight = 1.0f;
-    materialColor = { 0.f, 0.f, 0.f };
-    specularColor = { 0.18f, 0.18f, 0.18f };
-    specularWeight = 1.0f;
-    specularGloss = 8.0f;
+    hasDiffuseMap = false;
+    hasNormalMap = false;
+    hasSpecularMap = false;
+    hasEmissiveMap = false;
+    hasAlphaMap = false;
 }
 
 void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiReference)
@@ -91,8 +88,10 @@ void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_p
         shaderFileName += "Nrm";
     }
 
-    std::string vertexShaderFilePath = std::format("assets/shaders/{}_VS.hlsl", shaderFileName);
-    std::string pixelShaderFilePath = std::format("assets/shaders/{}_PS.hlsl", shaderFileName);
+    //std::string vertexShaderFilePath = std::format("assets/shaders/{}_VS.hlsl", shaderFileName);
+    //std::string pixelShaderFilePath = std::format("assets/shaders/{}_PS.hlsl", shaderFileName);
+    std::string vertexShaderFilePath = "assets/shaders/MeshDefault_VS.hlsl";
+    std::string pixelShaderFilePath = "assets/shaders/MeshBlinnPhong_PS.hlsl";
 
     vertexShader = std::make_shared<Shader>();
     vertexShader->Compile(Shader::Type::Vertex, vertexShaderFilePath, VertexType::PosUvNorTan);
@@ -151,6 +150,8 @@ const BoundingBox& Mesh::GetBoundingBox(const BoundingBoxType type)
     {
         return boundingBox;
     }
+
+    return BoundingBox::Undefined;
 }
 
 const unsigned char Mesh::GetLODMask() const
@@ -245,17 +246,17 @@ void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std
 
     if (material.HasNormalTexture())
     {
-        useNormalMap = true;
+        hasNormalMap = true;
     }
 
     if (material.HasSpecularTexture())
     {
-        if (material.GetTexture(Material::TextureType::Specular)->HasAlpha())
+        /*if (material.GetTexture(Material::TextureType::Specular)->HasAlpha())
         {
             useGlossAlpha = true;
-        }
+        }*/
 
-        useSpecularMap = true;
+        hasSpecularMap = true;
     }
 }
 
@@ -271,26 +272,26 @@ void Mesh::Render()
         return;
     }
 
-    UberConstantBuffer& uberConstantBufferCpu = renderer3D->GetUberConstantBufferCpu();
+    MeshConstantBuffer& meshConstantBufferCpu = renderer3D->GetMeshConstantBufferCpu();
     Matrix worldView = GetTransform()->GetWorldMatrix() * renderer3D->GetCamera()->GetView();
     //Quaternion rotation = Quaternion::FromEulerAngles(-90.f, 0.f, 0.f);
     //Matrix worldView = (GetTransform()->GetWorldMatrix() * Matrix(Vector3(0.f, 0.f, 0.f), rotation, Vector3(1.f, 1.f, 1.f))) * SceneRenderer::GetCamera()->GetView();
 
-    uberConstantBufferCpu.model = GetTransform()->GetWorldMatrix();
-    uberConstantBufferCpu.modelView = worldView;
-    uberConstantBufferCpu.modelViewProjection = worldView * renderer3D->GetCamera()->GetProjection();
-    uberConstantBufferCpu.projection = renderer3D->GetCamera()->GetProjection();
-    uberConstantBufferCpu.sphereMatrix = worldView.Inverted();
-    uberConstantBufferCpu.useGlossAlpha = useGlossAlpha;
-    uberConstantBufferCpu.useSpecularMap = useSpecularMap;
-    uberConstantBufferCpu.useNormalMap = useNormalMap;
-    uberConstantBufferCpu.materialColor = materialColor;
-    uberConstantBufferCpu.specularColor = specularColor;
-    uberConstantBufferCpu.specularWeight = specularWeight;
-    uberConstantBufferCpu.specularGloss = specularGloss;
-    uberConstantBufferCpu.normalMapWeight = normalMapWeight;
+    meshConstantBufferCpu.materialDiffuse = Vector4(1.f, 1.f, 1.f, 1.f);
+    meshConstantBufferCpu.materialAmbient = Vector4(1.f, 1.f, 1.f, 1.f);
+    meshConstantBufferCpu.materialEmissive = Vector4(0.f, 0.f, 0.f, 1.f);
+    meshConstantBufferCpu.materialReflect = Vector4(0.f, 0.f, 0.f, 1.f);
+    meshConstantBufferCpu.materialSpecular = Vector4(0.f, 0.f, 0.f, 1.f);
 
-    renderer3D->UpdateUberConstantBuffer();
+    meshConstantBufferCpu.world = GetTransform()->GetWorldMatrix();
+    meshConstantBufferCpu.modelViewProjection = worldView * renderer3D->GetCamera()->GetProjection();
+    meshConstantBufferCpu.hasDiffuseMap = true;
+    meshConstantBufferCpu.hasNormalMap = hasNormalMap;
+    meshConstantBufferCpu.hasSpecularMap = hasSpecularMap;
+    meshConstantBufferCpu.hasEmissiveMap = hasEmissiveMap;
+    meshConstantBufferCpu.hasAlphaMap = hasAlphaMap;
+
+    renderer3D->UpdateMeshConstantBuffer();
 
     CommandList& commandList = Editor::GetInstance().GetDirectXRenderer()->GetCommandList();
     static PipelineState pipelineState;
@@ -330,7 +331,8 @@ void Mesh::Render()
         pipelineState.blendState = TStaticBlendState<>::GetRHI();
     }
 
-    pipelineState.depthStencilState = TStaticDepthStencilState<true, DepthStencilState::CompareFunction::DepthNearOrEqual, true>::GetRHI();
+    //pipelineState.depthStencilState = TStaticDepthStencilState<true, DepthStencilState::CompareFunction::DepthNearOrEqual, true>::GetRHI();
+    pipelineState.depthStencilState = TStaticDepthStencilState<true, DepthStencilState::CompareFunction::Less>::GetRHI();
     pipelineState.primitiveType = primitiveType;
 
     commandList.SetPipelineState(pipelineState, renderer3D.get(), false);
@@ -370,19 +372,26 @@ void Mesh::RenderProperties()
 {
     static constexpr ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed
         | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+    static std::vector<UI::TableColumn> tableColumns;
 
-    //if (ImGui::TreeNodeEx("Outline", treeNodeFlags))
-    //{
-    //    UI::BeginProperties();
+    if (tableColumns.empty())
+    {
+        tableColumns.push_back({ "Name" , 0, 1.f });
+        tableColumns.push_back({ "Value" , ImGuiTableColumnFlags_WidthStretch, 0.f });
+    }
 
-    //    UI::Property("Blur Radius", blurRadius);
-    //    UI::Property("Blur Sigma", blurSigma);
-    //    //UI::PropertyVector("Outline Color", outlineColor, true);
+    if (ImGui::TreeNodeEx("Outline", treeNodeFlags))
+    {
+        UI::BeginProperties("OutlineProperties", tableColumns, false);
 
-    //    UI::EndProperties();
+        UI::Property("Blur Radius", blurRadius);
+        UI::Property("Blur Sigma", blurSigma);
+        UI::ColorRGBAProperty("Outline Color", outlineColor);
 
-    //    ImGui::TreePop();
-    //}
+        UI::EndProperties();
+
+        ImGui::TreePop();
+    }
 }
 
 void Mesh::SetWireframe(const bool wireframe)
