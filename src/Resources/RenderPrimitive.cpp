@@ -140,6 +140,8 @@ void RenderPrimitive::Deserialize()
 				break;
 		}
 	}
+
+	isResourceDeserialized = true;
 }
 
 void RenderPrimitive::Export(const std::string& outputPath, const std::string& exportOption)
