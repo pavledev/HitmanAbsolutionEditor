@@ -16,7 +16,7 @@ class Camera : public Component
 public:
 	Camera() = default;
 	Camera(const char* name, const char* icon, std::weak_ptr<Entity> entity);
-	void Initialize(const float fov, const float aspectRatio, const float nearPlane, const float farPlane);
+	void Initialize(const float fov, const float aspectRatio, const float nearPlane, const float farPlane, const Vector3& position = Vector3(0.f, 0.f, 0.f), const Vector3& rotation = Vector3(0.f, 0.f, 0.f));
 	const float GetAspectRatio() const;
 	const float GetHorizontalFovDeg() const;
 	const float GetVerticalFovRad() const;

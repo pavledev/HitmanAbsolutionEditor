@@ -13,7 +13,7 @@ Camera::Camera(const char* name, const char* icon, std::weak_ptr<Entity> entity)
 {
 }
 
-void Camera::Initialize(const float fov, const float aspectRatio, const float nearPlane, const float farPlane)
+void Camera::Initialize(const float fov, const float aspectRatio, const float nearPlane, const float farPlane, const Vector3& position, const Vector3& rotation)
 {
 	horizontalFov = DirectX::XMConvertToRadians(fov);
 	this->aspectRatio = aspectRatio;
@@ -24,6 +24,8 @@ void Camera::Initialize(const float fov, const float aspectRatio, const float ne
 	speed = 1;
 	sensitivity = 20;
 
+	GetTransform()->SetWorldPosition(position);
+	GetTransform()->SetWorldRotation(Quaternion::FromEulerAngles(rotation));
 	GetCursorPos(&previousMousePosition);
 	UpdateProjection();
 	UpdateView();

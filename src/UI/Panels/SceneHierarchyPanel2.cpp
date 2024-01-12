@@ -48,7 +48,7 @@ void SceneHierarchyPanel2::CreateEntities()
     ambientLightEntity->AddComponent<AmbientLight>("Ambient Light", ICON_MDI_LIGHTBULB);
 
     cameraEntity->AddComponent<Camera>("Camera", ICON_MDI_CAMERA);
-    cameraEntity->GetComponent<Camera>()->Initialize(75.f, 0.f, 0.1f, 3000.0f);
+    cameraEntity->GetComponent<Camera>()->Initialize(75.f, 0.f, 0.1f, 3000.0f, Vector3(2.f, 0.5f, 0.f), Vector3(0.f, -90.f, 0.f));
 
     gridEntity->AddComponent<Grid>("Grid", ICON_MDI_GRID);
     gridEntity->GetComponent<Grid>()->Initialize();
