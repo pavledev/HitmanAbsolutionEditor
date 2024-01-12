@@ -169,15 +169,19 @@ void SceneHierarchyPanel2::Render()
         return;
     }
 
-    /*if (renderPrimitive->GetMeshes().size() == 0)
+    if (!resource->IsResourceDeserialized())
     {
+        ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
+        ImGui::Text("Loading model...");
         End();
 
         return;
-    }*/
+    }
 
     if (!rootEntity)
     {
+        ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
+        ImGui::Text("Creating entities...");
         End();
 
         return;
