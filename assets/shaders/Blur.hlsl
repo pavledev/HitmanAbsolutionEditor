@@ -46,7 +46,7 @@ float3 gaussian_blur(const uint2 pos)
         float2 sample_uv = uv + (i * direction);
 
         // During the vertical pass, the input texture is seconday scratch texture which belongs to the blur pass.
-        // It's at least as big as the original input texture (to be blurred), so we have to adapt the smaple uv.
+        // It's at least as big as the original input texture (to be blurred), so we have to adapt the sample uv.
         sample_uv = lerp(sample_uv, (trunc(sample_uv * renderTargetResolution) + 0.5f) / renderTargetResolution, is_vertical_pass);
         
         float weight = compute_gaussian_weight(i);
