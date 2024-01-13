@@ -43,7 +43,7 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
 
     UpdateLODVisibility();
 
-    const BoneRig* boneRig = renderPrimitive->GetBoneRig();
+    std::shared_ptr<BoneRig> boneRig = renderPrimitive->GetBoneRig();
 
     if (boneRig)
     {
