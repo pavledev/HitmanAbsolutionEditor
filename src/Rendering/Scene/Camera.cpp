@@ -13,19 +13,20 @@ Camera::Camera(const char* name, const char* icon, std::weak_ptr<Entity> entity)
 {
 }
 
-void Camera::Initialize(const float fov, const float aspectRatio, const float nearPlane, const float farPlane, const Vector3& position, const Vector3& rotation)
+void Camera::Initialize(const float fov, const float aspectRatio, const float nearPlane, const float farPlane, const Vector3& position, const Vector3& rotation, const float pitch, const float yaw)
 {
 	horizontalFov = DirectX::XMConvertToRadians(fov);
 	this->aspectRatio = aspectRatio;
 	this->nearPlane = nearPlane;
 	this->farPlane = farPlane;
-	pitch = 0;
-	yaw = 0;
+	this->pitch = pitch;
+	this->yaw = yaw;
 	speed = 1;
 	sensitivity = 20;
 
 	GetTransform()->SetWorldPosition(position);
 	GetTransform()->SetWorldRotation(Quaternion::FromEulerAngles(rotation));
+
 	GetCursorPos(&previousMousePosition);
 	UpdateProjection();
 	UpdateView();
