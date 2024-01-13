@@ -11,7 +11,7 @@ class Skeleton : public Component
 public:
 	Skeleton(const char* name, const char* icon, std::weak_ptr<Entity> entity);
 	void Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive);
-	void InitializeVirtualNodes(const unsigned int parentIndex, std::vector<VirtualNode>& virtualNodes, BoneRig* boneRig);
+	void InitializeVirtualNodes(const unsigned int parentIndex, std::vector<VirtualNode>& virtualNodes, std::shared_ptr<BoneRig> boneRig);
 	void AddModelBone(std::shared_ptr<ModelBone> modelBone);
 	void Render() override;
 	void RenderProperties() override;
@@ -35,7 +35,6 @@ private:
 	};
 
 	std::vector<std::shared_ptr<ModelBone>> modelBones;
-	BoneRig* boneRig;
 	inline static const float minBoneLength = 0.004f;
 	BoneHeuristic boneHeuristic = BoneHeuristic::Temperance;
 };
