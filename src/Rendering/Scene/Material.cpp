@@ -41,3 +41,13 @@ const bool Material::HasSpecularTexture() const
 {
 	return textures.contains(TextureType::Specular);
 }
+
+const bool Material::HasEmissiveTexture() const
+{
+	return textures.contains(TextureType::Emissive);
+}
+
+const bool Material::HasAlphaTexture() const
+{
+	return textures.contains(TextureType::Alpha);
+}

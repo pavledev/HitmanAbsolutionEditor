@@ -13,7 +13,9 @@ public:
 	{
 		Diffuse = 1,
 		Normal,
-		Specular
+		Specular,
+		Emissive,
+		Alpha
 	};
 
 	Material() = default;
@@ -25,6 +27,8 @@ public:
 	const bool HasDiffuseTexture() const;
 	const bool HasNormalTexture() const;
 	const bool HasSpecularTexture() const;
+	const bool HasEmissiveTexture() const;
+	const bool HasAlphaTexture() const;
 
 private:
 	std::string name;

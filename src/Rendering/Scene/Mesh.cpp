@@ -253,6 +253,16 @@ void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std
     {
         hasSpecularMap = true;
     }
+
+    if (material.HasEmissiveTexture())
+    {
+        hasEmissiveMap = true;
+    }
+
+    if (material.HasAlphaTexture())
+    {
+        hasAlphaMap = true;
+    }
 }
 
 void Mesh::Render()

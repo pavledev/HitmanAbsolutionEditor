@@ -259,8 +259,10 @@ void RenderMaterialInstance::GetTextures(std::shared_ptr<Resource> matiResource,
 	bool foundNormalTexture = false;
 	bool foundDiffuseTexture = false;
 	bool foundSpecularTexture = false;
+	bool foundEmissiveTexture = false;
+	bool foundAlphaTexture = false;
 
-	GetTextures(instanceProperty, matiResource, textures, foundNormalTexture, foundDiffuseTexture, foundSpecularTexture);
+	GetTextures(instanceProperty, matiResource, textures, foundNormalTexture, foundDiffuseTexture, foundSpecularTexture, foundEmissiveTexture);
 
 	std::vector<std::shared_ptr<Resource>>& matiReferences = matiResource->GetReferences();
 	Texture texture{};
@@ -292,6 +294,18 @@ void RenderMaterialInstance::GetTextures(std::shared_ptr<Resource> matiResource,
 					texture.textureReferenceIndex = i;
 					foundSpecularTexture = true;
 				}
+				else if (!foundDiffuseTexture && referenceInfo.resourceID.contains("/emissive"))
+				{
+					texture.type = Texture::Type::Emissive;
+					texture.textureReferenceIndex = i;
+					foundEmissiveTexture = true;
+				}
+				else if (referenceInfo.resourceID.contains("/alpha"))
+				{
+					texture.type = Texture::Type::Alpha;
+					texture.textureReferenceIndex = i;
+					foundAlphaTexture = true;
+				}
 			}
 		}
 
@@ -315,9 +329,19 @@ void RenderMaterialInstance::GetTextures(std::shared_ptr<Resource> matiResource,
 	{
 		Logger::GetInstance().Log(Logger::Level::Warning, "Specular texture not found!");
 	}
+
+	if (!foundEmissiveTexture)
+	{
+		Logger::GetInstance().Log(Logger::Level::Warning, "Emissive texture not found!");
+	}
+
+	if (!foundAlphaTexture)
+	{
+		Logger::GetInstance().Log(Logger::Level::Warning, "Alpha texture not found!");
+	}
 }
 
-void RenderMaterialInstance::GetTextures(const Property& property, std::shared_ptr<Resource> matiResource, std::vector<Texture>& textures, bool& foundNormalTexture, bool& foundDiffuseTexture, bool& foundSpecularTexture)
+void RenderMaterialInstance::GetTextures(const Property& property, std::shared_ptr<Resource> matiResource, std::vector<Texture>& textures, bool& foundNormalTexture, bool& foundDiffuseTexture, bool& foundSpecularTexture, bool& foundEmissiveTexture)
 {
 	bool isTextureProperty = false;
 
@@ -350,6 +374,12 @@ void RenderMaterialInstance::GetTextures(const Property& property, std::shared_p
 				texture.type = Texture::Type::Specular;
 				foundSpecularTexture = true;
 			}
+			else if (property.childProperties[i].propertyInfo.lName == 'NAME' &&
+				property.childProperties[i].stringValue == "mapEmissive_01")
+			{
+				texture.type = Texture::Type::Emissive;
+				foundEmissiveTexture = true;
+			}
 
 			if (property.childProperties[i].propertyInfo.lName == 'TXID')
 			{
@@ -367,11 +397,19 @@ void RenderMaterialInstance::GetTextures(const Property& property, std::shared_p
 					{
 						foundDiffuseTexture = false;
 					}
+					else if (texture.type == Texture::Type::Specular)
+					{
+						foundSpecularTexture = false;
+					}
+					else if (texture.type == Texture::Type::Emissive)
+					{
+						foundEmissiveTexture = false;
+					}
 				}
 			}
 		}
 
-		GetTextures(property.childProperties[i], matiResource, textures, foundNormalTexture, foundDiffuseTexture, foundSpecularTexture);
+		GetTextures(property.childProperties[i], matiResource, textures, foundNormalTexture, foundDiffuseTexture, foundSpecularTexture, foundEmissiveTexture);
 	}
 
 	if (texture.type != Texture::Type::Unknown && texture.textureReferenceIndex != -1)

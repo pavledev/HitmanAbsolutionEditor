@@ -35,7 +35,8 @@ public:
 			Diffuse,
 			Normal,
 			Specular,
-			Emissive
+			Emissive,
+			Alpha
 		};
 
 		Type type;
@@ -52,7 +53,7 @@ public:
 	std::string& GetMaterialClassType();
 	Property& GetInstanceProperty();
 	void GetTextures(std::shared_ptr<Resource> matiResource, std::vector<RenderMaterialInstance::Texture>& textures);
-	void GetTextures(const Property& property, std::shared_ptr<Resource> matiResource, std::vector<Texture>& textures, bool& foundNormalTexture, bool& foundDiffuseTexture, bool& foundSpecularTexture);
+	void GetTextures(const Property& property, std::shared_ptr<Resource> matiResource, std::vector<Texture>& textures, bool& foundNormalTexture, bool& foundDiffuseTexture, bool& foundSpecularTexture, bool& foundEmissiveTexture);
 	static std::unordered_map<unsigned int, std::string>& GetMaterialPropertyNames();
 
 private:
