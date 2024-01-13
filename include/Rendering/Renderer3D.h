@@ -42,6 +42,8 @@ public:
 		PhongDiffuseSpecularNormalPixel,
 		MeshDefaultVertex,
 		MeshBlinnPhongPixel,
+		SimpleVertex,
+		SimplePixel,
 		ShaderCount
 	};
 
