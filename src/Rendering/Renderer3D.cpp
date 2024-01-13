@@ -136,6 +136,11 @@ void Renderer3D::CreateShaders()
     shaders[Shaders::MeshDefaultVertex]->Compile(Shader::Type::Vertex, "assets/shaders/MeshDefault_VS.hlsl", VertexType::PosUvNorTan);
     shaders[Shaders::MeshBlinnPhongPixel] = std::make_shared<Shader>();
     shaders[Shaders::MeshBlinnPhongPixel]->Compile(Shader::Type::Pixel, "assets/shaders/MeshBlinnPhong_PS.hlsl");
+
+    shaders[Shaders::SimpleVertex] = std::make_shared<Shader>();
+    shaders[Shaders::SimpleVertex]->Compile(Shader::Type::Vertex, "assets/shaders/Simple_VS.hlsl", VertexType::PosUvNorTan);
+    shaders[Shaders::SimplePixel] = std::make_shared<Shader>();
+    shaders[Shaders::SimplePixel]->Compile(Shader::Type::Pixel, "assets/shaders/Simple_PS.hlsl");
 }
 
 void Renderer3D::CreateDepthStencilStates()
