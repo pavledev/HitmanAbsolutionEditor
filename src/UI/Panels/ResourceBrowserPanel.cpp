@@ -86,6 +86,16 @@ void ResourceBrowserPanel::Render()
 
     isInputTextActive = ImGui::IsItemActive();
 
+    if (isInputTextActive &&
+        (!(assemblyNode.children.size() == 1 && assemblyNode.children[0].name.empty()) ||
+            !(modulesNode.children.size() == 1 && modulesNode.children[0].name.empty())))
+    {
+        assemblyNode.children.clear();
+        modulesNode.children.clear();
+
+        AddRootResourceNodes();
+    }
+
     ImGui::SameLine();
 
     if (UI::IconButton("  " ICON_MDI_FILTER, ""))
@@ -167,6 +177,11 @@ void ResourceBrowserPanel::RenderTree(ResourceNode& parentNode, std::string pare
     if (isNodeSelected)
     {
         nodeFlags |= ImGuiTreeNodeFlags_Selected;
+    }
+
+    if (isInputTextActive)
+    {
+        ImGui::SetNextItemOpen(false);
     }
 
     if (parentNode.children.size() > 0)
@@ -271,7 +286,7 @@ void ResourceBrowserPanel::AddChildren(ResourceNode& parentNode, const std::stri
             continue;
         }
 
-        if (!resourceTypes[resourceInfo.type] || isInputTextActive && !resourceInfo.resourceID.contains(resourceName))
+        if (!resourceTypes[resourceInfo.type] || !resourceInfo.resourceID.contains(resourceName))
         {
             continue;
         }
