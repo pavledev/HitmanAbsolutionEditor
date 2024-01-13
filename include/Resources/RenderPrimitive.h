@@ -126,9 +126,8 @@ public:
 	const SPrimObjectHeader& GetPrimObjectHeader() const;
 	const unsigned int GetBoneRigResourceIndex() const;
 	const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const;
-	const BoneRig* GetBoneRig() const;
+	std::shared_ptr<BoneRig> GetBoneRig() const;
 	const Physics* GetPhysics() const;
-	BoneRig* GetBoneRig();
 	void SetBoneRig(BoneRig* boneRig);
 	void SetPhysics(Physics* physics);
 	void Deserialize() override;
@@ -139,6 +138,5 @@ public:
 private:
 	SPrimObjectHeader primObjectHeader;
 	std::vector<std::shared_ptr<Mesh>> meshes;
-	BoneRig* boneRig;
 	Physics* physics;
 };
