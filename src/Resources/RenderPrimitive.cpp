@@ -745,17 +745,34 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 			{
 				const std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
 				const std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
+				std::shared_ptr<RenderMaterialInstance> matiReference2;
 
-				const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
+				if (matiReference->GetHash() == 0x00983D6FA01A9AE9) //hitman_face_standard
+				{
+					matiReference2 = std::static_pointer_cast<RenderMaterialInstance>(ResourceUtility::CreateResource("MATI"));
+
+					matiReference2->SetHash(0x00C2F21BB84A3AFF); //hitman_01_face
+				}
+				else
+				{
+					matiReference2 = matiReference;
+				}
+
+				const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference2->GetHash());
 				std::vector<RenderMaterialInstance::Texture> textures;
 
-				matiReference->SetHeaderLibraries(&matiReferenceInfo.headerLibraries);
-				matiReference->LoadResource(0, matiReferenceInfo.headerLibraries[0].chunkIndex, matiReferenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-				matiReference->Deserialize();
-				matiReference->GetTextures(matiReference, textures);
+				if (matiReference->GetHash() == 0x00983D6FA01A9AE9) //hitman_face_standard
+				{
+					matiReference2->SetResourceID(matiReferenceInfo.resourceID);
+				}
 
-				materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
-				const std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
+				matiReference2->SetHeaderLibraries(&matiReferenceInfo.headerLibraries);
+				matiReference2->LoadResource(0, matiReferenceInfo.headerLibraries[0].chunkIndex, matiReferenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+				matiReference2->Deserialize();
+				matiReference2->GetTextures(matiReference2, textures);
+
+				materialResourceName = ResourceUtility::GetResourceName(matiReference2->GetResourceID());
+				const std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference2->GetReferences();
 
 				for (size_t j = 0; j < textures.size(); ++j)
 				{
@@ -774,7 +791,7 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 					textReference->DeleteResourceData();
 				}
 
-				matiReference->DeleteResourceData();
+				matiReference2->DeleteResourceData();
 
 				mtlFileName = std::format("{}.mtl", materialResourceName);
 				const std::string mtlFilePath = std::format("{}\\{}", outputPath, mtlFileName);
@@ -975,18 +992,35 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 			continue;
 		}
 
-		std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
+		const std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
+		std::shared_ptr<RenderMaterialInstance> matiReference2;
 
-		const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference->GetHash());
+		if (matiReference->GetHash() == 0x00983D6FA01A9AE9) //hitman_face_standard
+		{
+			matiReference2 = std::static_pointer_cast<RenderMaterialInstance>(ResourceUtility::CreateResource("MATI"));
+
+			matiReference2->SetHash(0x00C2F21BB84A3AFF); //hitman_01_face
+		}
+		else
+		{
+			matiReference2 = matiReference;
+		}
+
+		const ResourceInfoRegistry::ResourceInfo& matiReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiReference2->GetHash());
 		std::vector<RenderMaterialInstance::Texture> textures;
 
-		matiReference->SetHeaderLibraries(&matiReferenceInfo.headerLibraries);
-		matiReference->LoadResource(0, matiReferenceInfo.headerLibraries[0].chunkIndex, matiReferenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-		matiReference->Deserialize();
-		matiReference->GetTextures(matiReference, textures);
+		if (matiReference->GetHash() == 0x00983D6FA01A9AE9) //hitman_face_standard
+		{
+			matiReference2->SetResourceID(matiReferenceInfo.resourceID);
+		}
 
-		const std::string materialResourceName = ResourceUtility::GetResourceName(matiReference->GetResourceID());
-		const std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference->GetReferences();
+		matiReference2->SetHeaderLibraries(&matiReferenceInfo.headerLibraries);
+		matiReference2->LoadResource(0, matiReferenceInfo.headerLibraries[0].chunkIndex, matiReferenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+		matiReference2->Deserialize();
+		matiReference2->GetTextures(matiReference2, textures);
+
+		const std::string materialResourceName = ResourceUtility::GetResourceName(matiReference2->GetResourceID());
+		const std::vector<std::shared_ptr<Resource>>& matiReferences = matiReference2->GetReferences();
 		Microsoft::glTF::Material material;
 
 		material.name = materialResourceName;
@@ -1046,7 +1080,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 			materialIDs[matiReferenceIndex] = document.materials.Append(std::move(material), Microsoft::glTF::AppendIdPolicy::GenerateOnEmpty).id;
 		}
 
-		matiReference->DeleteResourceData();
+		matiReference2->DeleteResourceData();
 	}
 
 	std::vector<std::string> nodeIDs;

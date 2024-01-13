@@ -206,18 +206,36 @@ void Mesh::CreateBoundingBox(const std::shared_ptr<RenderPrimitive::Mesh> mesh)
 
 void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiResource)
 {
-    const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiResource->GetHash());
+    std::shared_ptr<RenderMaterialInstance> matiResource2;
+
+    if (matiResource->GetHash() == 0x00983D6FA01A9AE9) //hitman_face_standard
+    {
+        matiResource2 = std::static_pointer_cast<RenderMaterialInstance>(ResourceUtility::CreateResource("MATI"));
+
+        matiResource2->SetHash(0x00C2F21BB84A3AFF); //hitman_01_face
+    }
+    else
+    {
+        matiResource2 = matiResource;
+    }
+
+    const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiResource2->GetHash());
     std::vector<RenderMaterialInstance::Texture> textures;
 
-    matiResource->SetHeaderLibraries(&referenceInfo.headerLibraries);
-    matiResource->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-    matiResource->Deserialize();
-    matiResource->GetTextures(matiResource, textures);
+    if (matiResource->GetHash() == 0x00983D6FA01A9AE9) //hitman_face_standard
+    {
+        matiResource2->SetResourceID(referenceInfo.resourceID);
+    }
 
-    std::string materialResourceName = ResourceUtility::GetResourceName(matiResource->GetResourceID());
+    matiResource2->SetHeaderLibraries(&referenceInfo.headerLibraries);
+    matiResource2->LoadResource(0, referenceInfo.headerLibraries[0].chunkIndex, referenceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+    matiResource2->Deserialize();
+    matiResource2->GetTextures(matiResource, textures);
+
+    std::string materialResourceName = ResourceUtility::GetResourceName(matiResource2->GetResourceID());
     material = Material(materialResourceName);
 
-    std::vector<std::shared_ptr<Resource>>& matiReferences = matiResource->GetReferences();
+    std::vector<std::shared_ptr<Resource>>& matiReferences = matiResource2->GetReferences();
 
     for (size_t i = 0; i < textures.size(); ++i)
     {
@@ -242,7 +260,7 @@ void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std
         delete textures[i].blob;
     }
 
-    matiResource->DeleteResourceData();
+    matiResource2->DeleteResourceData();
 
     if (material.HasNormalTexture())
     {
