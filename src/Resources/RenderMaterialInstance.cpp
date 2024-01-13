@@ -307,11 +307,11 @@ void RenderMaterialInstance::GetTextures(std::shared_ptr<Resource> matiResource,
 					foundAlphaTexture = true;
 				}
 			}
-		}
 
-		if (texture.type != Texture::Type::Unknown)
-		{
-			textures.push_back(texture);
+			if (texture.type != Texture::Type::Unknown)
+			{
+				textures.push_back(texture);
+			}
 		}
 	}
 
