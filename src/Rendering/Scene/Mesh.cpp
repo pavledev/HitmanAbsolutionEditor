@@ -251,11 +251,6 @@ void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std
 
     if (material.HasSpecularTexture())
     {
-        /*if (material.GetTexture(Material::TextureType::Specular)->HasAlpha())
-        {
-            useGlossAlpha = true;
-        }*/
-
         hasSpecularMap = true;
     }
 }
