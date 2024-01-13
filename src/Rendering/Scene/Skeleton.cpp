@@ -1,5 +1,4 @@
 #include "Rendering/Scene/Skeleton.h"
-//#include "Rendering/Scene/SceneRenderer.h"
 
 Skeleton::Skeleton(const char* name, const char* icon, std::weak_ptr<Entity> entity) : Component(name, icon, entity)
 {
@@ -7,7 +6,7 @@ Skeleton::Skeleton(const char* name, const char* icon, std::weak_ptr<Entity> ent
 
 void Skeleton::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
 {
-    BoneRig* boneRig = renderPrimitive->GetBoneRig();
+    std::shared_ptr<BoneRig> boneRig = renderPrimitive->GetBoneRig();
     const std::vector<SBoneDefinition>& boneDefinitions = boneRig->GetBoneDefinitions();
     std::vector<SQV>& bindPoses = boneRig->GetBindPoses();
     std::vector<VirtualNode> virtualNodes;
@@ -73,11 +72,9 @@ void Skeleton::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
     Quaternion localRotation = Quaternion::FromEulerAngles({ -90.f, 0.f, 0.f });
 
     GetTransform().get()->SetLocalRotation(localRotation);
-
-    this->boneRig = boneRig;
 }
 
-void Skeleton::InitializeVirtualNodes(const unsigned int parentIndex, std::vector<VirtualNode>& virtualNodes, BoneRig* boneRig)
+void Skeleton::InitializeVirtualNodes(const unsigned int parentIndex, std::vector<VirtualNode>& virtualNodes, std::shared_ptr<BoneRig> boneRig)
 {
     const std::vector<SBoneDefinition>& boneDefinitions = boneRig->GetBoneDefinitions();
 
