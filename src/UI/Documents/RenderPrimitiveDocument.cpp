@@ -8,6 +8,7 @@
 #include <UI/Panels/HexViewerPanel.h>
 #include <Editor.h>
 #include <Utility/UI.h>
+#include <Registry/ResourceInfoRegistry.h>
 
 RenderPrimitiveDocument::RenderPrimitiveDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
@@ -118,4 +119,15 @@ void RenderPrimitiveDocument::RenderMenuBar()
 void RenderPrimitiveDocument::OnResourceLoaded()
 {
     renderPrimitive->Deserialize();
+
+    std::shared_ptr<BoneRig> boneRig = renderPrimitive->GetBoneRig();
+
+    if (boneRig && !boneRig->IsResourceLoaded())
+    {
+        const ResourceInfoRegistry::ResourceInfo& borgResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(boneRig->GetHash());
+
+        boneRig->LoadResource(0, borgResourceInfo.headerLibraries[0].chunkIndex, borgResourceInfo.headerLibraries[0].indexInLibrary, false, false, true);
+        boneRig->Deserialize();
+        boneRig->DeleteResourceData();
+    }
 }
