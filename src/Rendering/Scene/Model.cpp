@@ -60,6 +60,10 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
         collision->GetTransform()->SetParent(GetTransform());
         GetTransform()->AddChild(collision->GetTransform());
     }
+
+    Quaternion worldRotation = Quaternion::FromEulerAngles({ -90.f, 0.f, 0.f });
+
+    GetTransform().get()->SetWorldRotation(worldRotation);
 }
 
 const std::vector<std::shared_ptr<Mesh>>& Model::GetMeshes() const

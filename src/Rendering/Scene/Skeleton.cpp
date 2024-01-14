@@ -69,9 +69,9 @@ void Skeleton::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
         GetTransform()->AddChild(modelBones[i]->GetTransform());
     }
 
-    Quaternion localRotation = Quaternion::FromEulerAngles({ -90.f, 0.f, 0.f });
+    Quaternion worldRotation = Quaternion::FromEulerAngles({ -90.f, 0.f, 0.f });
 
-    GetTransform().get()->SetLocalRotation(localRotation);
+    GetTransform().get()->SetWorldRotation(worldRotation);
 }
 
 void Skeleton::InitializeVirtualNodes(const unsigned int parentIndex, std::vector<VirtualNode>& virtualNodes, std::shared_ptr<BoneRig> boneRig)
