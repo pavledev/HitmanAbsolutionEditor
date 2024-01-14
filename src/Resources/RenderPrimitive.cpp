@@ -30,27 +30,32 @@ const std::vector<std::shared_ptr<RenderPrimitive::Mesh>>& RenderPrimitive::GetM
 	return meshes;
 }
 
-const BoneRig* RenderPrimitive::GetBoneRig() const
+std::shared_ptr<BoneRig> RenderPrimitive::GetBoneRig() const
 {
+	std::shared_ptr<BoneRig> boneRig;
+	const std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
+
+	for (size_t i = 0; i < primReferences.size(); ++i)
+	{
+		const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(primReferences[i]->GetHash());
+
+		if (referenceInfo.type == "BORG")
+		{
+			boneRig = std::static_pointer_cast<BoneRig>(primReferences[i]);
+
+			break;
+		}
+	}
+
 	return boneRig;
 }
 
-const Physics* RenderPrimitive::GetPhysics() const
+std::shared_ptr<Physics>RenderPrimitive::GetPhysics() const
 {
 	return physics;
 }
 
-BoneRig* RenderPrimitive::GetBoneRig()
-{
-	return boneRig;
-}
-
-void RenderPrimitive::SetBoneRig(BoneRig* boneRig)
-{
-	this->boneRig = boneRig;
-}
-
-void RenderPrimitive::SetPhysics(Physics* physics)
+void RenderPrimitive::SetPhysics(std::shared_ptr<Physics> physics)
 {
 	this->physics = physics;
 }
@@ -865,20 +870,7 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 
 void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 {
-	std::shared_ptr<BoneRig> boneRig;
-	std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
-
-	for (size_t i = 0; i < primReferences.size(); ++i)
-	{
-		const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(primReferences[i]->GetHash());
-
-		if (referenceInfo.type == "BORG")
-		{
-			boneRig = std::static_pointer_cast<BoneRig>(primReferences[i]);
-
-			break;
-		}
-	}
+	std::shared_ptr<BoneRig> boneRig = GetBoneRig();
 
 	if (boneRig && !boneRig->IsResourceLoaded())
 	{
@@ -992,6 +984,7 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 			continue;
 		}
 
+		const std::vector<std::shared_ptr<Resource>>& primReferences = GetReferences();
 		const std::shared_ptr<RenderMaterialInstance> matiReference = std::static_pointer_cast<RenderMaterialInstance>(primReferences[matiReferenceIndex]);
 		std::shared_ptr<RenderMaterialInstance> matiReference2;
 
