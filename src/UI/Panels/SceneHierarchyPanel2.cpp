@@ -105,9 +105,11 @@ void SceneHierarchyPanel2::CreateEntities()
                 modelBoneEntity->Initialize();
                 modelBoneEntity->AddComponent<ModelBone>("Model Bone", ICON_MDI_BONE);
 
+                static const char* meshNames[3] = { "Head", "Tail", "Bone" };
+
                 for (unsigned int j = 0; j < 3; ++j)
                 {
-                    std::string meshName = std::format("{} Mesh {}", ICON_MDI_SHAPE, j + 1);
+                    std::string meshName = std::format("{} {} Mesh", ICON_MDI_SHAPE, meshNames[j]);
                     std::shared_ptr<Entity> meshEntity = std::make_shared<Entity>(meshName);
 
                     meshEntity->Initialize();
