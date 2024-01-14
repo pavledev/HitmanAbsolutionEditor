@@ -22,4 +22,5 @@ private:
 	std::shared_ptr<Entity> hoveredEntity;
 	std::shared_ptr<Entity> selectedEntity;
 	std::shared_ptr<Renderer3D> renderer3D;
+	bool areEntitiesCreated;
 };

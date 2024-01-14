@@ -15,6 +15,7 @@ SceneHierarchyPanel2::SceneHierarchyPanel2(const char* name, const char* icon, s
     rootEntity = nullptr;
     hoveredEntity = nullptr;
     selectedEntity = nullptr;
+    areEntitiesCreated = false;
 }
 
 void SceneHierarchyPanel2::OnSelectedEntityTreeNode(std::shared_ptr<Entity> selectedEntity)
@@ -162,6 +163,8 @@ void SceneHierarchyPanel2::CreateEntities()
     {
         OnSelectedEntityTreeNode(selectedEntity);
     });
+
+    areEntitiesCreated = true;
 }
 
 void SceneHierarchyPanel2::Render()
@@ -180,7 +183,7 @@ void SceneHierarchyPanel2::Render()
         return;
     }
 
-    if (!rootEntity)
+    if (!areEntitiesCreated)
     {
         ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
         ImGui::Text("Creating entities...");
