@@ -52,7 +52,7 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
         GetTransform()->AddChild(skeleton->GetTransform());
     }
 
-    const Physics* physics = renderPrimitive->GetPhysics();
+    std::shared_ptr<Physics> physics = renderPrimitive->GetPhysics();
 
     if (physics)
     {
