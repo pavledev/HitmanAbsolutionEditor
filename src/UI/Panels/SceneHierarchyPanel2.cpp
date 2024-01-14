@@ -48,7 +48,7 @@ void SceneHierarchyPanel2::CreateEntities()
     ambientLightEntity->AddComponent<AmbientLight>("Ambient Light", ICON_MDI_LIGHTBULB);
 
     cameraEntity->AddComponent<Camera>("Camera", ICON_MDI_CAMERA);
-    cameraEntity->GetComponent<Camera>()->Initialize(75.f, 0.f, 0.1f, 3000.0f, Vector3(2.f, 0.5f, 0.f), Vector3(0.f, -90.f, 0.f));
+    cameraEntity->GetComponent<Camera>()->Initialize(75.f, 0.f, 0.1f, 3000.0f, Vector3(2.f, 0.5f, 0.f), Vector3(0.f, -90.f, 0.f), 0.f, -90.f);
 
     gridEntity->AddComponent<Grid>("Grid", ICON_MDI_GRID);
     gridEntity->GetComponent<Grid>()->Initialize();
@@ -86,9 +86,7 @@ void SceneHierarchyPanel2::CreateEntities()
             modelEntity->AddChild(meshEntity);
         }
 
-        children[children.size() - 1]->GetComponent<Model>()->Initialize(renderPrimitive);
-
-        const BoneRig* boneRig = renderPrimitive->GetBoneRig();
+        std::shared_ptr<BoneRig> boneRig = renderPrimitive->GetBoneRig();
 
         if (boneRig)
         {
@@ -114,6 +112,7 @@ void SceneHierarchyPanel2::CreateEntities()
 
                     meshEntity->Initialize();
                     meshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
+                    meshEntity->GetComponent<Mesh>()->SetRenderer3D(renderer3D);
                     modelBoneEntity->GetComponent<ModelBone>()->AddMesh(meshEntity->GetComponent<Mesh>());
                     modelBoneEntity->AddChild(meshEntity);
                 }
@@ -125,7 +124,7 @@ void SceneHierarchyPanel2::CreateEntities()
             modelEntity->AddChild(skeletonEntity);
         }
 
-        const Physics* physics = renderPrimitive->GetPhysics();
+        std::shared_ptr<Physics> physics = renderPrimitive->GetPhysics();
 
         if (physics)
         {
@@ -150,6 +149,8 @@ void SceneHierarchyPanel2::CreateEntities()
 
             modelEntity->AddChild(collisionEntity);
         }
+
+        children[children.size() - 1]->GetComponent<Model>()->Initialize(renderPrimitive);
     }
 
     renderer3D->SetCamera(cameraEntity->GetComponent<Camera>());
