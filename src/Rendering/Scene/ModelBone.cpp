@@ -200,11 +200,6 @@ void ModelBone::AddMesh(std::shared_ptr<Mesh> mesh)
     meshes.push_back(mesh);
 }
 
-const std::vector<std::shared_ptr<Mesh>>& ModelBone::GetMeshes() const
-{
-    return meshes;
-}
-
 void ModelBone::Render()
 {
 }

@@ -15,7 +15,6 @@ public:
 	static void AlignRoll(EditBone& editBone, const SVector3& no);
 	static float CalculateRoll(EditBone& editBone, const SVector3& alignAxis, const bool axisOnly);
 	void AddMesh(std::shared_ptr<Mesh> mesh);
-	const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const;
 	void Render() override;
 	void RenderProperties() override;
 	SMatrix44 GetBoneOffsetMatrix();
