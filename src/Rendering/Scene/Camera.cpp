@@ -207,38 +207,28 @@ void Camera::Pick()
 
 	// Traces ray against all AABBs in the world
 	std::vector<RayHit> hits;
-	const std::vector<std::shared_ptr<Entity>>& entities = renderer3D->GetRootEntity()->GetChildren();
+	std::vector<std::shared_ptr<Entity>> meshEntities = GetMeshEntities();
 
-	for (size_t i = 0; i < entities.size(); ++i)
+	for (size_t i = 0; i < meshEntities.size(); ++i)
 	{
-		if (!entities[i]->GetComponent<Model>())
+		// Get object oriented bounding box
+		const BoundingBox& aabb = meshEntities[i]->GetComponent<Mesh>()->GetBoundingBox(Mesh::BoundingBoxType::Transformed);
+
+		// Compute hit distance
+		const float distance = ray.HitDistance(aabb);
+
+		// Don't store hit data if there was no hit
+		if (distance == std::numeric_limits<float>::infinity())
 		{
 			continue;
 		}
 
-		const std::vector<std::shared_ptr<Entity>>& children = entities[i]->GetChildren();
-
-		for (size_t j = 0; j < children.size(); ++j)
-		{
-			// Get object oriented bounding box
-			const BoundingBox& aabb = children[j]->GetComponent<Mesh>()->GetBoundingBox(Mesh::BoundingBoxType::Transformed);
-
-			// Compute hit distance
-			const float distance = ray.HitDistance(aabb);
-
-			// Don't store hit data if there was no hit
-			if (distance == std::numeric_limits<float>::infinity())
-			{
-				continue;
-			}
-
-			hits.emplace_back(
-				children[j],                                        // Entity
-				ray.GetStart() + ray.GetDirection() * distance, // Position
-				distance,                                           // Distance
-				distance == 0.0f                                    // Inside
-			);
-		}
+		hits.emplace_back(
+			meshEntities[i],                                        // Entity
+			ray.GetStart() + ray.GetDirection() * distance, // Position
+			distance,                                           // Distance
+			distance == 0.0f                                    // Inside
+		);
 	}
 
 	// Sort by distance (ascending)
@@ -294,6 +284,46 @@ void Camera::Pick()
 			}
 		}
 	}
+}
+
+std::vector<std::shared_ptr<Entity>> Camera::GetMeshEntities()
+{
+	std::vector<std::shared_ptr<Entity>> meshEntities;
+	const std::vector<std::shared_ptr<Entity>>& entities = renderer3D->GetRootEntity()->GetChildren();
+
+	for (size_t i = 0; i < entities.size(); ++i)
+	{
+		if (!entities[i]->GetComponent<Model>())
+		{
+			continue;
+		}
+
+		const std::vector<std::shared_ptr<Entity>>& modelEntityChildren = entities[i]->GetChildren();
+
+		for (size_t j = 0; j < modelEntityChildren.size(); ++j)
+		{
+			if (modelEntityChildren[j]->GetComponent<Mesh>())
+			{
+				meshEntities.push_back(modelEntityChildren[j]);
+			}
+			else if (modelEntityChildren[j]->GetComponent<Skeleton>())
+			{
+				const std::vector<std::shared_ptr<Entity>>& skeletonEntityChildren = modelEntityChildren[j]->GetChildren();
+
+				for (size_t k = 0; k < skeletonEntityChildren.size(); ++k)
+				{
+					const std::vector<std::shared_ptr<Entity>>& modelBoneEntityChildren = skeletonEntityChildren[k]->GetChildren();
+
+					for (size_t l = 0; l < modelBoneEntityChildren.size(); ++l)
+					{
+						meshEntities.push_back(modelBoneEntityChildren[l]);
+					}
+				}
+			}
+		}
+	}
+
+	return meshEntities;
 }
 
 Vector3 Camera::ScreenToWorldCoordinates(const Vector2& screenPosition, const float z) const

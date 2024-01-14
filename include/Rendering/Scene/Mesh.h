@@ -36,7 +36,7 @@ public:
             vertexPositions.push_back(vertexPosition);
         }
 
-        indices = nullptr;
+        //indices = nullptr;
         this->vertexShader = Renderer3D::GetShader(vertexShader);
         this->pixelShader = Renderer3D::GetShader(pixelShader);
         //this->materialColor = color;
@@ -58,7 +58,7 @@ public:
             vertexPositions.push_back(vertexPosition);
         }
 
-        this->indices = &indices;
+        this->indices = indices;
         this->vertexShader = Renderer3D::GetShader(vertexShader);
         this->pixelShader = Renderer3D::GetShader(pixelShader);
         //this->materialColor = color;
@@ -117,7 +117,7 @@ public:
 
 private:
     std::vector<VertexPosition> vertexPositions;
-    const std::vector<unsigned short>* indices;
+    std::vector<unsigned short> indices;
     std::shared_ptr<VertexBuffer> vertexBuffer;
     std::shared_ptr<IndexBuffer> indexBuffer;
     std::shared_ptr<Shader> vertexShader;

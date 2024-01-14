@@ -11,12 +11,18 @@ ModelBone::ModelBone(const char* name, const char* icon, std::weak_ptr<Entity> e
 
 void ModelBone::Initialize(const VirtualNode* virtualNode, EditBone& editBone)
 {
-    std::vector<VertexPositionNormal> boneVertices;
-    std::vector<VertexPositionNormal> sphereVertices;
-    std::vector<unsigned short> sphereIndices;
+    //std::vector<VertexPositionNormal> boneVertices;
+    static std::vector<VertexPosition> boneVertices;
+    static std::vector<unsigned short> boneIndices;
+    static std::vector<VertexPositionNormal> sphereVertices;
+    static std::vector<unsigned short> sphereIndices;
 
-    Geometry::CreateOctahedralBone(boneVertices);
-    Geometry::CreateSphere(sphereVertices, sphereIndices, 0.05f);
+    if (boneVertices.empty())
+    {
+        //Geometry::CreateOctahedralBone(boneVertices);
+        Geometry::CreateOctahedralBone(boneVertices, boneIndices);
+        Geometry::CreateSphere(sphereVertices, sphereIndices, 0.05f);
+    }
 
     std::shared_ptr<Mesh> head = meshes[0];
     std::shared_ptr<Mesh> tail = meshes[1];
@@ -24,7 +30,8 @@ void ModelBone::Initialize(const VirtualNode* virtualNode, EditBone& editBone)
 
     head->Initialize(sphereVertices, sphereIndices, Renderer3D::Shaders::SimpleVertex, Renderer3D::Shaders::SimplePixel, Vector3(0.721f, 0.709f, 0.709f));
     tail->Initialize(sphereVertices, sphereIndices, Renderer3D::Shaders::SimpleVertex, Renderer3D::Shaders::SimplePixel, Vector3(0.721f, 0.709f, 0.709f));
-    bone->Initialize(boneVertices, Renderer3D::Shaders::SimpleVertex, Renderer3D::Shaders::SimplePixel, Vector3(0.721f, 0.709f, 0.709f));
+    //bone->Initialize(boneVertices, Renderer3D::Shaders::SimpleVertex, Renderer3D::Shaders::SimplePixel, Vector3(0.721f, 0.709f, 0.709f));
+    bone->Initialize(boneVertices, boneIndices, Renderer3D::Shaders::SimpleVertex, Renderer3D::Shaders::SimplePixel, Vector3(0.721f, 0.709f, 0.709f));
 
     editBone.headPosition = virtualNode->armatureMatrix * SVector3(0, 0, 0);
     editBone.tailPosition = virtualNode->armatureMatrix * SVector3(0, 1, 0);

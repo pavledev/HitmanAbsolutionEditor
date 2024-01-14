@@ -33,6 +33,7 @@ public:
 	void UpdateProjection();
 	const Ray ComputePickingRay();
 	void Pick();
+	std::vector<std::shared_ptr<Entity>> GetMeshEntities();
 	Vector3 ScreenToWorldCoordinates(const Vector2& screenPosition, const float z) const;
 	Vector2 WorldToScreenCoordinates(const Vector3& worldPosition) const;
 	void Render() override;

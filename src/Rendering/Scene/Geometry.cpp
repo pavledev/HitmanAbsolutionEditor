@@ -565,6 +565,50 @@ void Geometry::CreateOctahedralBone(std::vector<VertexPositionNormal>& vertices)
     }
 }
 
+void Geometry::CreateOctahedralBone(std::vector<VertexPosition>& vertices, std::vector<unsigned short>& indices)
+{
+    static const Vector3 octahedralBoneVertices[6] =
+    {
+        { 0.0f, 0.0f, 0.0f },
+        { 0.1f, 0.1f, 0.1f },
+        { 0.1f, 0.1f, -0.1f },
+        { -0.1f, 0.1f, -0.1f },
+        { -0.1f, 0.1f, 0.1f },
+        { 0.0f, 1.0f, 0.0f }
+    };
+
+    static const unsigned int octahedralBoneSolidTris[8][3] =
+    {
+        { 2, 1, 0 }, /* bottom */
+        { 3, 2, 0 },
+        { 4, 3, 0 },
+        { 1, 4, 0 },
+
+        { 5, 1, 2 }, /* top */
+        { 5, 2, 3 },
+        { 5, 3, 4 },
+        { 5, 4, 1 },
+    };
+
+    vertices.resize(6);
+    indices.resize(24);
+
+    for (int i = 0; i < 6; i++)
+    {
+        vertices[i].position = octahedralBoneVertices[i];
+    }
+
+    unsigned int index = 0;
+
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            indices[index++] = octahedralBoneSolidTris[i][j];
+        }
+    }
+}
+
 void Geometry::CreateCircle(std::vector<VertexPositionColor>& vertices, const Vector3& base, const Vector3& x, const Vector3& y, const Vector4& color, double radius, int numSides)
 {
     const float	angleDelta = 2.0f * M_PI / numSides;

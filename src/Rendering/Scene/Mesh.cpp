@@ -66,7 +66,7 @@ void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_p
         vertexPositions.push_back(vertexPosition);
     }
 
-    indices = &mesh->GetIndices();
+    indices = mesh->GetIndices();
 
     CreateGpuBuffers(mesh);
     CreateMaterial(mesh, matiReference);
@@ -109,7 +109,7 @@ const std::vector<VertexPosition>& Mesh::GetVertexPositions() const
 
 const std::vector<unsigned short>& Mesh::GetIndices() const
 {
-    return *indices;
+    return indices;
 }
 
 const VertexBuffer* Mesh::GetVertexBuffer() const
@@ -361,7 +361,7 @@ void Mesh::Render()
     commandList.SetPipelineState(pipelineState, renderer3D.get(), false);
     commandList.SetVertexBuffer(vertexBuffer.get());
 
-    if (indices)
+    if (indices.size() > 0)
     {
         commandList.SetIndexBuffer(indexBuffer.get());
     }
@@ -381,7 +381,7 @@ void Mesh::Render()
         commandList.SetTexture(ShaderResourceViewRendererBindings::SpecularTexture, material.GetTexture(Material::TextureType::Specular));
     }
 
-    if (indices)
+    if (indices.size() > 0)
     {
         commandList.DrawIndexedPrimitive(indexBuffer.get(), 0, 0, 0, 1);
     }
