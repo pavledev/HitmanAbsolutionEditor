@@ -265,7 +265,6 @@ void RenderMaterialInstance::GetTextures(std::shared_ptr<Resource> matiResource,
 	GetTextures(instanceProperty, matiResource, textures, foundNormalTexture, foundDiffuseTexture, foundSpecularTexture, foundEmissiveTexture);
 
 	std::vector<std::shared_ptr<Resource>>& matiReferences = matiResource->GetReferences();
-	Texture texture{};
 
 	if (!foundNormalTexture || !foundDiffuseTexture || !foundSpecularTexture)
 	{
@@ -276,6 +275,8 @@ void RenderMaterialInstance::GetTextures(std::shared_ptr<Resource> matiResource,
 
 			if (referenceInfo.type == "TEXT")
 			{
+				Texture texture{};
+
 				if (!foundNormalTexture && referenceInfo.resourceID.contains("/normal"))
 				{
 					texture.type = Texture::Type::Normal;
@@ -306,11 +307,11 @@ void RenderMaterialInstance::GetTextures(std::shared_ptr<Resource> matiResource,
 					texture.textureReferenceIndex = i;
 					foundAlphaTexture = true;
 				}
-			}
 
-			if (texture.type != Texture::Type::Unknown)
-			{
-				textures.push_back(texture);
+				if (texture.type != Texture::Type::Unknown)
+				{
+					textures.push_back(texture);
+				}
 			}
 		}
 	}
