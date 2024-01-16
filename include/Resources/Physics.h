@@ -17,7 +17,8 @@
 class Physics : public Resource
 {
 public:
-	Physics() = default;
+	Physics();
+	~Physics();
 	const ZCollisionShape& GetCollisionShape() const;
 	void Deserialize() override;
 	bool DeserializeHeader(BinaryReader& binaryReader);

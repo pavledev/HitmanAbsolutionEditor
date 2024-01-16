@@ -19,6 +19,16 @@
 #include "Registry/GlobalBoneRegistry.h"
 #include "Logger.h"
 
+Physics::Physics()
+{
+	physicsSDK = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION);
+}
+
+Physics::~Physics()
+{
+	NxReleasePhysicsSDK(physicsSDK);
+}
+
 const ZCollisionShape& Physics::GetCollisionShape() const
 {
 	return collisionShape;
@@ -27,7 +37,6 @@ const ZCollisionShape& Physics::GetCollisionShape() const
 void Physics::Deserialize()
 {
 	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
-	physicsSDK = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION);
 
 	if (!DeserializeHeader(binaryReader))
 	{
@@ -70,7 +79,7 @@ void Physics::Deserialize()
 		}
 	}
 
-	NxReleasePhysicsSDK(physicsSDK);
+	isResourceDeserialized = true;
 }
 
 bool Physics::DeserializeHeader(BinaryReader& binaryReader)
@@ -145,7 +154,7 @@ bool Physics::DeserializeCollisionShape(BinaryReader& binaryReader)
 
 bool Physics::DeserializeConvexMesh(BinaryReader& binaryReader)
 {
-	const std::string tag = binaryReader.ReadString(3, false);
+	const std::string tag = binaryReader.ReadString(3, true);
 
 	if (tag != "CVX")
 	{
@@ -182,7 +191,7 @@ bool Physics::DeserializeConvexMesh(BinaryReader& binaryReader)
 
 bool Physics::DeserializeTriangleMesh(BinaryReader& binaryReader)
 {
-	const std::string tag = binaryReader.ReadString(3, false);
+	const std::string tag = binaryReader.ReadString(3, true);
 
 	if (tag != "TRI")
 	{
@@ -218,7 +227,7 @@ bool Physics::DeserializeTriangleMesh(BinaryReader& binaryReader)
 
 bool Physics::DeserializeImplicitPrimitives(std::vector<G2NxShapeDesc*>& shapeDescriptors, BinaryReader& binaryReader)
 {
-	const std::string tag = binaryReader.ReadString(3, false);
+	const std::string tag = binaryReader.ReadString(3, true);
 
 	if (tag != "ICP")
 	{
@@ -231,7 +240,7 @@ bool Physics::DeserializeImplicitPrimitives(std::vector<G2NxShapeDesc*>& shapeDe
 
 	for (unsigned int i = 0; i < shapeCount; ++i)
 	{
-		const std::string shapeType = binaryReader.ReadString(3, false);
+		const std::string shapeType = binaryReader.ReadString(3, true);
 		NxShapeDesc* shapeDescriptor;
 		G2NxShapeDesc* g2ShapeDescriptor = new G2NxShapeDesc();
 
@@ -303,7 +312,7 @@ void Physics::DeserializeBoxShape(NxBoxShapeDesc* boxShapeDescriptor, BinaryRead
 
 bool Physics::DeserializeShatterData(BinaryReader& binaryReader)
 {
-	const std::string tag = binaryReader.ReadString(3, false);
+	const std::string tag = binaryReader.ReadString(3, true);
 
 	if (tag != "BCP")
 	{
@@ -419,7 +428,7 @@ bool Physics::DeserializeKinematicLinkedData(BinaryReader& binaryReader)
 		return false;
 	}
 
-	const std::string tag = binaryReader.ReadString(3, false);
+	const std::string tag = binaryReader.ReadString(3, true);
 
 	if (tag != "KBP")
 	{
