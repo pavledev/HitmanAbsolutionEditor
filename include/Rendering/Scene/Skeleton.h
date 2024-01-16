@@ -15,12 +15,12 @@ public:
 	void AddModelBone(std::shared_ptr<ModelBone> modelBone);
 	void Render() override;
 	void RenderProperties() override;
-	void PrettifyBones(VirtualNode* virtualNode, const SQuaternion* parentBoneRotation = nullptr);
+	void PrettifyBones(VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> parentBoneRotation = nullptr);
 	float PickBoneLength(const VirtualNode* virtualNode);
-	SQuaternion PickBoneRotation(const VirtualNode* virtualNode, const SQuaternion* parentBoneRotation);
-	SQuaternion Temperance(const VirtualNode* virtualNode, const SQuaternion* parentBoneRotation);
-	void RotateBone(VirtualNode* virtualNode, const SQuaternion& rotation);
-	void LocalRotation(VirtualNode* virtualNode, const SQuaternion& rotation);
+	std::shared_ptr<SQuaternion> PickBoneRotation(const VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> parentBoneRotation);
+	std::shared_ptr<SQuaternion> Temperance(const VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> parentBoneRotation);
+	void RotateBone(VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> rotation);
+	void LocalRotation(VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> rotation);
 	void CalculateBoneMatrices(VirtualNode* virtualNode);
 	void ConvertPosition(SVector3& vector);
 	void ConvertRotation(SQuaternion& SQuaternion);

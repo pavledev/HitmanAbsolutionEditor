@@ -106,17 +106,20 @@ void Skeleton::RenderProperties()
 {
 }
 
-void Skeleton::PrettifyBones(VirtualNode* virtualNode, const SQuaternion* parentBoneRotation)
+void Skeleton::PrettifyBones(VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> parentBoneRotation)
 {
     virtualNode->boneLength = PickBoneLength(virtualNode);
 
-    const SQuaternion rotation = PickBoneRotation(virtualNode, parentBoneRotation);
+    const std::shared_ptr<SQuaternion> rotation = PickBoneRotation(virtualNode, parentBoneRotation);
 
-    RotateBone(virtualNode, rotation);
+    if (rotation)
+    {
+        RotateBone(virtualNode, rotation);
+    }
 
     for (size_t i = 0; i < virtualNode->children.size(); ++i)
     {
-        PrettifyBones(virtualNode->children[i], &rotation);
+        PrettifyBones(virtualNode->children[i], rotation);
     }
 }
 
@@ -166,13 +169,13 @@ float Skeleton::PickBoneLength(const VirtualNode* virtualNode)
     return 1.0f;
 }
 
-SQuaternion Skeleton::PickBoneRotation(const VirtualNode* virtualNode, const SQuaternion* parentBoneRotation)
+std::shared_ptr<SQuaternion> Skeleton::PickBoneRotation(const VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> parentBoneRotation)
 {
     //A bone's tip lies on its local +Y axis so rotating a bone let's us adjust the bone direction.
 
     if (boneHeuristic == BoneHeuristic::Blender)
     {
-        return SQuaternion(std::powf(2, 0.5) / 2, std::powf(2, 0.5) / 2, 0, 0);
+        return std::make_shared<SQuaternion>(std::powf(2, 0.5) / 2, std::powf(2, 0.5) / 2, 0, 0);
     }
     else
     {
@@ -180,7 +183,7 @@ SQuaternion Skeleton::PickBoneRotation(const VirtualNode* virtualNode, const SQu
     }
 }
 
-SQuaternion Skeleton::Temperance(const VirtualNode* virtualNode, const SQuaternion* parentBoneRotation)
+std::shared_ptr<SQuaternion> Skeleton::Temperance(const VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> parentBoneRotation)
 {
     //Try to put our tip at the centroid of our children
     std::vector<SVector3> childBoneLocations;
@@ -216,22 +219,22 @@ SQuaternion Skeleton::Temperance(const VirtualNode* virtualNode, const SQuaterni
             rotation = Math::GetNearbySignedPermutationMatrix(rotation).MatrixToQuaternion();
         }
 
-        return rotation;
+        return std::make_shared<SQuaternion>(rotation);
     }
 
-    return *parentBoneRotation;
+    return parentBoneRotation;
 }
 
-void Skeleton::RotateBone(VirtualNode* virtualNode, const SQuaternion& rotation)
+void Skeleton::RotateBone(VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> rotation)
 {
     //Rotate one edit bone without affecting anything else.
 
-    SQuaternion rotation2 = virtualNode->editBoneRotation * rotation;
+    SQuaternion rotation2 = virtualNode->editBoneRotation * *rotation;
 
     virtualNode->editBoneRotation = rotation2;
 
     //Cancel out the rotation so children aren't affected.
-    SQuaternion invertedRotation = rotation.Conjugated();
+    SQuaternion invertedRotation = rotation->Conjugated();
 
     for (size_t i = 0; i < virtualNode->children.size(); ++i)
     {
@@ -246,7 +249,7 @@ void Skeleton::RotateBone(VirtualNode* virtualNode, const SQuaternion& rotation)
     LocalRotation(virtualNode, rotation);
 }
 
-void Skeleton::LocalRotation(VirtualNode* virtualNode, const SQuaternion& rotation)
+void Skeleton::LocalRotation(VirtualNode* virtualNode, const std::shared_ptr<SQuaternion> rotation)
 {
     /*
     * Appends a local rotation to vnode's world transform:
@@ -257,11 +260,11 @@ void Skeleton::LocalRotation(VirtualNode* virtualNode, const SQuaternion& rotati
     * (eg. (X Y Z)->(X - Z Y)) OR vnode's scale must always be uniform.
     */
 
-    SQuaternion rotationBefore2 = virtualNode->rotationBefore * rotation;
+    SQuaternion rotationBefore2 = virtualNode->rotationBefore * *rotation;
     virtualNode->rotationBefore = rotationBefore2;
 
     //Append the inverse rotation after children's TRS to cancel it out.
-    SQuaternion invertedRotation = rotation.Conjugated();
+    SQuaternion invertedRotation = rotation->Conjugated();
 
     for (size_t i = 0; i < virtualNode->children.size(); ++i)
     {
