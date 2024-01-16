@@ -881,6 +881,20 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 		boneRig->DeleteResourceData();
 	}
 
+	std::vector<std::shared_ptr<Mesh>> meshes;
+
+	for (size_t i = 0; i < this->meshes.size(); ++i)
+	{
+		const unsigned char lodMask = this->meshes[i]->GetLODMask();
+
+		if ((lodMask & 1) != 1)
+		{
+			continue;
+		}
+
+		meshes.push_back(this->meshes[i]);
+	}
+
 	std::vector<std::vector<float>> verticesMin;
 	std::vector<std::vector<float>> verticesMax;
 
@@ -888,16 +902,6 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 	{
 		std::vector<float> tempVerticesMin;
 		std::vector<float> tempVerticesMax;
-		const unsigned char lodMask = meshes[i]->GetLODMask();
-
-		if ((lodMask & 1) != 1)
-		{
-			verticesMin.push_back(tempVerticesMin);
-			verticesMax.push_back(tempVerticesMax);
-
-			continue;
-		}
-
 		const std::vector<Vertex> vertices = meshes[i]->GetVertices();
 
 		for (size_t j = 0; j < vertices.size(); j++)
@@ -970,13 +974,6 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 
 	for (size_t i = 0; i < meshes.size(); ++i)
 	{
-		const unsigned char lodMask = meshes[i]->GetLODMask();
-
-		if ((lodMask & 1) != 1)
-		{
-			continue;
-		}
-
 		const unsigned int matiReferenceIndex = meshes[i]->GetMaterialID();
 
 		if (materialIDs.contains(matiReferenceIndex))
@@ -1084,13 +1081,6 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 
 	for (size_t i = 0; i < meshes.size(); ++i)
 	{
-		unsigned char lodMask = meshes[i]->GetLODMask();
-
-		if ((lodMask & 1) != 1)
-		{
-			continue;
-		}
-
 		if (meshes[i]->IsWeighted())
 		{
 			isAnyMeshWeighted = true;
@@ -1120,13 +1110,6 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 
 	for (size_t i = 0; i < meshes.size(); ++i)
 	{
-		unsigned char lodMask = meshes[i]->GetLODMask();
-
-		if ((lodMask & 1) != 1)
-		{
-			continue;
-		}
-
 		const unsigned int matiReferenceIndex = meshes[i]->GetMaterialID();
 		Microsoft::glTF::MeshPrimitive meshPrimitive;
 
