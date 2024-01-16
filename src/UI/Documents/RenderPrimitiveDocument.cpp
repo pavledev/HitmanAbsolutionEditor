@@ -9,6 +9,9 @@
 #include <Editor.h>
 #include <Utility/UI.h>
 #include <Registry/ResourceInfoRegistry.h>
+#include <Registry/ResourceIDRegistry.h>
+#include <Hash.h>
+#include <Utility/ResourceUtility.h>
 
 RenderPrimitiveDocument::RenderPrimitiveDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
@@ -129,5 +132,25 @@ void RenderPrimitiveDocument::OnResourceLoaded()
         boneRig->LoadResource(0, borgResourceInfo.headerLibraries[0].chunkIndex, borgResourceInfo.headerLibraries[0].indexInLibrary, false, false, true);
         boneRig->Deserialize();
         boneRig->DeleteResourceData();
+    }
+
+    const std::string primResourceID = renderPrimitive->GetResourceID();
+    const std::string alocResourceID = std::format("{}_coll", primResourceID.substr(0, primResourceID.find_last_of("_")));
+    const unsigned long long alocRuntimeResourceID = ResourceIDRegistry::GetInstance().GetRuntimeResourceID(alocResourceID);
+
+    if (alocRuntimeResourceID != -1)
+    {
+        const unsigned long long alocHash = Hash::GetMD5(alocResourceID);
+        const ResourceInfoRegistry::ResourceInfo& alocResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(alocHash);
+        const std::shared_ptr<Physics> physics = std::static_pointer_cast<Physics>(ResourceUtility::CreateResource("ALOC"));
+
+        physics->SetHeaderLibraries(&alocResourceInfo.headerLibraries);
+        physics->LoadResource(0, alocResourceInfo.headerLibraries[0].chunkIndex, alocResourceInfo.headerLibraries[0].indexInLibrary, false, false, true);
+        physics->Deserialize();
+        renderPrimitive->SetPhysics(physics);
+    }
+    else
+    {
+        Logger::GetInstance().Log(Logger::Level::Info, "{} {}", primResourceID, "doesn't have collision.");
     }
 }
