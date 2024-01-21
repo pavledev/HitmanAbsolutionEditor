@@ -55,7 +55,7 @@ void Collision::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
             }
             default:
             {
-                //Logger::GetInstance().Log(Logger::Level::Error, "Shape type isn't supported!");
+                Logger::GetInstance().Log(Logger::Level::Error, "Shape type isn't supported!");
 
                 break;
             }
