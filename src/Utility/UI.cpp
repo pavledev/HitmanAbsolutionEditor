@@ -350,8 +350,10 @@ bool UI::ColorRGBAProperty(const char* label, Vector4& vector, const char* toolt
 	return isModified;
 }
 
-void UI::Vector2Property(const char* label, Vector2& vector, const char* tooltip, float resetValue)
+bool UI::Vector2Property(const char* label, Vector2& vector, const char* tooltip, float resetValue)
 {
+	bool isModified = false;
+
 	BeginProperty(label, tooltip, false);
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -376,72 +378,7 @@ void UI::Vector2Property(const char* label, Vector2& vector, const char* tooltip
 	if (ImGui::Button("X", buttonSize))
 	{
 		vector.x = resetValue;
-	}
-
-	ImGui::PopFont();
-	ImGui::PopStyleColor(4);
-
-	ImGui::SameLine();
-	ImGui::DragFloat("##X", &vector.x, 0.1f, 0.0f, 0.0f, "%.2f");
-
-	ImGui::PopItemWidth();
-	ImGui::PopStyleVar();
-
-	ImGui::SameLine();
-
-	// Y
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
-	ImGui::PushFont(boldFont);
-
-	if (ImGui::Button("Y", buttonSize))
-	{
-		vector.y = resetValue;
-	}
-
-	ImGui::PopFont();
-	ImGui::PopStyleColor(4);
-
-	ImGui::SameLine();
-	ImGui::DragFloat("##Y", &vector.y, 0.1f, 0.0f, 0.0f, "%.2f");
-
-	ImGui::PopItemWidth();
-	ImGui::PopStyleVar();
-
-	EndProperty();
-}
-
-void UI::Vector3Property(const char* label, Vector3& vector, const char* tooltip, float resetValue, std::function<void(Vector3&)> onValueChangeCallback)
-{
-	BeginProperty(label, tooltip, false);
-
-	ImGuiIO& io = ImGui::GetIO();
-	auto boldFont = io.Fonts->Fonts[1];
-
-	ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-
-	float frameHeight = ImGui::GetFrameHeight();
-	ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
-
-	ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, innerItemSpacing);
-
-	// X
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
-	ImGui::PushFont(boldFont);
-
-	bool isValueChanged = false;
-
-	if (ImGui::Button("X", buttonSize))
-	{
-		vector.x = resetValue;
+		isModified = true;
 	}
 
 	ImGui::PopFont();
@@ -451,7 +388,7 @@ void UI::Vector3Property(const char* label, Vector3& vector, const char* tooltip
 
 	if (ImGui::DragFloat("##X", &vector.x, 0.1f, 0.0f, 0.0f, "%.2f"))
 	{
-		isValueChanged = true;
+		isModified = true;
 	}
 
 	ImGui::PopItemWidth();
@@ -470,6 +407,7 @@ void UI::Vector3Property(const char* label, Vector3& vector, const char* tooltip
 	if (ImGui::Button("Y", buttonSize))
 	{
 		vector.y = resetValue;
+		isModified = true;
 	}
 
 	ImGui::PopFont();
@@ -479,7 +417,85 @@ void UI::Vector3Property(const char* label, Vector3& vector, const char* tooltip
 
 	if (ImGui::DragFloat("##Y", &vector.y, 0.1f, 0.0f, 0.0f, "%.2f"))
 	{
-		isValueChanged = true;
+		isModified = true;
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::PopStyleVar();
+
+	EndProperty();
+
+	return isModified;
+}
+
+bool UI::Vector3Property(const char* label, Vector3& vector, const char* tooltip, float resetValue)
+{
+	bool isModified = false;
+
+	BeginProperty(label, tooltip, false);
+
+	ImGuiIO& io = ImGui::GetIO();
+	auto boldFont = io.Fonts->Fonts[1];
+
+	ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+
+	float frameHeight = ImGui::GetFrameHeight();
+	ImVec2 buttonSize = { frameHeight + 3.0f, frameHeight };
+
+	ImVec2 innerItemSpacing = ImGui::GetStyle().ItemInnerSpacing;
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, innerItemSpacing);
+
+	// X
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+	ImGui::PushFont(boldFont);
+
+	if (ImGui::Button("X", buttonSize))
+	{
+		vector.x = resetValue;
+		isModified = true;
+	}
+
+	ImGui::PopFont();
+	ImGui::PopStyleColor(4);
+
+	ImGui::SameLine();
+
+	if (ImGui::DragFloat("##X", &vector.x, 0.1f, 0.0f, 0.0f, "%.2f"))
+	{
+		isModified = true;
+	}
+
+	ImGui::PopItemWidth();
+	ImGui::PopStyleVar();
+
+	ImGui::SameLine();
+
+	// Y
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 1.0f, 1.0f, 1.0f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+	ImGui::PushFont(boldFont);
+
+	if (ImGui::Button("Y", buttonSize))
+	{
+		vector.y = resetValue;
+		isModified = true;
+	}
+
+	ImGui::PopFont();
+	ImGui::PopStyleColor(4);
+
+	ImGui::SameLine();
+
+	if (ImGui::DragFloat("##Y", &vector.y, 0.1f, 0.0f, 0.0f, "%.2f"))
+	{
+		isModified = true;
 	}
 
 	ImGui::PopItemWidth();
@@ -498,6 +514,7 @@ void UI::Vector3Property(const char* label, Vector3& vector, const char* tooltip
 	if (ImGui::Button("Z", buttonSize))
 	{
 		vector.z = resetValue;
+		isModified = true;
 	}
 
 	ImGui::PopFont();
@@ -507,7 +524,7 @@ void UI::Vector3Property(const char* label, Vector3& vector, const char* tooltip
 
 	if (ImGui::DragFloat("##Z", &vector.z, 0.1f, 0.0f, 0.0f, "%.2f"))
 	{
-		isValueChanged = true;
+		isModified = true;
 	}
 
 	ImGui::PopItemWidth();
@@ -515,12 +532,9 @@ void UI::Vector3Property(const char* label, Vector3& vector, const char* tooltip
 
 	ImGui::PopStyleVar();
 
-	if (isValueChanged && onValueChangeCallback)
-	{
-		onValueChangeCallback(vector);
-	}
-
 	EndProperty();
+
+	return isModified;
 }
 
 bool UI::IconButton(const char* icon, const char* label, ImVec4 iconColor, ImVec4 backgroundColor)
