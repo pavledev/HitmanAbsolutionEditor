@@ -1407,3 +1407,16 @@ void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
 
 	glbResourceWriter->Flush(manifest, glbFileName.string());
 }
+
+const bool RenderPrimitive::HasBulletCollisionData() const
+{
+	for (size_t i = 0; i < meshes.size(); ++i)
+	{
+		if (meshes[i]->GetSubMesh().lCollision > 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}

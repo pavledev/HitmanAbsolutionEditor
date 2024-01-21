@@ -151,6 +151,7 @@ public:
 	void Export(const std::string& outputPath, const std::string& exportOption) override;
 	void ConvertToOBJ(const std::string& outputPath);
 	void ConvertToGLB(const std::string& glbFilePath, bool rotate);
+	const bool HasBulletCollisionData() const;
 
 private:
 	SPrimObjectHeader primObjectHeader;
