@@ -15,6 +15,8 @@ public:
 	static void CreateBoxMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> boxMesh);
 	static void CreateSphereMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> sphereMesh);
 	static void CreateCapsuleMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> capsuleMesh);
+	static void CreateConvexMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> convexMesh);
+	static void CreateTriangleMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> triangleMesh);
 
 private:
 	std::vector<std::shared_ptr<Mesh>> meshes;
