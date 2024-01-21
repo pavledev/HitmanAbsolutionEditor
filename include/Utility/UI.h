@@ -281,8 +281,8 @@ public:
 	static bool ColorRGBProperty(const char* label, Vector3& vector, const char* tooltip = nullptr);
 	static bool ColorRGBAProperty(const char* label, Vector4& vector, const char* tooltip = nullptr);
 
-	static void Vector2Property(const char* label, Vector2& vector, const char* tooltip = nullptr, float resetValue = 0.0f);
-	static void Vector3Property(const char* label, Vector3& vector, const char* tooltip = nullptr, float resetValue = 0.0f, std::function<void(Vector3&)> onValueChangeCallback = nullptr);
+	static bool Vector2Property(const char* label, Vector2& vector, const char* tooltip = nullptr, float resetValue = 0.f);
+	static bool Vector3Property(const char* label, Vector3& vector, const char* tooltip = nullptr, float resetValue = 0.f);
 
 	static bool IconButton(const char* icon, const char* label, ImVec4 iconColor = { 1.f, 1.f, 1.f, 1.0f }, ImVec4 backgroundColor = { 0.22f, 0.22f, 0.22f, 1.00f });
 	static ImVec2 GetIconButtonSize(const char* icon, const char* label);
