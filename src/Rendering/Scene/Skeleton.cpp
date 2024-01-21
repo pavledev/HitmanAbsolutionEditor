@@ -71,7 +71,7 @@ void Skeleton::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
 
     Quaternion worldRotation = Quaternion::FromEulerAngles({ -90.f, 0.f, 0.f });
 
-    GetTransform().get()->SetWorldRotation(worldRotation);
+    GetTransform()->SetWorldRotation(worldRotation);
 }
 
 void Skeleton::InitializeVirtualNodes(const unsigned int parentIndex, std::vector<VirtualNode>& virtualNodes, std::shared_ptr<BoneRig> boneRig)
