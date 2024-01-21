@@ -286,13 +286,20 @@ void Transform::RenderProperties()
 		Vector3 worldRotation = GetWorldRotation().ToEulerAngles();
 		Vector3 worldScale = GetWorldScale();
 
-		UI::Vector3Property("Position", worldPosition);
-		UI::Vector3Property("Rotation", worldRotation);
-		UI::Vector3Property("Scale", worldScale, nullptr, 1.0f);
+		if (UI::Vector3Property("Position", worldPosition))
+		{
+			SetWorldPosition(worldPosition);
+		}
 
-		SetWorldPosition(worldPosition);
-		SetWorldRotation(Quaternion::FromEulerAngles(worldRotation));
-		SetWorldScale(worldScale);
+		if (UI::Vector3Property("Rotation", worldRotation))
+		{
+			SetWorldRotation(Quaternion::FromEulerAngles(worldRotation));
+		}
+
+		if (UI::Vector3Property("Scale", worldScale, nullptr, 1.0f))
+		{
+			SetWorldScale(worldScale);
+		}
 
 		UI::EndProperties();
 
@@ -307,15 +314,20 @@ void Transform::RenderProperties()
 		Vector3 localRotation = GetLocalRotation().ToEulerAngles();
 		Vector3 localScale = GetLocalScale();
 
-		UI::Vector3Property("Position", localPosition);
-		UI::Vector3Property("Rotation", localRotation);
-		UI::Vector3Property("Scale", localScale, nullptr, 1.0f);
+		if (UI::Vector3Property("Position", localPosition))
+		{
+			SetLocalPosition(localPosition);
+		}
 
-		Vector3 localRotation2 = Math::ConvertDegressToRadians(localRotation);
+		if (UI::Vector3Property("Rotation", localRotation))
+		{
+			SetLocalRotation(Quaternion::FromEulerAngles(localRotation));
+		}
 
-		SetLocalPosition(localPosition);
-		SetLocalRotation(Quaternion::FromEulerAngles(localRotation));
-		SetLocalScale(localScale);
+		if (UI::Vector3Property("Scale", localScale, nullptr, 1.0f))
+		{
+			SetLocalScale(localScale);
+		}
 
 		UI::EndProperties();
 
