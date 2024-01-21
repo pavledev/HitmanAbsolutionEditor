@@ -509,6 +509,13 @@ void RenderPrimitive::StandardMesh::Deserialize(BinaryReader& binaryReader, cons
 
 	ReadIndices(binaryReader);
 	ReadVertices(binaryReader, hasHighResolutionPositions);
+
+	if (primSubMesh.lCollision > 0)
+	{
+		binaryReader.Seek(primSubMesh.lCollision);
+
+		DeserializeCollisionData(binaryReader);
+	}
 }
 
 void RenderPrimitive::StandardMesh::ReadVertices(BinaryReader& binaryReader, const bool hasHighResolutionPositions)
@@ -532,6 +539,18 @@ void RenderPrimitive::StandardMesh::ReadVertices(BinaryReader& binaryReader, con
 	}
 }
 
+void RenderPrimitive::StandardMesh::DeserializeCollisionData(BinaryReader& binaryReader)
+{
+	collisionBox.coliBoxHeader = binaryReader.Read<SColiBoxHeader>();
+
+	collisionBox.chunks.resize(collisionBox.coliBoxHeader.nNumChunks);
+
+	for (size_t i = 0; i < collisionBox.chunks.size(); ++i)
+	{
+		collisionBox.chunks[i] = binaryReader.Read<SColiBox>();
+	}
+}
+
 const bool RenderPrimitive::StandardMesh::IsWeighted() const
 {
 	return false;
@@ -545,6 +564,11 @@ const unsigned short RenderPrimitive::StandardMesh::GetMaterialID() const
 const unsigned char RenderPrimitive::StandardMesh::GetLODMask() const
 {
 	return primMesh.lLODMask;
+}
+
+const RenderPrimitive::CollisionBox& RenderPrimitive::StandardMesh::GetCollisionBox() const
+{
+	return collisionBox;
 }
 
 void RenderPrimitive::LinkedMesh::Deserialize(BinaryReader& binaryReader, const bool hasHighResolutionPositions)
@@ -572,6 +596,13 @@ void RenderPrimitive::LinkedMesh::Deserialize(BinaryReader& binaryReader, const 
 	binaryReader.Seek(primMeshWeighted.lBoneInfo, SeekOrigin::Begin);
 
 	boneInfo = binaryReader.Read<SBoneInfo>();
+
+	if (primSubMesh.lCollision > 0)
+	{
+		binaryReader.Seek(primSubMesh.lCollision);
+
+		DeserializeCollisionData(binaryReader);
+	}
 }
 
 void RenderPrimitive::LinkedMesh::ReadVertices(BinaryReader& binaryReader, const bool hasHighResolutionPositions)
@@ -597,6 +628,33 @@ void RenderPrimitive::LinkedMesh::ReadVertices(BinaryReader& binaryReader, const
 		}
 
 		ReadVertexColor(binaryReader, i);
+	}
+}
+
+void RenderPrimitive::LinkedMesh::DeserializeCollisionData(BinaryReader& binaryReader)
+{
+	const size_t collisionDataPosition = binaryReader.GetPosition();
+	coliBoneHeader = binaryReader.Read<SColiBoneHeader>();
+
+	collisionBoxes.resize(coliBoneHeader.nNumBlocks);
+
+	for (size_t i = 0; i < collisionBoxes.size(); ++i)
+	{
+		const unsigned short collisionBoxOffset = binaryReader.Read<unsigned short>();
+		const size_t currentPosition = binaryReader.GetPosition();
+
+		binaryReader.Seek(collisionDataPosition + collisionBoxOffset);
+
+		collisionBoxes[i].coliBoxHeader = binaryReader.Read<SColiBoxHeader>();
+
+		collisionBoxes[i].chunks.resize(collisionBoxes[i].coliBoxHeader.nNumChunks);
+
+		for (size_t j = 0; j < collisionBoxes[i].chunks.size(); ++j)
+		{
+			collisionBoxes[i].chunks[j] = binaryReader.Read<SColiBox>();
+		}
+
+		binaryReader.Seek(currentPosition);
 	}
 }
 
@@ -671,6 +729,10 @@ void RenderPrimitive::WeightedMesh::ReadVertices(BinaryReader& binaryReader, con
 
 		ReadVertexColor(binaryReader, i);
 	}
+}
+
+void RenderPrimitive::WeightedMesh::DeserializeCollisionData(BinaryReader& binaryReader)
+{
 }
 
 const bool RenderPrimitive::WeightedMesh::IsWeighted() const

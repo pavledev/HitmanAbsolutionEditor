@@ -6,6 +6,9 @@
 #include "Glacier/RenderPrimitive/SPrimMesh.h"
 #include "Glacier/RenderPrimitive/SPrimSubMesh.h"
 #include "Glacier/RenderPrimitive/SPrimMeshWeighted.h"
+#include "Glacier/RenderPrimitive/SColiBoxHeader.h"
+#include "Glacier/RenderPrimitive/SColiBox.h"
+#include "Glacier/RenderPrimitive/SColiBoneHeader.h"
 
 #include "IO/BinaryReader.h"
 #include "Resources/BoneRig.h"
@@ -36,6 +39,12 @@ public:
 		unsigned char boneRemapValues[4];
 	};
 
+	struct CollisionBox
+	{
+		SColiBoxHeader coliBoxHeader;
+		std::vector<SColiBox> chunks;
+	};
+
 	class Mesh
 	{
 	public:
@@ -51,6 +60,7 @@ public:
 		void ReadVertexBinormal(BinaryReader& binaryReader, const unsigned int vertexIndex);
 		void ReadVertexUVs(BinaryReader& binaryReader, const unsigned int vertexIndex, const Vector2& scale, const Vector2& bias);
 		void ReadVertexColor(BinaryReader& binaryReader, const unsigned int vertexIndex);
+		virtual void DeserializeCollisionData(BinaryReader& binaryReader) = 0;
 		const SPrimObject::SUBTYPE GetSubType() const;
 		const unsigned int GetIndexCount() const;
 		const unsigned int GetVertexCount() const;
@@ -86,12 +96,15 @@ public:
 	public:
 		void Deserialize(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
 		void ReadVertices(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
+		void DeserializeCollisionData(BinaryReader& binaryReader) override;
 		const bool IsWeighted() const override;
 		const unsigned short GetMaterialID() const override;
 		const unsigned char GetLODMask() const override;
+		const CollisionBox& GetCollisionBox() const;
 
 	private:
 		SPrimMesh primMesh;
+		CollisionBox collisionBox;
 	};
 
 	class LinkedMesh : public Mesh
@@ -99,6 +112,7 @@ public:
 	public:
 		void Deserialize(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
 		void ReadVertices(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
+		void DeserializeCollisionData(BinaryReader& binaryReader) override;
 		const bool IsWeighted() const override;
 		const unsigned short GetMaterialID() const override;
 		const unsigned char GetLODMask() const override;
@@ -106,6 +120,8 @@ public:
 	private:
 		SPrimMeshWeighted primMeshWeighted;
 		SBoneInfo boneInfo;
+		SColiBoneHeader coliBoneHeader;
+		std::vector<CollisionBox> collisionBoxes;
 	};
 
 	class WeightedMesh : public Mesh
@@ -113,6 +129,7 @@ public:
 	public:
 		void Deserialize(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
 		void ReadVertices(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
+		void DeserializeCollisionData(BinaryReader& binaryReader) override;
 		const bool IsWeighted() const override;
 		const unsigned short GetMaterialID() const override;
 		const unsigned char GetLODMask() const override;
