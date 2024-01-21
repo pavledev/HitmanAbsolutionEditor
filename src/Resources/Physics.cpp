@@ -180,8 +180,8 @@ bool Physics::DeserializeConvexMesh(BinaryReader& binaryReader)
 
 		g2ShapeDescriptor->m_pDesc = convexShapeDescriptor;
 		g2ShapeDescriptor->m_bIsOpaque = true;
-		g2ShapeDescriptor->m_pStatic = 0;
-		g2ShapeDescriptor->m_pDynamic = 0;
+		g2ShapeDescriptor->m_pStatic = nullptr;
+		g2ShapeDescriptor->m_pDynamic = nullptr;
 
 		collisionShape.AddShapeDescriptor(g2ShapeDescriptor);
 	}
@@ -216,8 +216,8 @@ bool Physics::DeserializeTriangleMesh(BinaryReader& binaryReader)
 
 		g2ShapeDescriptor->m_pDesc = triangleMeshShapeDescriptor;
 		g2ShapeDescriptor->m_bIsOpaque = true;
-		g2ShapeDescriptor->m_pStatic = 0;
-		g2ShapeDescriptor->m_pDynamic = 0;
+		g2ShapeDescriptor->m_pStatic = nullptr;
+		g2ShapeDescriptor->m_pDynamic = nullptr;
 
 		collisionShape.AddShapeDescriptor(g2ShapeDescriptor);
 	}
@@ -277,8 +277,8 @@ bool Physics::DeserializeImplicitPrimitives(std::vector<G2NxShapeDesc*>& shapeDe
 		}
 
 		shapeDescriptor->skinWidth = skinWidth;
-		g2ShapeDescriptor->m_pStatic = 0;
-		g2ShapeDescriptor->m_pDynamic = 0;
+		g2ShapeDescriptor->m_pStatic = nullptr;
+		g2ShapeDescriptor->m_pDynamic = nullptr;
 		g2ShapeDescriptor->m_pDesc = shapeDescriptor;
 		g2ShapeDescriptor->m_bIsOpaque = IsCollisionLayerOpaque(static_cast<ECollidableLayer>(shapeDescriptor->group));
 
