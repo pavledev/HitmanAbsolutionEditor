@@ -82,6 +82,7 @@ public:
 		const unsigned int GetVertexBufferSize() const;
 		const unsigned int GetStride() const;
 		void CreateVertexBuffer();
+		const SPrimSubMesh& GetSubMesh() const;
 
 	protected:
 		SPrimSubMesh primSubMesh;

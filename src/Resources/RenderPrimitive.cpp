@@ -488,6 +488,11 @@ void RenderPrimitive::Mesh::CreateVertexBuffer()
 	}
 }
 
+const SPrimSubMesh& RenderPrimitive::Mesh::GetSubMesh() const
+{
+	return primSubMesh;
+}
+
 void RenderPrimitive::StandardMesh::Deserialize(BinaryReader& binaryReader, const bool hasHighResolutionPositions)
 {
 	primMesh = binaryReader.Read<SPrimMesh>();
