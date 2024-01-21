@@ -125,18 +125,20 @@ void Collision::CreateCapsuleMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<
     NxCapsuleShapeDesc* capsuleShapeDescriptor = static_cast<NxCapsuleShapeDesc*>(shapeDescriptor);
     std::vector<VertexPositionColor> vertices;
     std::vector<unsigned short> indices;
-    const int capsuleSides = Math::Clamp<int>(capsuleShapeDescriptor->radius / 4.f, 16, 64);
+    const float halfHeight = capsuleShapeDescriptor->height / 2.f;
 
-    Geometry::CreateWireCapsule(vertices, capsuleShapeDescriptor->localPose.t, Vector3(1.f, 0.f, 0.f), Vector3(0.f, 1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4(255.f, 0.f, 0.f, 1.f),
-        capsuleShapeDescriptor->radius, capsuleShapeDescriptor->height / 2, capsuleSides);
+    static const Vector3 base = Vector3(0.f, 0.f, 0.f);
+    static const Vector3 xAxis = Vector3(1.f, 0.f, 0.f);
+    static const Vector3 yAxis = Vector3(0.f, 1.f, 0.f);
+    static const Vector3 zAxis = Vector3(0.f, 0.f, 1.f);
 
-    //capsuleMesh->Initialize(vertices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector4(255.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
+    Geometry::CreateWireCapsule(vertices, base, xAxis, yAxis, zAxis, Vector4(255.f, 0.f, 0.f, 1.f), capsuleShapeDescriptor->radius, halfHeight, 16);
+
+    capsuleMesh->Initialize(vertices, Renderer3D::Shaders::SimpleVertex, Renderer3D::Shaders::SimplePixel, Vector4(1.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
 
     NxQuat rotation;
 
     capsuleShapeDescriptor->localPose.M.toQuat(rotation);
-
-    Vector3 r = Quaternion(rotation).ToEulerAngles();
 
     capsuleMesh->GetTransform()->SetLocalPosition(capsuleShapeDescriptor->localPose.t);
     capsuleMesh->GetTransform()->SetLocalRotation(rotation);
