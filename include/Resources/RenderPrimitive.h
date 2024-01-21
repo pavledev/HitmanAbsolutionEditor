@@ -119,6 +119,7 @@ public:
 		const bool IsWeighted() const override;
 		const unsigned short GetMaterialID() const override;
 		const unsigned char GetLODMask() const override;
+		const std::vector<CollisionBox>& GetCollisionBoxes() const;
 
 	private:
 		SPrimMeshWeighted primMeshWeighted;

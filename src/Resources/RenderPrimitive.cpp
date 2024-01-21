@@ -683,6 +683,11 @@ const unsigned char RenderPrimitive::LinkedMesh::GetLODMask() const
 	return primMeshWeighted.lLODMask;
 }
 
+const std::vector<RenderPrimitive::CollisionBox>& RenderPrimitive::LinkedMesh::GetCollisionBoxes() const
+{
+	return collisionBoxes;
+}
+
 void RenderPrimitive::WeightedMesh::Deserialize(BinaryReader& binaryReader, const bool hasHighResolutionPositions)
 {
 	primMeshWeighted = binaryReader.Read<SPrimMeshWeighted>();
