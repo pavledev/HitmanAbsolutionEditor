@@ -61,7 +61,7 @@ public:
 		void ReadVertexUVs(BinaryReader& binaryReader, const unsigned int vertexIndex, const Vector2& scale, const Vector2& bias);
 		void ReadVertexColor(BinaryReader& binaryReader, const unsigned int vertexIndex);
 		virtual void DeserializeCollisionData(BinaryReader& binaryReader) = 0;
-		const SPrimObject::SUBTYPE GetSubType() const;
+		virtual const SPrimObject::SUBTYPE GetSubType() const = 0;
 		const unsigned int GetIndexCount() const;
 		const unsigned int GetVertexCount() const;
 		const std::vector<unsigned short>& GetIndices() const;
@@ -98,6 +98,7 @@ public:
 		void Deserialize(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
 		void ReadVertices(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
 		void DeserializeCollisionData(BinaryReader& binaryReader) override;
+		const SPrimObject::SUBTYPE GetSubType() const override;
 		const bool IsWeighted() const override;
 		const unsigned short GetMaterialID() const override;
 		const unsigned char GetLODMask() const override;
@@ -114,6 +115,7 @@ public:
 		void Deserialize(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
 		void ReadVertices(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
 		void DeserializeCollisionData(BinaryReader& binaryReader) override;
+		const SPrimObject::SUBTYPE GetSubType() const override;
 		const bool IsWeighted() const override;
 		const unsigned short GetMaterialID() const override;
 		const unsigned char GetLODMask() const override;
@@ -131,6 +133,7 @@ public:
 		void Deserialize(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
 		void ReadVertices(BinaryReader& binaryReader, const bool hasHighResolutionPositions) override;
 		void DeserializeCollisionData(BinaryReader& binaryReader) override;
+		const SPrimObject::SUBTYPE GetSubType() const override;
 		const bool IsWeighted() const override;
 		const unsigned short GetMaterialID() const override;
 		const unsigned char GetLODMask() const override;

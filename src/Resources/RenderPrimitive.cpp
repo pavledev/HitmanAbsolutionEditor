@@ -283,11 +283,6 @@ void RenderPrimitive::Mesh::ReadVertexColor(BinaryReader& binaryReader, const un
 	vertices[vertexIndex].color = ColorRGBA(r, g, b, a);
 }
 
-const SPrimObject::SUBTYPE RenderPrimitive::Mesh::GetSubType() const
-{
-	return static_cast<SPrimObject::SUBTYPE>(primSubMesh.lSubType);
-}
-
 const unsigned int RenderPrimitive::Mesh::GetIndexCount() const
 {
 	return primSubMesh.lNumIndices;
@@ -556,6 +551,11 @@ void RenderPrimitive::StandardMesh::DeserializeCollisionData(BinaryReader& binar
 	}
 }
 
+const SPrimObject::SUBTYPE RenderPrimitive::StandardMesh::GetSubType() const
+{
+	return static_cast<SPrimObject::SUBTYPE>(primMesh.lSubType);
+}
+
 const bool RenderPrimitive::StandardMesh::IsWeighted() const
 {
 	return false;
@@ -663,6 +663,11 @@ void RenderPrimitive::LinkedMesh::DeserializeCollisionData(BinaryReader& binaryR
 	}
 }
 
+const SPrimObject::SUBTYPE RenderPrimitive::LinkedMesh::GetSubType() const
+{
+	return static_cast<SPrimObject::SUBTYPE>(primMeshWeighted.lSubType);
+}
+
 const bool RenderPrimitive::LinkedMesh::IsWeighted() const
 {
 	return false;
@@ -738,6 +743,11 @@ void RenderPrimitive::WeightedMesh::ReadVertices(BinaryReader& binaryReader, con
 
 void RenderPrimitive::WeightedMesh::DeserializeCollisionData(BinaryReader& binaryReader)
 {
+}
+
+const SPrimObject::SUBTYPE RenderPrimitive::WeightedMesh::GetSubType() const
+{
+	return static_cast<SPrimObject::SUBTYPE>(primMeshWeighted.lSubType);
 }
 
 const bool RenderPrimitive::WeightedMesh::IsWeighted() const
