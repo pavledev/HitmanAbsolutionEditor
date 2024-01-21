@@ -8,6 +8,8 @@
 #include "Rendering/Scene/Camera.h"
 #include "Rendering/Scene/Grid.h"
 #include "Rendering/Scene/Skeleton.h"
+#include "Rendering/Scene/BulletCollision.h"
+#include "Rendering/Scene/CollisionBone.h"
 
 SceneHierarchyPanel2::SceneHierarchyPanel2(const char* name, const char* icon, std::shared_ptr<Resource> resource) : BasePanel(name, icon)
 {
@@ -33,6 +35,7 @@ void SceneHierarchyPanel2::CreateEntities()
     std::string directionalLightEntityName = std::format("{} Directional Light", ICON_MDI_SUN_WIRELESS);
     std::string ambientLightEntityName = std::format("{} Ambient Light", ICON_MDI_WALL_SCONCE_FLAT);
     std::string collisionEntityName = std::format("{} Collision", ICON_MDI_SHAPE);
+    std::string bulletCollisionsEntityName = std::format("{} Bullet Collisions", ICON_MDI_SHAPE);
 
     rootEntity = std::make_shared<Entity>(rootEntityName);
     const std::vector<std::shared_ptr<Entity>>& children = rootEntity->GetChildren();
@@ -146,11 +149,71 @@ void SceneHierarchyPanel2::CreateEntities()
 
                 meshEntity->Initialize();
                 meshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
+                meshEntity->GetComponent<Mesh>()->SetRenderer3D(renderer3D);
                 collisionEntity->GetComponent<Collision>()->AddMesh(meshEntity->GetComponent<Mesh>());
                 collisionEntity->AddChild(meshEntity);
             }
 
             modelEntity->AddChild(collisionEntity);
+        }
+
+        if (renderPrimitive->HasBulletCollisionData())
+        {
+            std::shared_ptr<Entity> bulletCollisionsEntity = std::make_shared<Entity>(bulletCollisionsEntityName);
+            const std::vector<std::shared_ptr<RenderPrimitive::Mesh>>& meshes = renderPrimitive->GetMeshes();
+
+            bulletCollisionsEntity->Initialize();
+
+            for (size_t i = 0; i < meshes.size(); ++i)
+            {
+                if (meshes[i]->GetSubMesh().lCollision == 0)
+                {
+                    continue;
+                }
+
+                const SPrimObject::SUBTYPE subType = meshes[i]->GetSubType();
+
+                if (subType == SPrimObject::SUBTYPE::SUBTYPE_STANDARD)
+                {
+                    const std::shared_ptr<RenderPrimitive::StandardMesh> standardMesh = std::static_pointer_cast<RenderPrimitive::StandardMesh>(meshes[i]);
+                    const RenderPrimitive::CollisionBox& collisionBox = standardMesh->GetCollisionBox();
+                    const Vector3 boundingBoxMin = standardMesh->GetBoundingBoxMin();
+                    const Vector3 boundingBoxMax = standardMesh->GetBoundingBoxMax();
+
+                    std::string bulletCollisionEntityName = std::format("{} Bullet Collision (Mesh {})", ICON_MDI_SHAPE, i + 1);
+                    std::shared_ptr<Entity> bulletCollisionEntity = std::make_shared<Entity>(bulletCollisionEntityName);
+
+                    bulletCollisionEntity->Initialize();
+                    bulletCollisionEntity->AddComponent<BulletCollision>("Bullet Collision", ICON_MDI_SHAPE);
+                    bulletCollisionEntity->GetComponent<BulletCollision>()->Initialize(collisionBox, boundingBoxMin, boundingBoxMax, bulletCollisionEntity, renderer3D);
+
+                    bulletCollisionsEntity->AddChild(bulletCollisionEntity);
+                    bulletCollisionEntity->GetComponent<BulletCollision>()->GetTransform()->SetParent(bulletCollisionsEntity->GetComponent<Transform>());
+                    bulletCollisionsEntity->GetComponent<Transform>()->AddChild(bulletCollisionEntity->GetComponent<BulletCollision>()->GetTransform());
+                }
+                else if (subType == SPrimObject::SUBTYPE::SUBTYPE_LINKED)
+                {
+                    const std::shared_ptr<RenderPrimitive::LinkedMesh> linkedMesh = std::static_pointer_cast<RenderPrimitive::LinkedMesh>(meshes[i]);
+                    const std::vector<RenderPrimitive::CollisionBox>& collisionBoxes = linkedMesh->GetCollisionBoxes();
+                    const Vector3 boundingBoxMin = linkedMesh->GetBoundingBoxMin();
+                    const Vector3 boundingBoxMax = linkedMesh->GetBoundingBoxMax();
+
+                    std::string collisionBoneEntityName = std::format("{} Collision Bone (Mesh {})", ICON_MDI_SHAPE, i + 1);
+                    std::shared_ptr<Entity> collisionBoneEntity = std::make_shared<Entity>(collisionBoneEntityName);
+
+                    collisionBoneEntity->Initialize();
+                    collisionBoneEntity->AddComponent<CollisionBone>("Collision Bone", ICON_MDI_SHAPE);
+                    collisionBoneEntity->GetComponent<CollisionBone>()->Initialize(meshes[i], collisionBoneEntity, renderer3D);
+
+                    bulletCollisionsEntity->AddChild(collisionBoneEntity);
+                    collisionBoneEntity->GetComponent<CollisionBone>()->GetTransform()->SetParent(bulletCollisionsEntity->GetComponent<Transform>());
+                    bulletCollisionsEntity->GetComponent<Transform>()->AddChild(collisionBoneEntity->GetComponent<CollisionBone>()->GetTransform());
+                }
+            }
+
+            modelEntity->AddChild(bulletCollisionsEntity);
+            bulletCollisionsEntity->GetComponent<Transform>()->SetParent(modelEntity->GetComponent<Model>()->GetTransform());
+            modelEntity->GetComponent<Model>()->GetTransform()->AddChild(bulletCollisionsEntity->GetComponent<Transform>());
         }
 
         children[children.size() - 1]->GetComponent<Model>()->Initialize(renderPrimitive);
