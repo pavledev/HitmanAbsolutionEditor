@@ -96,73 +96,19 @@ void Collision::RenderProperties()
 void Collision::CreateBoxMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> boxMesh)
 {
     NxBoxShapeDesc* boxShapeDescriptor = static_cast<NxBoxShapeDesc*>(shapeDescriptor);
-    std::vector<VertexPositionColor> cubeVertices;
-    std::vector<unsigned short> cubeIndices;
-    Vector4 color = Vector4(255.f, 0.f, 0.f, 1.f);
+    static std::vector<VertexPosition> cubeVertices;
+    static std::vector<unsigned short> cubeIndices;
 
-    //Geometry::CreateCube(cubeVertices, cubeIndices, Vector4(255.f, 0.f, 0.f, 1.f), boxShapeDescriptor->localPose.t, boxShapeDescriptor->dimensions);
-    Geometry::CreateCube(cubeVertices, cubeIndices, Vector4(255.f, 0.f, 0.f, 1.f));
+    if (cubeVertices.empty())
+    {
+        Geometry::CreateCube(cubeVertices, cubeIndices);
+    }
 
-    //boxMesh->Initialize(cubeVertices, cubeIndices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector4(255.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
-
-    /*Vector3 v1 = Vector3(-0.0308475010, -0.0361977108, 0.0404765755);
-    Vector3 v2 = Vector3(-0.0308475010, -0.0361977108, 0.221976563);
-    Vector3 v3 = Vector3(-0.0308475010, -0.0361977108, 0.0404765755);
-    Vector3 v4 = Vector3(0.0391524918, -0.0361977108, 0.0404765755);
-    Vector3 v5 = Vector3(-0.0308475010, -0.0361977108, 0.0404765755);
-    Vector3 v6 = Vector3(-0.0308475010, 0.0338022821, 0.0404765755);
-    Vector3 v7 = Vector3(-0.0308475010, 0.0338022821, 0.0404765755);
-    Vector3 v8 = Vector3(-0.0308475010, 0.0338022821, 0.221976563);
-    Vector3 v9 = Vector3(-0.0308475010, -0.0361977108, 0.221976563);
-    Vector3 v10 = Vector3(0.0391524918, -0.0361977108, 0.221976563);
-    Vector3 v11 = Vector3(0.0391524918, -0.0361977108, 0.0404765755);
-    Vector3 v12 = Vector3(0.0391524918, 0.0338022821, 0.0404765755);
-    Vector3 v13 = Vector3(0.0391524918, -0.0361977108, 0.0404765755);
-    Vector3 v14 = Vector3(0.0391524918, -0.0361977108, 0.221976563);
-    Vector3 v15 = Vector3(-0.0308475010, 0.0338022821, 0.0404765755);
-    Vector3 v16 = Vector3(0.0391524918, 0.0338022821, 0.0404765755);
-    Vector3 v17 = Vector3(-0.0308475010, -0.0361977108, 0.221976563);
-    Vector3 v18 = Vector3(-0.0308475010, 0.0338022821, 0.221976563);
-    Vector3 v19 = Vector3(0.0391524918, 0.0338022821, 0.0404765755);
-    Vector3 v20 = Vector3(0.0391524918, 0.0338022821, 0.221976563);
-    Vector3 v21 = Vector3(-0.0308475010, 0.0338022821, 0.221976563);
-    Vector3 v22 = Vector3(0.0391524918, 0.0338022821, 0.221976563);
-    Vector3 v23 = Vector3(0.0391524918, -0.0361977108, 0.221976563);
-    Vector3 v24 = Vector3(0.0391524918, 0.0338022821, 0.221976563);
-
-    cubeVertices.push_back({ v1, color });
-    cubeVertices.push_back({ v2, color });
-    cubeVertices.push_back({ v3, color });
-    cubeVertices.push_back({ v4, color });
-    cubeVertices.push_back({ v5, color });
-    cubeVertices.push_back({ v6, color });
-    cubeVertices.push_back({ v7, color });
-    cubeVertices.push_back({ v8, color });
-    cubeVertices.push_back({ v9, color });
-    cubeVertices.push_back({ v10, color });
-    cubeVertices.push_back({ v11, color });
-    cubeVertices.push_back({ v12, color });
-    cubeVertices.push_back({ v13, color });
-    cubeVertices.push_back({ v14, color });
-    cubeVertices.push_back({ v15, color });
-    cubeVertices.push_back({ v16, color });
-    cubeVertices.push_back({ v17, color });
-    cubeVertices.push_back({ v18, color });
-    cubeVertices.push_back({ v19, color });
-    cubeVertices.push_back({ v20, color });
-    cubeVertices.push_back({ v21, color });
-    cubeVertices.push_back({ v22, color });
-    cubeVertices.push_back({ v23, color });
-    cubeVertices.push_back({ v24, color });
-
-    boxMesh->Initialize(cubeVertices, SceneRenderer::Shaders::PhongVertex, SceneRenderer::Shaders::PhongPixel, Vector4(255.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);*/
+    boxMesh->Initialize(cubeVertices, cubeIndices, Renderer3D::Shaders::SimpleVertex, Renderer3D::Shaders::SimplePixel, Vector4(1.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
 
     NxQuat rotation;
 
     boxShapeDescriptor->localPose.M.toQuat(rotation);
-
-    Vector3 r = Quaternion(rotation).ToEulerAngles();
-    Quaternion newQuaternion = Quaternion::FromEulerAngles(Vector3(8.07611, 88.2883, -86.4235));
 
     boxMesh->GetTransform()->SetLocalPosition(boxShapeDescriptor->localPose.t);
     boxMesh->GetTransform()->SetLocalRotation(rotation);
