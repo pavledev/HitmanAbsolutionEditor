@@ -12,9 +12,9 @@ public:
 	const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const;
 	void Render() override;
 	void RenderProperties() override;
-	void CreateBoxMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> boxMesh);
-	void CreateSphereMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> sphereMesh);
-	void CreateCapsuleMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> capsuleMesh);
+	static void CreateBoxMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> boxMesh);
+	static void CreateSphereMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> sphereMesh);
+	static void CreateCapsuleMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> capsuleMesh);
 
 private:
 	std::vector<std::shared_ptr<Mesh>> meshes;
