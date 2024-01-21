@@ -5,6 +5,7 @@
 
 #include <string>
 
+#include "Foundation/NxMat33.h"
 #include "Physics/NxSphereShapeDesc.h"
 #include "Physics/NxCapsuleShapeDesc.h"
 #include "Physics/NxBoxShapeDesc.h"
@@ -31,6 +32,7 @@ public:
 	void DeserializeBoxShape(NxBoxShapeDesc* boxShapeDescriptor, BinaryReader& binaryReader);
 	bool DeserializeShatterData(BinaryReader& binaryReader);
 	bool DeserializeKinematicLinkedData(BinaryReader& binaryReader);
+	NxMat33 DeserializeNxMat33(BinaryReader& binaryReader);
 	NxMat34 DeserializeNxMat34(BinaryReader& binaryReader);
 	bool IsCollisionLayerOpaque(const ECollidableLayer collidableLayer);
 	void Export(const std::string& outputPath, const std::string& exportOption) override;

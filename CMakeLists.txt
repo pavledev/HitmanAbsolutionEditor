@@ -35,6 +35,10 @@ add_executable(HitmanAbsolutionEditor
 	${HEADER_FILES}
 )
 
+target_compile_definitions(HitmanAbsolutionEditor PRIVATE
+	INTERFACE TRANSPOSED_MAT33=1
+)
+
 target_include_directories(HitmanAbsolutionEditor PRIVATE
 	${CMAKE_SOURCE_DIR}/External/mINI/src/mini
 )

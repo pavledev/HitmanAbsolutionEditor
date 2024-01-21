@@ -1,8 +1,6 @@
 #include <vector>
 #include <unordered_map>
 
-#define TRANSPOSED_MAT33
-
 #include "Physics/NxConvexShapeDesc.h"
 #include "Physics/NxTriangleMeshShapeDesc.h"
 #include "Physics/NxTriangleMesh.h"
@@ -483,12 +481,33 @@ bool Physics::DeserializeKinematicLinkedData(BinaryReader& binaryReader)
 	return true;
 }
 
+NxMat33 Physics::DeserializeNxMat33(BinaryReader& binaryReader)
+{
+	const float m11 = binaryReader.Read<float>();
+	const float m21 = binaryReader.Read<float>();
+	const float m31 = binaryReader.Read<float>();
+
+	const float m12 = binaryReader.Read<float>();
+	const float m22 = binaryReader.Read<float>();
+	const float m32 = binaryReader.Read<float>();
+
+	const float m13 = binaryReader.Read<float>();
+	const float m23 = binaryReader.Read<float>();
+	const float m33 = binaryReader.Read<float>();
+
+	const NxVec3 row0 = NxVec3(m11, m12, m13);
+	const NxVec3 row1 = NxVec3(m21, m22, m23);
+	const NxVec3 row2 = NxVec3(m31, m32, m33);
+
+	return NxMat33(row0, row1, row2);
+}
+
 NxMat34 Physics::DeserializeNxMat34(BinaryReader& binaryReader)
 {
 	NxMat34 matrix;
 
 	matrix.t = binaryReader.Read<NxVec3>();
-	matrix.M = binaryReader.Read<NxMat33>(); //Column major matrix
+	matrix.M = DeserializeNxMat33(binaryReader);
 
 	return matrix;
 }
