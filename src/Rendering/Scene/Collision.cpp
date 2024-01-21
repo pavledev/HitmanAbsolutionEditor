@@ -118,6 +118,19 @@ void Collision::CreateBoxMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh
 void Collision::CreateSphereMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> sphereMesh)
 {
     NxSphereShapeDesc* sphereShapeDescriptor = static_cast<NxSphereShapeDesc*>(shapeDescriptor);
+    std::vector<VertexPosition> sphereVertices;
+    std::vector<unsigned short> sphereIndices;
+
+    Geometry::CreateSphere(sphereVertices, sphereIndices, sphereShapeDescriptor->radius);
+
+    sphereMesh->Initialize(sphereVertices, sphereIndices, Renderer3D::Shaders::SimpleVertex, Renderer3D::Shaders::SimplePixel, Vector4(1.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
+
+    NxQuat rotation;
+
+    sphereShapeDescriptor->localPose.M.toQuat(rotation);
+
+    sphereMesh->GetTransform()->SetLocalPosition(sphereShapeDescriptor->localPose.t);
+    sphereMesh->GetTransform()->SetLocalRotation(rotation);
 }
 
 void Collision::CreateCapsuleMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> capsuleMesh)
