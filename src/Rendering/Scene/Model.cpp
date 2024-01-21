@@ -63,7 +63,7 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
 
     Quaternion worldRotation = Quaternion::FromEulerAngles({ -90.f, 0.f, 0.f });
 
-    GetTransform().get()->SetWorldRotation(worldRotation);
+    GetTransform()->SetWorldRotation(worldRotation);
 }
 
 const std::vector<std::shared_ptr<Mesh>>& Model::GetMeshes() const
