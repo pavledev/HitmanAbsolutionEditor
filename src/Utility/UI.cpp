@@ -212,12 +212,12 @@ bool UI::StringProperty(const char* label, std::string& string, const char* tool
 	BeginProperty(label, tooltip);
 	ImGui::BeginDisabled(isDisabled);
 
-	const bool modified = ImGui::InputText(GetPropertyID(label).c_str(), &string);
+	const bool isModified = ImGui::InputText(GetPropertyID(label).c_str(), &string);
 
 	ImGui::EndDisabled();
 	EndProperty();
 
-	return modified;
+	return isModified;
 }
 
 bool UI::StringProperty(std::string& label, std::string& string, const char* tooltip, const bool isDisabled)
@@ -225,12 +225,12 @@ bool UI::StringProperty(std::string& label, std::string& string, const char* too
 	BeginProperty(label, tooltip);
 	ImGui::BeginDisabled(isDisabled);
 
-	const bool modified = ImGui::InputText(GetPropertyID(label.c_str()).c_str(), &string);
+	const bool isModified = ImGui::InputText(GetPropertyID(label.c_str()).c_str(), &string);
 
 	ImGui::EndDisabled();
 	EndProperty();
 
-	return modified;
+	return isModified;
 }
 
 bool UI::Property(const char* label, char* stringBuffer, size_t stringBufferSize, const char* tooltip, const bool isDisabled, std::function<void(char*)> onTextChangeCallback)
@@ -238,49 +238,49 @@ bool UI::Property(const char* label, char* stringBuffer, size_t stringBufferSize
 	BeginProperty(label, tooltip);
 	ImGui::BeginDisabled(isDisabled);
 
-	const bool modified = ImGui::InputText(GetPropertyID(label).c_str(), stringBuffer, stringBufferSize);
+	const bool isModified = ImGui::InputText(GetPropertyID(label).c_str(), stringBuffer, stringBufferSize);
 
 	ImGui::EndDisabled();
 	EndProperty();
 
-	if (modified && onTextChangeCallback)
+	if (isModified && onTextChangeCallback)
 	{
 		onTextChangeCallback(stringBuffer);
 	}
 
-	return modified;
+	return isModified;
 }
 
 bool UI::Property(const char* label, bool& flag, const char* tooltip)
 {
 	BeginProperty(label, tooltip);
 
-	bool modified = ImGui::Checkbox(GetPropertyID(label).c_str(), &flag);
+	bool isModified = ImGui::Checkbox(GetPropertyID(label).c_str(), &flag);
 
 	EndProperty();
 
-	return modified;
+	return isModified;
 }
 
 bool UI::Property(const char* label, std::vector<std::string>& flagStrings, std::vector<bool>& flags, const bool renderInSameLine, const char* tooltip)
 {
 	BeginProperty(label, tooltip);
 
-	bool modified = false;
+	bool isModified = false;
 
 	for (size_t i = 0; i < flags.size(); ++i)
 	{
 		ImGui::PushID(flagStrings[i].c_str());
 
 		bool flag = flags[i];
-		bool modified2 = ImGui::Checkbox(flagStrings[i].c_str(), &flag);
+		bool isModified2 = ImGui::Checkbox(flagStrings[i].c_str(), &flag);
 
 		ImGui::PopID();
 
-		if (modified2)
+		if (isModified2)
 		{
 			flags[i] = flag;
-			modified = true;
+			isModified = true;
 		}
 
 		if (renderInSameLine)
@@ -291,14 +291,14 @@ bool UI::Property(const char* label, std::vector<std::string>& flagStrings, std:
 
 	EndProperty();
 
-	return modified;
+	return isModified;
 }
 
 bool UI::Property(const char* label, int& value, const char** dropdownStrings, int count, const char* tooltip)
 {
 	BeginProperty(label, tooltip);
 
-	bool modified = false;
+	bool isModified = false;
 	const char* current = dropdownStrings[value];
 
 	if (ImGui::BeginCombo(GetPropertyID(label).c_str(), current))
@@ -311,7 +311,7 @@ bool UI::Property(const char* label, int& value, const char** dropdownStrings, i
 			{
 				current = dropdownStrings[i];
 				value = i;
-				modified = true;
+				isModified = true;
 			}
 
 			if (isSelected)
@@ -325,29 +325,29 @@ bool UI::Property(const char* label, int& value, const char** dropdownStrings, i
 
 	EndProperty();
 
-	return modified;
+	return isModified;
 }
 
 bool UI::ColorRGBProperty(const char* label, Vector3& vector, const char* tooltip)
 {
 	BeginProperty(label, tooltip);
 
-	bool modified = ImGui::ColorEdit3(GetPropertyID(label).c_str(), &vector.x);
+	const bool isModified = ImGui::ColorEdit3(GetPropertyID(label).c_str(), &vector.x);
 
 	EndProperty();
 
-	return modified;
+	return isModified;
 }
 
 bool UI::ColorRGBAProperty(const char* label, Vector4& vector, const char* tooltip)
 {
 	BeginProperty(label, tooltip);
 
-	bool modified = ImGui::ColorEdit4(GetPropertyID(label).c_str(), &vector.x);
+	bool isModified = ImGui::ColorEdit4(GetPropertyID(label).c_str(), &vector.x);
 
 	EndProperty();
 
-	return modified;
+	return isModified;
 }
 
 void UI::Vector2Property(const char* label, Vector2& vector, const char* tooltip, float resetValue)
