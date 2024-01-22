@@ -8,7 +8,7 @@ class Geometry
 {
 public:
     static void CreateCube(std::vector<VertexPositionTextureNormalTangent>& vertices, std::vector<unsigned short>& indices);
-    static void CreateCube(std::vector<VertexPositionColor>& vertices, std::vector<unsigned short>& indices, const Vector4& color);
+    static void CreateCube(std::vector<VertexPosition>& vertices, std::vector<unsigned short>& indices);
     static void CreateCube(std::vector<VertexPositionColor>& vertices, std::vector<unsigned short>& indices, const Vector4& color, const Vector3& position, const Vector3& dimensions);
     static void CreateQuad(std::vector<VertexPositionTextureNormalTangent>& vertices, std::vector<unsigned short>& indices);
     static void CreateCylinder(std::vector<VertexPositionTextureNormalTangent>& vertices, std::vector<unsigned short>& indices, const float radiusTop = 1.0f, const float radiusBottom = 1.0f, const float height = 1.0f, const unsigned short slices = 15, const unsigned short stacks = 15);
