@@ -39,9 +39,7 @@ cbuffer MeshConstantBuffer : register(b1)
     float2 padding3;
 	
 	float4 outlineColor;
-	
-	float3 materialColor;
-	float padding4;
+	float4 meshColor;
 };
 
 cbuffer LightConstantBuffer : register(b2)
