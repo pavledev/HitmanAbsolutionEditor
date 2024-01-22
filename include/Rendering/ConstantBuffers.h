@@ -44,9 +44,7 @@ struct MeshConstantBuffer
     Vector2 padding2;
 
     Vector4 outlineColor;
-
-    Vector3 materialColor;
-    float padding3;
+    Vector4 meshColor;
 };
 
 struct Light
