@@ -661,7 +661,7 @@ void Geometry::CreateOctahedralBone(std::vector<VertexPosition>& vertices, std::
     }
 }
 
-void Geometry::CreateCircle(std::vector<VertexPositionColor>& vertices, const Vector3& base, const Vector3& x, const Vector3& y, const Vector4& color, double radius, int numSides)
+void Geometry::CreateCircle(std::vector<VertexPosition>& vertices, const Vector3& base, const Vector3& x, const Vector3& y, double radius, int numSides)
 {
     const float	angleDelta = 2.0f * M_PI / numSides;
     Vector3 lastVertex = base + x * radius;
@@ -670,14 +670,14 @@ void Geometry::CreateCircle(std::vector<VertexPositionColor>& vertices, const Ve
     {
         const Vector3 vertex = base + (x * Math::Cos(angleDelta * (sideIndex + 1)) + y * Math::Sin(angleDelta * (sideIndex + 1))) * radius;
 
-        vertices.push_back({ lastVertex, color });
-        vertices.push_back({ vertex, color });
+        vertices.push_back({ lastVertex });
+        vertices.push_back({ vertex });
 
         lastVertex = vertex;
     }
 }
 
-void Geometry::CreateHalfCircle(std::vector<VertexPositionColor>& vertices, const Vector3& base, const Vector3& x, const Vector3& y, const Vector4& color, double radius, int numSides)
+void Geometry::CreateHalfCircle(std::vector<VertexPosition>& vertices, const Vector3& base, const Vector3& x, const Vector3& y, double radius, int numSides)
 {
     const float	angleDelta = static_cast<float>(M_PI) / (static_cast<float>(numSides));
     Vector3	lastVertex = base + x * radius;
@@ -686,14 +686,14 @@ void Geometry::CreateHalfCircle(std::vector<VertexPositionColor>& vertices, cons
     {
         const Vector3 vertex = base + (x * Math::Cos(angleDelta * (sideIndex + 1)) + y * Math::Sin(angleDelta * (sideIndex + 1))) * radius;
 
-        vertices.push_back({ lastVertex, color });
-        vertices.push_back({ vertex, color });
+        vertices.push_back({ lastVertex });
+        vertices.push_back({ vertex });
 
         lastVertex = vertex;
     }
 }
 
-void Geometry::CreateWireCapsule(std::vector<VertexPositionColor>& vertices, const Vector3& base, const Vector3& x, const Vector3& y, const Vector3& z, const Vector4& color, double radius, double HalfHeight, int NumSides)
+void Geometry::CreateWireCapsule(std::vector<VertexPosition>& vertices, const Vector3& base, const Vector3& x, const Vector3& y, const Vector3& z, double radius, double HalfHeight, int NumSides)
 {
     const Vector3 origin = base;
     const Vector3 xAxis = x.Normalized();
@@ -714,17 +714,17 @@ void Geometry::CreateWireCapsule(std::vector<VertexPositionColor>& vertices, con
     const Vector3 topEnd = origin + (HalfHeight * zAxis);
     const Vector3 bottomEnd = origin - (HalfHeight * zAxis);
 
-    CreateCircle(vertices, topEnd, xAxis, yAxis, color, capsuleRadius, NumSides);
-    CreateCircle(vertices, bottomEnd, xAxis, yAxis, color, capsuleRadius, NumSides);
+    CreateCircle(vertices, topEnd, xAxis, yAxis, capsuleRadius, NumSides);
+    CreateCircle(vertices, bottomEnd, xAxis, yAxis, capsuleRadius, NumSides);
 
     //Draw domed caps
-    CreateHalfCircle(vertices, topEnd, yAxis, zAxis, color, capsuleRadius, NumSides / 2);
-    CreateHalfCircle(vertices, topEnd, xAxis, zAxis, color, capsuleRadius, NumSides / 2);
+    CreateHalfCircle(vertices, topEnd, yAxis, zAxis, capsuleRadius, NumSides / 2);
+    CreateHalfCircle(vertices, topEnd, xAxis, zAxis, capsuleRadius, NumSides / 2);
 
     const Vector3 negZAxis = Vector3(-zAxis.x, -zAxis.y, -zAxis.z);
 
-    CreateHalfCircle(vertices, bottomEnd, yAxis, negZAxis, color, capsuleRadius, NumSides / 2);
-    CreateHalfCircle(vertices, bottomEnd, xAxis, negZAxis, color, capsuleRadius, NumSides / 2);
+    CreateHalfCircle(vertices, bottomEnd, yAxis, negZAxis, capsuleRadius, NumSides / 2);
+    CreateHalfCircle(vertices, bottomEnd, xAxis, negZAxis, capsuleRadius, NumSides / 2);
 
     //We set NumSides to 4 as it makes a nicer looking capsule as we only draw 2 HalfCircles above
     const int numCylinderLines = 4;
@@ -737,8 +737,8 @@ void Geometry::CreateWireCapsule(std::vector<VertexPositionColor>& vertices, con
     {
         const Vector3 vertex = base + (xAxis * Math::Cos(angleDelta * (sideIndex + 1)) + yAxis * Math::Sin(angleDelta * (sideIndex + 1))) * capsuleRadius;
 
-        vertices.push_back({ lastVertex - zAxis * HalfHeight, color });
-        vertices.push_back({ lastVertex + zAxis * HalfHeight, color });
+        vertices.push_back({ lastVertex - zAxis * HalfHeight });
+        vertices.push_back({ lastVertex + zAxis * HalfHeight });
 
         lastVertex = vertex;
     }

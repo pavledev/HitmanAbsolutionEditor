@@ -29,7 +29,7 @@ public:
 
     static void CreateOctahedralBone(std::vector<VertexPositionNormal>& vertices);
     static void CreateOctahedralBone(std::vector<VertexPosition>& vertices, std::vector<unsigned short>& indices);
-    static void CreateCircle(std::vector<VertexPositionColor>& vertices, const Vector3& base, const Vector3& xAxis, const Vector3& yAxis, const Vector4& color, double radius, int numSides);
-    static void CreateHalfCircle(std::vector<VertexPositionColor>& vertices, const Vector3& base, const Vector3& xAxis, const Vector3& yAxis, const Vector4& color, double radius, int numSides);
-    static void CreateWireCapsule(std::vector<VertexPositionColor>& vertices, const Vector3& base, const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis, const Vector4& color, double radius, double HalfHeight, int NumSides);
+    static void CreateCircle(std::vector<VertexPosition>& vertices, const Vector3& base, const Vector3& xAxis, const Vector3& yAxis, double radius, int numSides);
+    static void CreateHalfCircle(std::vector<VertexPosition>& vertices, const Vector3& base, const Vector3& xAxis, const Vector3& yAxis, double radius, int numSides);
+    static void CreateWireCapsule(std::vector<VertexPosition>& vertices, const Vector3& base, const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis, double radius, double HalfHeight, int NumSides);
 };
