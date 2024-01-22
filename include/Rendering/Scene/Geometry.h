@@ -7,6 +7,7 @@
 class Geometry
 {
 public:
+    static void CreateCube(std::vector<VertexPosition>& vertices, std::vector<unsigned short>& indices, const Vector3& scale);
     static void CreateCube(std::vector<VertexPositionTextureNormalTangent>& vertices, std::vector<unsigned short>& indices);
     static void CreateCube(std::vector<VertexPosition>& vertices, std::vector<unsigned short>& indices);
     static void CreateCube(std::vector<VertexPositionColor>& vertices, std::vector<unsigned short>& indices, const Vector4& color, const Vector3& position, const Vector3& dimensions);

@@ -2,6 +2,67 @@
 
 #include "Rendering/Scene/Geometry.h"
 #include "Utility/Math.h"
+#include "Math/Matrix.h"
+
+void Geometry::CreateCube(std::vector<VertexPosition>& vertices, std::vector<unsigned short>& indices, const Vector3& scale)
+{
+    unsigned int index = 0;
+    const Matrix scaleMatrix = Matrix::CreateScale(scale);
+
+    static const char faces[6][4] =
+    {
+        { 0, 1, 3, 2 },
+        { 2, 3, 7, 6 },
+        { 6, 7, 5, 4 },
+        { 4, 5, 1, 0 },
+        { 2, 6, 4, 0 },
+        { 7, 3, 1, 5 },
+    };
+
+    /*indices.resize(24);
+
+    for (int i = 0; i < 6; ++i)
+    {
+        for (int j = 0; j < 4; ++j)
+        {
+            indices[index++] = static_cast<unsigned short>(faces[i][j]);
+        }
+    }*/
+
+    indices.resize(48);
+
+    for (int i = 0; i < 6; ++i)
+    {
+        indices.push_back(faces[i][0]);
+        indices.push_back(faces[i][1]);
+
+        indices.push_back(faces[i][1]);
+        indices.push_back(faces[i][2]);
+
+        indices.push_back(faces[i][2]);
+        indices.push_back(faces[i][3]);
+
+        indices.push_back(faces[i][3]);
+        indices.push_back(faces[i][0]);
+    }
+
+    index = 0;
+
+    vertices.resize(8);
+
+    for (int x = -1; x < 2; x += 2)
+    {
+        for (int y = -1; y < 2; y += 2)
+        {
+            for (int z = -1; z < 2; z += 2)
+            {
+                Vector3 vector = Vector3(x, y, z);
+
+                vertices[index++].position = scaleMatrix * vector;
+            }
+        }
+    }
+}
 
 void Geometry::CreateCube(std::vector<VertexPositionTextureNormalTangent>& vertices, std::vector<unsigned short>& indices)
 {
