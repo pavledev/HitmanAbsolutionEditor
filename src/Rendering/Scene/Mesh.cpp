@@ -315,7 +315,17 @@ void Mesh::Render()
     meshConstantBufferCpu.hasSpecularMap = hasSpecularMap;
     meshConstantBufferCpu.hasEmissiveMap = hasEmissiveMap;
     meshConstantBufferCpu.hasAlphaMap = hasAlphaMap;
-    meshConstantBufferCpu.meshColor = meshColor;
+
+    std::shared_ptr<Entity> selectedEntity = renderer3D->GetCamera()->GetSelectedEntity();
+
+    if (selectedEntity && selectedEntity->GetComponent<Mesh>().get() == this)
+    {
+        meshConstantBufferCpu.meshColor = outlineColor;
+    }
+    else
+    {
+        meshConstantBufferCpu.meshColor = meshColor;
+    }
 
     renderer3D->UpdateMeshConstantBuffer();
 
