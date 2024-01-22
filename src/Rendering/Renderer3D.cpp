@@ -281,6 +281,11 @@ void Renderer3D::OutlinePass(RenderTexture* outputTexture)
         return;
     }
 
+    if (mesh->GetPrimitiveType() == PrimitiveType::LineList)
+    {
+        return;
+    }
+
     CommandList& commandList = Editor::GetInstance().GetDirectXRenderer()->GetCommandList();
     RenderTexture* outlineTexture = renderTargets[RendererTextures::Outline].get();
     static const Color clearColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
