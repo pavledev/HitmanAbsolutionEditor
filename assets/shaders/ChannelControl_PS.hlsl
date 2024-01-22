@@ -41,5 +41,4 @@ float4 mainPS(PS_INPUT input) : SV_Target
     }
 	
 	return outputColor;
-	//return float4(1.f, 0.f, 0.f, 1.f);
 }
