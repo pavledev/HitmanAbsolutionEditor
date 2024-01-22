@@ -128,7 +128,7 @@ void Collision::CreateSphereMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<M
 void Collision::CreateCapsuleMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<Mesh> capsuleMesh)
 {
     NxCapsuleShapeDesc* capsuleShapeDescriptor = static_cast<NxCapsuleShapeDesc*>(shapeDescriptor);
-    std::vector<VertexPositionColor> vertices;
+    std::vector<VertexPosition> vertices;
     std::vector<unsigned short> indices;
     const float halfHeight = capsuleShapeDescriptor->height / 2.f;
 
@@ -137,7 +137,7 @@ void Collision::CreateCapsuleMesh(NxShapeDesc* shapeDescriptor, std::shared_ptr<
     static const Vector3 yAxis = Vector3(0.f, 1.f, 0.f);
     static const Vector3 zAxis = Vector3(0.f, 0.f, 1.f);
 
-    Geometry::CreateWireCapsule(vertices, base, xAxis, yAxis, zAxis, Vector4(255.f, 0.f, 0.f, 1.f), capsuleShapeDescriptor->radius, halfHeight, 16);
+    Geometry::CreateWireCapsule(vertices, base, xAxis, yAxis, zAxis, capsuleShapeDescriptor->radius, halfHeight, 16);
 
     capsuleMesh->Initialize(vertices, Renderer3D::Shaders::SimpleVertex, Renderer3D::Shaders::SimplePixel, Vector4(1.f, 0.f, 0.f, 1.f), PrimitiveType::LineList);
 
