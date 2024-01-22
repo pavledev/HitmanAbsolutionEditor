@@ -36,10 +36,8 @@ public:
             vertexPositions.push_back(vertexPosition);
         }
 
-        //indices = nullptr;
         this->vertexShader = Renderer3D::GetShader(vertexShader);
         this->pixelShader = Renderer3D::GetShader(pixelShader);
-        //this->materialColor = color;
         this->primitiveType = primitiveType;
 
         CreateGpuBuffers(vertices);
@@ -61,7 +59,6 @@ public:
         this->indices = indices;
         this->vertexShader = Renderer3D::GetShader(vertexShader);
         this->pixelShader = Renderer3D::GetShader(pixelShader);
-        //this->materialColor = color;
         this->primitiveType = primitiveType;
 
         CreateGpuBuffers(vertices, indices);
