@@ -24,6 +24,8 @@ Mesh::Mesh(const char* name, const char* icon, std::weak_ptr<Entity> entity) : C
     hasSpecularMap = false;
     hasEmissiveMap = false;
     hasAlphaMap = false;
+
+    meshColor = { 0.721f, 0.709f, 0.709f, 1.0f };
 }
 
 void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiReference)
@@ -313,6 +315,7 @@ void Mesh::Render()
     meshConstantBufferCpu.hasSpecularMap = hasSpecularMap;
     meshConstantBufferCpu.hasEmissiveMap = hasEmissiveMap;
     meshConstantBufferCpu.hasAlphaMap = hasAlphaMap;
+    meshConstantBufferCpu.meshColor = meshColor;
 
     renderer3D->UpdateMeshConstantBuffer();
 
@@ -401,6 +404,15 @@ void Mesh::RenderProperties()
     {
         tableColumns.push_back({ "Name" , 0, 1.f });
         tableColumns.push_back({ "Value" , ImGuiTableColumnFlags_WidthStretch, 0.f });
+    }
+
+    if (primitiveType == PrimitiveType::LineList)
+    {
+        UI::BeginProperties("MeshProperties", tableColumns, false);
+
+        UI::ColorRGBAProperty("Mesh Color", meshColor);
+
+        UI::EndProperties();
     }
 
     if (ImGui::TreeNodeEx("Outline", treeNodeFlags))

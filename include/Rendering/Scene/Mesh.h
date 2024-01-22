@@ -141,4 +141,6 @@ private:
     float blurRadius;
     float blurSigma;
     Vector4 outlineColor;
+
+    Vector4 meshColor;
 };
