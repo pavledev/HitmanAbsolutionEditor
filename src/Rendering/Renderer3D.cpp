@@ -87,51 +87,6 @@ void Renderer3D::CreateShaders()
     shaders[Shaders::OutlineCompute] = std::make_shared<Shader>();
     shaders[Shaders::OutlineCompute]->Compile(Shader::Type::Compute, "assets/shaders/Outline.hlsl");
 
-    /*shaders[Shaders::SimpleElementVertex] = std::make_shared<Shader>();
-    shaders[Shaders::SimpleElementVertex]->Compile(Shader::Type::Vertex, "assets/shaders/SimpleElementVertexShader.hlsl", VertexType::PosUvCol);
-    shaders[Shaders::SimpleElementPixel] = std::make_shared<Shader>();
-    shaders[Shaders::SimpleElementPixel]->Compile(Shader::Type::Pixel, "assets/shaders/SimpleElementPixelShader.hlsl");
-
-    shaders[Shaders::SolidVertex] = std::make_shared<Shader>();
-    shaders[Shaders::SolidVertex]->Compile(Shader::Type::Vertex, "assets/shaders/Solid_VS.hlsl", VertexType::Pos);
-    shaders[Shaders::SolidPixel] = std::make_shared<Shader>();
-    shaders[Shaders::SolidPixel]->Compile(Shader::Type::Pixel, "assets/shaders/Solid_PS.hlsl");
-
-    shaders[Shaders::PhongVertex] = std::make_shared<Shader>();
-    shaders[Shaders::PhongVertex]->Compile(Shader::Type::Vertex, "assets/shaders/Phong_VS.hlsl", VertexType::PosNor);
-    shaders[Shaders::PhongPixel] = std::make_shared<Shader>();
-    shaders[Shaders::PhongPixel]->Compile(Shader::Type::Pixel, "assets/shaders/Phong_PS.hlsl");
-
-    shaders[Shaders::PhongDiffuseVertex] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseVertex]->Compile(Shader::Type::Vertex, "assets/shaders/PhongDif_VS.hlsl", VertexType::PosUvNorTan);
-    shaders[Shaders::PhongDiffusePixel] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffusePixel]->Compile(Shader::Type::Pixel, "assets/shaders/PhongDif_PS.hlsl");
-
-    shaders[Shaders::PhongDiffuseMaskSpecularVertex] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseMaskSpecularVertex]->Compile(Shader::Type::Vertex, "assets/shaders/PhongDifMskSpc_VS.hlsl", VertexType::PosUvNorTan);
-    shaders[Shaders::PhongDiffuseMaskSpecularPixel] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseMaskSpecularPixel]->Compile(Shader::Type::Pixel, "assets/shaders/PhongDifMskSpc_PS.hlsl");
-
-    shaders[Shaders::PhongDiffuseMaskSpecularNormalVertex] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseMaskSpecularNormalVertex]->Compile(Shader::Type::Vertex, "assets/shaders/PhongDifMskSpcNrm_VS.hlsl", VertexType::PosUvNorTan);
-    shaders[Shaders::PhongDiffuseMaskSpecularNormalPixel] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseMaskSpecularNormalPixel]->Compile(Shader::Type::Pixel, "assets/shaders/PhongDifMskSpcNrm_PS.hlsl");
-
-    shaders[Shaders::PhongDiffuseNormalVertex] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseNormalVertex]->Compile(Shader::Type::Vertex, "assets/shaders/PhongDifNrm_VS.hlsl", VertexType::PosUvNorTan);
-    shaders[Shaders::PhongDiffuseNormalPixel] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseNormalPixel]->Compile(Shader::Type::Pixel, "assets/shaders/PhongDifNrm_PS.hlsl");
-
-    shaders[Shaders::PhongDiffuseSpecularVertex] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseSpecularVertex]->Compile(Shader::Type::Vertex, "assets/shaders/PhongDifSpc_VS.hlsl", VertexType::PosUvNorTan);
-    shaders[Shaders::PhongDiffuseSpecularPixel] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseSpecularPixel]->Compile(Shader::Type::Pixel, "assets/shaders/PhongDifSpc_PS.hlsl");
-
-    shaders[Shaders::PhongDiffuseSpecularNormalVertex] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseSpecularNormalVertex]->Compile(Shader::Type::Vertex, "assets/shaders/PhongDifSpcNrm_VS.hlsl", VertexType::PosUvNorTan);
-    shaders[Shaders::PhongDiffuseSpecularNormalPixel] = std::make_shared<Shader>();
-    shaders[Shaders::PhongDiffuseSpecularNormalPixel]->Compile(Shader::Type::Pixel, "assets/shaders/PhongDifSpcNrm_PS.hlsl");*/
-
     shaders[Shaders::MeshDefaultVertex] = std::make_shared<Shader>();
     shaders[Shaders::MeshDefaultVertex]->Compile(Shader::Type::Vertex, "assets/shaders/MeshDefault_VS.hlsl", VertexType::PosUvNorTan);
     shaders[Shaders::MeshBlinnPhongPixel] = std::make_shared<Shader>();
