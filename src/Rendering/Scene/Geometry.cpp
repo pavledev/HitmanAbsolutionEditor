@@ -66,7 +66,7 @@ void Geometry::CreateCube(std::vector<VertexPositionTextureNormalTangent>& verti
     indices.emplace_back(23); indices.emplace_back(21); indices.emplace_back(22);
 }
 
-void Geometry::CreateCube(std::vector<VertexPositionColor>& vertices, std::vector<unsigned short>& indices, const Vector4& color)
+void Geometry::CreateCube(std::vector<VertexPosition>& vertices, std::vector<unsigned short>& indices)
 {
     vertices.resize(8);
     indices.resize(24);
@@ -79,15 +79,6 @@ void Geometry::CreateCube(std::vector<VertexPositionColor>& vertices, std::vecto
     vertices[5].position = Vector3(1.f, 1.f, -1.f);
     vertices[6].position = Vector3(1.f, 1.f, 1.f);
     vertices[7].position = Vector3(-1.f, 1.f, 1.f);
-
-    vertices[0].color = color;
-    vertices[1].color = color;
-    vertices[2].color = color;
-    vertices[3].color = color;
-    vertices[4].color = color;
-    vertices[5].color = color;
-    vertices[6].color = color;
-    vertices[7].color = color;
 
     indices.push_back(0);
     indices.push_back(1);
