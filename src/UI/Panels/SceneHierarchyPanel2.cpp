@@ -128,6 +128,11 @@ void SceneHierarchyPanel2::CreateEntities()
             }
 
             modelEntity->AddChild(skeletonEntity);
+
+            if (meshes[0]->GetSubType() != SPrimObject::SUBTYPE::SUBTYPE_WEIGHTED)
+            {
+                skeletonEntity->SetIsVisible(false);
+            }
         }
 
         std::shared_ptr<Physics> physics = renderPrimitive->GetPhysics();
@@ -155,6 +160,8 @@ void SceneHierarchyPanel2::CreateEntities()
             }
 
             modelEntity->AddChild(collisionEntity);
+
+            collisionEntity->SetIsVisible(false);
         }
 
         if (renderPrimitive->HasBulletCollisionData())
@@ -214,6 +221,8 @@ void SceneHierarchyPanel2::CreateEntities()
             modelEntity->AddChild(bulletCollisionsEntity);
             bulletCollisionsEntity->GetComponent<Transform>()->SetParent(modelEntity->GetComponent<Model>()->GetTransform());
             modelEntity->GetComponent<Model>()->GetTransform()->AddChild(bulletCollisionsEntity->GetComponent<Transform>());
+
+            bulletCollisionsEntity->SetIsVisible(false);
         }
 
         children[children.size() - 1]->GetComponent<Model>()->Initialize(renderPrimitive);
