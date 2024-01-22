@@ -73,25 +73,6 @@ void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_p
     CreateGpuBuffers(mesh);
     CreateMaterial(mesh, matiReference);
 
-    std::string shaderFileName = "PhongDif";
-
-    /*if (material.GetTexture(Material::TextureType::Diffuse)->HasAlpha())
-    {
-        shaderFileName += "Msk";
-    }*/
-
-    if (material.HasSpecularTexture())
-    {
-        shaderFileName += "Spc";
-    }
-
-    if (material.HasNormalTexture())
-    {
-        shaderFileName += "Nrm";
-    }
-
-    //std::string vertexShaderFilePath = std::format("assets/shaders/{}_VS.hlsl", shaderFileName);
-    //std::string pixelShaderFilePath = std::format("assets/shaders/{}_PS.hlsl", shaderFileName);
     std::string vertexShaderFilePath = "assets/shaders/MeshDefault_VS.hlsl";
     std::string pixelShaderFilePath = "assets/shaders/MeshBlinnPhong_PS.hlsl";
 
