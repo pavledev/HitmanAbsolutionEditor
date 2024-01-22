@@ -73,14 +73,8 @@ void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_p
     CreateGpuBuffers(mesh);
     CreateMaterial(mesh, matiReference);
 
-    std::string vertexShaderFilePath = "assets/shaders/MeshDefault_VS.hlsl";
-    std::string pixelShaderFilePath = "assets/shaders/MeshBlinnPhong_PS.hlsl";
-
-    vertexShader = std::make_shared<Shader>();
-    vertexShader->Compile(Shader::Type::Vertex, vertexShaderFilePath, VertexType::PosUvNorTan);
-
-    pixelShader = std::make_shared<Shader>();
-    pixelShader->Compile(Shader::Type::Pixel, pixelShaderFilePath);
+    vertexShader = Renderer3D::GetShader(Renderer3D::Shaders::MeshDefaultVertex);
+    pixelShader = Renderer3D::GetShader(Renderer3D::Shaders::MeshBlinnPhongPixel);
 
     primitiveType = PrimitiveType::TriangleList;
 }
