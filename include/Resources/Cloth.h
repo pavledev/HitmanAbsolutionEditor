@@ -105,6 +105,15 @@ public:
     void Deserialize() override;
     void Deserialize(std::shared_ptr<Node> node, BinaryReader& binaryReader, unsigned int depth);
     void Export(const std::string& outputPath, const std::string& exportOption) override;
+    void ExportMesh(const std::string& outputPath, const bool exportToOBJ);
+    static std::vector<Vertex> GenerateVerticesForThickMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, const std::vector<Vector3>& startingNormals, const std::shared_ptr<ObjectNode> thickMeshControlObject);
+    static void GenerateVerticesAndIndicesForSheetMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+    static void GenerateVerticesAndIndicesForTubeMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+    static void GenerateVerticesAndIndicesForStrandMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+    void ExportMeshToOBJ(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::string& simulationObjectName, const std::string& outputPath);
+    void ExportMeshToGLB(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::string& simulationObjectName, const std::string& outputPath, const bool rotate);
+    std::shared_ptr<RenderMaterialInstance> FindMaterialReference();
+    static std::vector<Vector4> CalculateTangents(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vector3> startingNormals, const std::vector<unsigned int>& triangleIndices, const std::vector<Vector2>& textureCoordinates);
 
     template <typename T>
     void DeserializePrimitives(BinaryReader& binaryReader, std::shared_ptr<Node>& childNode, const CloakWorks::BinaryNode& binaryNode, const std::string& name, const std::string& className)
