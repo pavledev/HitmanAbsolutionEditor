@@ -224,10 +224,10 @@ std::string ResourceUtility::ConvertResourceTypeToString(const unsigned int type
 
     std::string hex(stream.str());
 
-    int length = hex.length();
+    size_t length = hex.length();
     std::string result;
 
-    for (int i = 0; i < length; i += 2)
+    for (size_t i = 0; i < length; i += 2)
     {
         std::string byte = hex.substr(i, 2);
         char chr = static_cast<char>(static_cast<int>(strtol(byte.c_str(), nullptr, 16)));
