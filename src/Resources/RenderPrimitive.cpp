@@ -950,7 +950,7 @@ void RenderPrimitive::ConvertToOBJ(const std::string& outputPath)
 	objFile.close();
 }
 
-void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, bool rotate)
+void RenderPrimitive::ConvertToGLB(const std::string& glbFilePath, const bool rotate)
 {
 	std::shared_ptr<BoneRig> boneRig = GetBoneRig();
 
