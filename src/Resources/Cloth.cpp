@@ -385,6 +385,10 @@ void Cloth::Export(const std::string& outputPath, const std::string& exportOptio
     {
         ExportRawData(outputPath);
     }
+    else if (exportOption.starts_with("CloakWorks XML"))
+    {
+        SerializeToXML(outputPath);
+    }
     else
     {
         SerializeToXML(outputPath);
