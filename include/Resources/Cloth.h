@@ -81,6 +81,8 @@ public:
         ObjectNode(const CloakWorks::Reflection::FieldType fieldType);
         ObjectNode(const CloakWorks::Reflection::FieldType fieldType, const std::string& name, const std::string& className);
         const std::vector<std::shared_ptr<Node>>& GetChildren() const;
+        const std::shared_ptr<Node> GetChildByName(const std::string& name);
+        const std::shared_ptr<Node> GetChildByClassName(const std::string& className);
         void AddChild(std::shared_ptr<Node> childNode);
 
     private:

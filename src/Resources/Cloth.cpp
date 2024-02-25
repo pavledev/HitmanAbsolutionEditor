@@ -51,6 +51,32 @@ const std::vector<std::shared_ptr<Cloth::Node>>& Cloth::ObjectNode::GetChildren(
     return children;
 }
 
+const std::shared_ptr<Cloth::Node> Cloth::ObjectNode::GetChildByName(const std::string& name)
+{
+    for (size_t i = 0; i < children.size(); ++i)
+    {
+        if (children[i]->GetName() == name)
+        {
+            return children[i];
+        }
+    }
+
+    return nullptr;
+}
+
+const std::shared_ptr<Cloth::Node> Cloth::ObjectNode::GetChildByClassName(const std::string& className)
+{
+    for (size_t i = 0; i < children.size(); ++i)
+    {
+        if (children[i]->GetClassName() == className)
+        {
+            return children[i];
+        }
+    }
+
+    return nullptr;
+}
+
 void Cloth::ObjectNode::AddChild(std::shared_ptr<Node> childNode)
 {
     children.push_back(childNode);
