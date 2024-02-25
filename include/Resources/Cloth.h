@@ -8,12 +8,33 @@
 #include "CloakWorks/CloakWorks.h"
 
 #include "Resources/Resource.h"
+#include "Math/Vector4.h"
+#include "Math/Vector2.h"
+
+class RenderMaterialInstance;
 
 #undef GetClassName
 
 class Cloth : public Resource
 {
 public:
+    struct MappingInfo
+    {
+        Vector4 barycentricCoordinates;
+        Vector4 positionOffset;
+        Vector4 normalOffset;
+        Vector4 tangentOffset;
+    };
+
+    struct Vertex
+    {
+        Vector3 position;
+        Vector3 normal;
+        Vector4 tangent;
+        Vector3 bitangent;
+        Vector2 textureCoordinates;
+    };
+
     class Node
     {
     public:
