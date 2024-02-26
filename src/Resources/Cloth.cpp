@@ -416,27 +416,6 @@ void Cloth::Export(const std::string& outputPath, const std::string& exportOptio
     }
 }
 
-void Cloth::ExportMesh(const std::string& outputPath, const bool exportToOBJ)
-{
-    std::vector<Cloth::Vertex> vertices;
-    std::vector<unsigned int> indices;
-
-    GenerateVerticesAndIndices(vertices, indices);
-
-    const std::shared_ptr<ObjectNode> shroudObject = std::static_pointer_cast<ObjectNode>(this->shroudObject);
-    const std::shared_ptr<ObjectNode> simulationObject = std::static_pointer_cast<ObjectNode>(shroudObject->GetChildByName("SimObject"));
-    const std::string simulationObjectName = std::static_pointer_cast<PrimitiveNode<std::string>>(simulationObject->GetChildByName("name"))->GetPrimitives()[0];
-
-    if (exportToOBJ)
-    {
-        ExportMeshToOBJ(vertices, indices, simulationObjectName, outputPath);
-    }
-    else
-    {
-        ExportMeshToGLB(vertices, indices, simulationObjectName, outputPath, true);
-    }
-}
-
 void Cloth::GenerateVerticesAndIndices(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
 {
     const std::shared_ptr<ObjectNode> shroudObject = std::static_pointer_cast<ObjectNode>(this->shroudObject);
@@ -546,153 +525,158 @@ void Cloth::GenerateVerticesAndIndices(std::vector<Vertex>& vertices, std::vecto
     }
 }
 
-std::vector<Cloth::Vertex> Cloth::GenerateVerticesForThickMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, const std::vector<Vector3>& startingNormals, const std::shared_ptr<ObjectNode> thickMeshControlObject)
+std::shared_ptr<RenderMaterialInstance> Cloth::FindMaterialReference()
 {
-    const unsigned int vertexCount = std::static_pointer_cast<PrimitiveNode<unsigned int>>(thickMeshControlObject->GetChildByName("mappedVertCount"))->GetPrimitives()[0];
-    const std::shared_ptr<ArrayNode> bindingOffsetsNode = std::static_pointer_cast<ArrayNode>(thickMeshControlObject->GetChildByName("bindingOffsets"));
-    const std::shared_ptr<ArrayNode> triangleIndicesNode = std::static_pointer_cast<ArrayNode>(thickMeshControlObject->GetChildByName("triIndices"));
-    const std::shared_ptr<ArrayNode> textureCoordinatesNode = std::static_pointer_cast<ArrayNode>(thickMeshControlObject->GetChildByName("texCoords"));
-    const std::vector<std::shared_ptr<Node>> bindingOffsetsNodeChildren = bindingOffsetsNode->GetChildren();
-    const std::vector<std::shared_ptr<Node>> triangleIndicesNodeChildren = triangleIndicesNode->GetChildren();
-    const std::vector<std::shared_ptr<Node>> textureCoordinatesNodeChildren = textureCoordinatesNode->GetChildren();
-    std::vector<Vertex> vertices;
+    std::shared_ptr<RenderMaterialInstance> matiResource;
+    const std::vector<std::shared_ptr<Resource>>& backReferences = GetBackReferences();
+    std::shared_ptr<TemplateEntity> tempResource;
+    bool hasClotBackReference = false;
+    ZRuntimeResourceID clotRuntimeResourceID = -1;
 
-    vertices.resize(vertexCount);
-
-    unsigned int bindingOffsetIndex = 0;
-
-    for (unsigned int i = 0; i < vertexCount; ++i)
+    for (size_t i = 0; i < backReferences.size(); ++i)
     {
-        MappingInfo mappingInfo;
+        const ResourceInfoRegistry::ResourceInfo& backReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(backReferences[i]->GetHash());
 
-        mappingInfo.barycentricCoordinates.x = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.barycentricCoordinates.y = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.barycentricCoordinates.z = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.barycentricCoordinates.w = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        if (backReferenceInfo.type == "TEMP")
+        {
+            tempResource = std::static_pointer_cast<TemplateEntity>(backReferences[i]);
 
-        mappingInfo.positionOffset.x = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.positionOffset.y = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.positionOffset.z = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.positionOffset.w = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+            break;
+        }
+        else if (backReferenceInfo.type == "CLOT")
+        {
+            std::shared_ptr<FabricResourceEntity> clotResource = std::static_pointer_cast<FabricResourceEntity>(backReferences[i]);
+            const ResourceInfoRegistry::ResourceInfo& clotResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(clotResource->GetHash());
 
-        mappingInfo.normalOffset.x = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.normalOffset.y = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.normalOffset.z = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.normalOffset.w = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+            clotResource->LoadResource(0, clotResourceInfo.headerLibraries[0].chunkIndex, clotResourceInfo.headerLibraries[0].indexInLibrary, false, true, false);
 
-        mappingInfo.tangentOffset.x = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.tangentOffset.y = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.tangentOffset.z = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
-        mappingInfo.tangentOffset.w = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+            const std::vector<std::shared_ptr<Resource>>& clotBackReferences = clotResource->GetBackReferences();
 
-        const unsigned int triangleIndex1 = std::static_pointer_cast<PrimitiveNode<unsigned int>>(triangleIndicesNodeChildren[i * 3])->GetPrimitives()[0];
-        const unsigned int triangleIndex2 = std::static_pointer_cast<PrimitiveNode<unsigned int>>(triangleIndicesNodeChildren[i * 3 + 1])->GetPrimitives()[0];
-        const unsigned int triangleIndex3 = std::static_pointer_cast<PrimitiveNode<unsigned int>>(triangleIndicesNodeChildren[i * 3 + 2])->GetPrimitives()[0];
+            for (size_t j = 0; j < clotBackReferences.size(); ++j)
+            {
+                const ResourceInfoRegistry::ResourceInfo& backReferenceInfo2 = ResourceInfoRegistry::GetInstance().GetResourceInfo(clotBackReferences[j]->GetHash());
 
-        const Vector3 a = startingPositions[triangleIndex1];
-        const Vector3 b = startingPositions[triangleIndex2];
-        const Vector3 c = startingPositions[triangleIndex3];
-        const Vector3 startingNormal1 = startingNormals[triangleIndex1];
-        const Vector3 startingNormal2 = startingNormals[triangleIndex2];
-        const Vector3 startingNormal3 = startingNormals[triangleIndex3];
+                if (backReferenceInfo2.type == "TEMP")
+                {
+                    tempResource = std::static_pointer_cast<TemplateEntity>(clotBackReferences[j]);
 
-        const Vector3 directionAB = (b - a).Normalized();
-        const Vector3 directionAC = (c - a).Normalized();
+                    break;
+                }
+            }
 
-        const Vector3 bindingPosition = Vector3(a * mappingInfo.barycentricCoordinates.x + b * mappingInfo.barycentricCoordinates.y + c * mappingInfo.barycentricCoordinates.z);
-        const Vector3 bindingNormal = Vector3(startingNormal1 * mappingInfo.barycentricCoordinates.x + startingNormal2 * mappingInfo.barycentricCoordinates.y + startingNormal3 * mappingInfo.barycentricCoordinates.z);
+            hasClotBackReference = true;
+            clotRuntimeResourceID = clotResource->GetRuntimeResourceID();
 
-        const Vector3 displacementNormalProjA = (bindingPosition - a) * startingNormal1;
-        const Vector3 displacementNormalProjB = (bindingPosition - b) * startingNormal2;
-        const Vector3 displacementNormalProjC = (bindingPosition - c) * startingNormal3;
-        const float weightedDisplacementA = (displacementNormalProjA.x + displacementNormalProjA.y + displacementNormalProjA.z) * mappingInfo.barycentricCoordinates.x * mappingInfo.barycentricCoordinates.x;
-        const float weightedDisplacementB = (displacementNormalProjB.x + displacementNormalProjB.y + displacementNormalProjB.z) * mappingInfo.barycentricCoordinates.y * mappingInfo.barycentricCoordinates.y;
-        const float weightedDisplacementC = (displacementNormalProjC.x + displacementNormalProjC.y + displacementNormalProjC.z) * mappingInfo.barycentricCoordinates.z * mappingInfo.barycentricCoordinates.z;
-        const float totalDisplacementInfluence = (weightedDisplacementA + weightedDisplacementB + weightedDisplacementC) * -1.f;
-        const Vector3 adjustedBindingPosition = bindingNormal * totalDisplacementInfluence + bindingPosition;
-
-        const Vector3 vertexPosition = Vector3(directionAB * mappingInfo.positionOffset.x + bindingNormal * mappingInfo.positionOffset.y + directionAC * mappingInfo.positionOffset.z) + adjustedBindingPosition;
-        const Vector3 vertexNormal = Vector3(directionAB * mappingInfo.normalOffset.x + bindingNormal * mappingInfo.normalOffset.y + directionAC * mappingInfo.normalOffset.z);
-        const Vector3 vertexTangent = Vector3(directionAB * mappingInfo.tangentOffset.x + bindingNormal * mappingInfo.tangentOffset.y + directionAC * mappingInfo.tangentOffset.z);
-
-        const float textureCoordinateX = std::static_pointer_cast<PrimitiveNode<float>>(textureCoordinatesNodeChildren[i * 2])->GetPrimitives()[0];
-        const float textureCoordinateY = std::static_pointer_cast<PrimitiveNode<float>>(textureCoordinatesNodeChildren[i * 2 + 1])->GetPrimitives()[0];
-
-        vertices[i].position = vertexPosition;
-        vertices[i].normal = vertexNormal;
-        vertices[i].tangent = Vector4(vertexTangent.x, vertexTangent.y, vertexTangent.z, mappingInfo.tangentOffset.w);
-        vertices[i].textureCoordinates = Vector2(textureCoordinateX, textureCoordinateY);
+            break;
+        }
     }
 
-    return vertices;
-}
+    const ResourceInfoRegistry::ResourceInfo& tempResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(tempResource->GetHash());
 
-void Cloth::GenerateVerticesAndIndicesForSheetMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
-{
-    const CloakWorks::SheetMeshControlInstance sheetMeshControlInstance = CloakWorks::SheetMeshControlInstance(shapeDefinition);
-    const unsigned int vertexCount = shapeDefinition.GetNumRows() * shapeDefinition.GetNumColumns();
-    const std::vector<Vector3> startingNormals = CloakWorks::SheetShapeDefinition::GenerateStartingNormals(shapeDefinition);
-    std::vector<Vector2> textureCoordinates;
+    tempResource->LoadResource(0, tempResourceInfo.headerLibraries[0].chunkIndex, tempResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+    tempResource->Deserialize();
+    tempResource->DeleteResourceData();
 
-    vertices.resize(vertexCount);
+    std::shared_ptr<STemplateEntity> templateEntity = tempResource->GetTemplateEntity();
+    const std::vector<std::shared_ptr<Resource>>& tempReferences = tempResource->GetReferences();
+    ZRuntimeResourceID materialID;
 
-    sheetMeshControlInstance.FillIndexBuffer(indices);
-    sheetMeshControlInstance.FillTexCoordsBuffer(textureCoordinates);
-
-    const std::vector<Vector4> tangents = CalculateTangents(shapeDefinition, startingPositions, startingNormals, indices, textureCoordinates);
-
-    for (unsigned int i = 0; i < vertexCount; ++i)
+    for (size_t i = 0; i < templateEntity->entityTemplates.Size(); ++i)
     {
-        vertices[i].position = startingPositions[i];
-        vertices[i].normal = startingNormals[i];
-        vertices[i].tangent = tangents[i];
-        vertices[i].textureCoordinates = textureCoordinates[i];
+        const unsigned int referenceIndex = templateEntity->entityTemplates[i].entityTypeResourceIndex;
+        const std::shared_ptr<Resource> reference = tempReferences[referenceIndex];
+
+        if (hasClotBackReference && reference->GetRuntimeResourceID() != clotRuntimeResourceID)
+        {
+            continue;
+        }
+
+        TArray<SEntityTemplateProperty>& properties = templateEntity->entityTemplates[i].propertyValues;
+        TArray<SEntityTemplateProperty>& postInitProperties = templateEntity->entityTemplates[i].postInitPropertyValues;
+        ZRuntimeResourceID fabricResourceID;
+
+        for (size_t j = 0; j < properties.Size(); ++j)
+        {
+            const std::string& propertyName = PropertyRegistry::GetInstance().GetPropertyName(properties[j].nPropertyID);
+
+            if (!hasClotBackReference && propertyName == "m_FabricResourceID")
+            {
+                fabricResourceID = properties[j].value.Get<ZRuntimeResourceID>();
+            }
+            else if (propertyName == "m_MaterialID")
+            {
+                materialID = properties[j].value.Get<ZRuntimeResourceID>();
+            }
+        }
+
+        if (hasClotBackReference && materialID.GetID() != -1)
+        {
+            break;
+        }
+        else if (fabricResourceID == GetRuntimeResourceID())
+        {
+            break;
+        }
+
+        for (size_t j = 0; j < postInitProperties.Size(); ++j)
+        {
+            const std::string& propertyName = PropertyRegistry::GetInstance().GetPropertyName(postInitProperties[j].nPropertyID);
+
+            if (!hasClotBackReference && propertyName == "m_FabricResourceID")
+            {
+                fabricResourceID = postInitProperties[j].value.Get<ZRuntimeResourceID>();
+            }
+            else if (propertyName == "m_MaterialID")
+            {
+                materialID = postInitProperties[j].value.Get<ZRuntimeResourceID>();
+            }
+        }
+
+        if (hasClotBackReference && materialID.GetID() != -1)
+        {
+            break;
+        }
+        else if (fabricResourceID == GetRuntimeResourceID())
+        {
+            break;
+        }
     }
-}
 
-void Cloth::GenerateVerticesAndIndicesForTubeMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
-{
-    const CloakWorks::TubeMeshControlInstance tubeMeshControlInstance = CloakWorks::TubeMeshControlInstance(shapeDefinition);
-    const unsigned int vertexCount = shapeDefinition.GetNumRows() * shapeDefinition.GetNumColumns();
-    const std::vector<Vector3> startingNormals = CloakWorks::TubeShapeDefinition::GenerateStartingNormals(shapeDefinition);
-    std::vector<Vector2> textureCoordinates;
-
-    vertices.resize(vertexCount);
-
-    tubeMeshControlInstance.FillIndexBuffer(indices);
-    tubeMeshControlInstance.FillTexCoordsBuffer(textureCoordinates);
-
-    const std::vector<Vector4> tangents = CalculateTangents(shapeDefinition, startingPositions, startingNormals, indices, textureCoordinates);
-
-    for (unsigned int i = 0; i < vertexCount; ++i)
+    if (materialID.GetID() != -1)
     {
-        vertices[i].position = startingPositions[i];
-        vertices[i].normal = startingNormals[i];
-        vertices[i].tangent = tangents[i];
-        vertices[i].textureCoordinates = textureCoordinates[i];
+        const std::string matiResourceID = ResourceIDRegistry::GetInstance().GetResourceID(materialID.GetID());
+        const unsigned long long matiHash = Hash::GetMD5(matiResourceID);
+        const ResourceInfoRegistry::ResourceInfo& matiResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiHash);
+        matiResource = std::static_pointer_cast<RenderMaterialInstance>(ResourceUtility::CreateResource("MATI"));
+
+        matiResource->SetHeaderLibraries(&matiResourceInfo.headerLibraries);
+        matiResource->SetResourceID(matiResourceID);
+        matiResource->LoadResource(0, matiResourceInfo.headerLibraries[0].chunkIndex, matiResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+        matiResource->Deserialize();
+        matiResource->DeleteResourceData();
     }
+
+    return matiResource;
 }
 
-void Cloth::GenerateVerticesAndIndicesForStrandMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+void Cloth::ExportMesh(const std::string& outputPath, const bool exportToOBJ)
 {
-    const CloakWorks::StrandMeshControlInstance strandMeshControlInstance = CloakWorks::StrandMeshControlInstance(shapeDefinition);
-    const unsigned int vertexCount = shapeDefinition.GetNumRows() * shapeDefinition.GetNumColumns();
-    const std::vector<Vector3> startingNormals = CloakWorks::StrandShapeDefinition::GenerateStartingNormals(shapeDefinition);
-    std::vector<Vector2> textureCoordinates;
+    std::vector<Cloth::Vertex> vertices;
+    std::vector<unsigned int> indices;
 
-    vertices.resize(vertexCount);
+    GenerateVerticesAndIndices(vertices, indices);
 
-    strandMeshControlInstance.FillIndexBuffer(indices);
-    strandMeshControlInstance.FillTexCoordsBuffer(textureCoordinates);
+    const std::shared_ptr<ObjectNode> shroudObject = std::static_pointer_cast<ObjectNode>(this->shroudObject);
+    const std::shared_ptr<ObjectNode> simulationObject = std::static_pointer_cast<ObjectNode>(shroudObject->GetChildByName("SimObject"));
+    const std::string simulationObjectName = std::static_pointer_cast<PrimitiveNode<std::string>>(simulationObject->GetChildByName("name"))->GetPrimitives()[0];
 
-    const std::vector<Vector4> tangents = CalculateTangents(shapeDefinition, startingPositions, startingNormals, indices, textureCoordinates);
-
-    for (unsigned int i = 0; i < vertexCount; ++i)
+    if (exportToOBJ)
     {
-        vertices[i].position = startingPositions[i];
-        vertices[i].normal = startingNormals[i];
-        vertices[i].tangent = tangents[i];
-        vertices[i].textureCoordinates = textureCoordinates[i];
+        ExportMeshToOBJ(vertices, indices, simulationObjectName, outputPath);
+    }
+    else
+    {
+        ExportMeshToGLB(vertices, indices, simulationObjectName, outputPath, true);
     }
 }
 
@@ -1041,138 +1025,154 @@ void Cloth::ExportMeshToGLB(const std::vector<Vertex>& vertices, const std::vect
     glbResourceWriter->Flush(manifest, glbFileName.string());
 }
 
-std::shared_ptr<RenderMaterialInstance> Cloth::FindMaterialReference()
+std::vector<Cloth::Vertex> Cloth::GenerateVerticesForThickMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, const std::vector<Vector3>& startingNormals, const std::shared_ptr<ObjectNode> thickMeshControlObject)
 {
-    std::shared_ptr<RenderMaterialInstance> matiResource;
-    const std::vector<std::shared_ptr<Resource>>& backReferences = GetBackReferences();
-    std::shared_ptr<TemplateEntity> tempResource;
-    bool hasClotBackReference = false;
-    ZRuntimeResourceID clotRuntimeResourceID = -1;
+    const unsigned int vertexCount = std::static_pointer_cast<PrimitiveNode<unsigned int>>(thickMeshControlObject->GetChildByName("mappedVertCount"))->GetPrimitives()[0];
+    const std::shared_ptr<ArrayNode> bindingOffsetsNode = std::static_pointer_cast<ArrayNode>(thickMeshControlObject->GetChildByName("bindingOffsets"));
+    const std::shared_ptr<ArrayNode> triangleIndicesNode = std::static_pointer_cast<ArrayNode>(thickMeshControlObject->GetChildByName("triIndices"));
+    const std::shared_ptr<ArrayNode> textureCoordinatesNode = std::static_pointer_cast<ArrayNode>(thickMeshControlObject->GetChildByName("texCoords"));
+    const std::vector<std::shared_ptr<Node>> bindingOffsetsNodeChildren = bindingOffsetsNode->GetChildren();
+    const std::vector<std::shared_ptr<Node>> triangleIndicesNodeChildren = triangleIndicesNode->GetChildren();
+    const std::vector<std::shared_ptr<Node>> textureCoordinatesNodeChildren = textureCoordinatesNode->GetChildren();
+    std::vector<Vertex> vertices;
 
-    for (size_t i = 0; i < backReferences.size(); ++i)
+    vertices.resize(vertexCount);
+
+    unsigned int bindingOffsetIndex = 0;
+
+    for (unsigned int i = 0; i < vertexCount; ++i)
     {
-        const ResourceInfoRegistry::ResourceInfo& backReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(backReferences[i]->GetHash());
+        MappingInfo mappingInfo;
 
-        if (backReferenceInfo.type == "TEMP")
-        {
-            tempResource = std::static_pointer_cast<TemplateEntity>(backReferences[i]);
+        mappingInfo.barycentricCoordinates.x = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.barycentricCoordinates.y = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.barycentricCoordinates.z = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.barycentricCoordinates.w = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
 
-            break;
-        }
-        else if (backReferenceInfo.type == "CLOT")
-        {
-            std::shared_ptr<FabricResourceEntity> clotResource = std::static_pointer_cast<FabricResourceEntity>(backReferences[i]);
-            const ResourceInfoRegistry::ResourceInfo& clotResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(clotResource->GetHash());
+        mappingInfo.positionOffset.x = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.positionOffset.y = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.positionOffset.z = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.positionOffset.w = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
 
-            clotResource->LoadResource(0, clotResourceInfo.headerLibraries[0].chunkIndex, clotResourceInfo.headerLibraries[0].indexInLibrary, false, true, false);
+        mappingInfo.normalOffset.x = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.normalOffset.y = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.normalOffset.z = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.normalOffset.w = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
 
-            const std::vector<std::shared_ptr<Resource>>& clotBackReferences = clotResource->GetBackReferences();
+        mappingInfo.tangentOffset.x = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.tangentOffset.y = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.tangentOffset.z = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
+        mappingInfo.tangentOffset.w = std::static_pointer_cast<PrimitiveNode<float>>(bindingOffsetsNodeChildren[bindingOffsetIndex++])->GetPrimitives()[0];
 
-            for (size_t j = 0; j < clotBackReferences.size(); ++j)
-            {
-                const ResourceInfoRegistry::ResourceInfo& backReferenceInfo2 = ResourceInfoRegistry::GetInstance().GetResourceInfo(clotBackReferences[j]->GetHash());
+        const unsigned int triangleIndex1 = std::static_pointer_cast<PrimitiveNode<unsigned int>>(triangleIndicesNodeChildren[i * 3])->GetPrimitives()[0];
+        const unsigned int triangleIndex2 = std::static_pointer_cast<PrimitiveNode<unsigned int>>(triangleIndicesNodeChildren[i * 3 + 1])->GetPrimitives()[0];
+        const unsigned int triangleIndex3 = std::static_pointer_cast<PrimitiveNode<unsigned int>>(triangleIndicesNodeChildren[i * 3 + 2])->GetPrimitives()[0];
 
-                if (backReferenceInfo2.type == "TEMP")
-                {
-                    tempResource = std::static_pointer_cast<TemplateEntity>(clotBackReferences[j]);
+        const Vector3 a = startingPositions[triangleIndex1];
+        const Vector3 b = startingPositions[triangleIndex2];
+        const Vector3 c = startingPositions[triangleIndex3];
+        const Vector3 startingNormal1 = startingNormals[triangleIndex1];
+        const Vector3 startingNormal2 = startingNormals[triangleIndex2];
+        const Vector3 startingNormal3 = startingNormals[triangleIndex3];
 
-                    break;
-                }
-            }
+        const Vector3 directionAB = (b - a).Normalized();
+        const Vector3 directionAC = (c - a).Normalized();
 
-            hasClotBackReference = true;
-            clotRuntimeResourceID = clotResource->GetRuntimeResourceID();
+        const Vector3 bindingPosition = Vector3(a * mappingInfo.barycentricCoordinates.x + b * mappingInfo.barycentricCoordinates.y + c * mappingInfo.barycentricCoordinates.z);
+        const Vector3 bindingNormal = Vector3(startingNormal1 * mappingInfo.barycentricCoordinates.x + startingNormal2 * mappingInfo.barycentricCoordinates.y + startingNormal3 * mappingInfo.barycentricCoordinates.z);
 
-            break;
-        }
+        const Vector3 displacementNormalProjA = (bindingPosition - a) * startingNormal1;
+        const Vector3 displacementNormalProjB = (bindingPosition - b) * startingNormal2;
+        const Vector3 displacementNormalProjC = (bindingPosition - c) * startingNormal3;
+        const float weightedDisplacementA = (displacementNormalProjA.x + displacementNormalProjA.y + displacementNormalProjA.z) * mappingInfo.barycentricCoordinates.x * mappingInfo.barycentricCoordinates.x;
+        const float weightedDisplacementB = (displacementNormalProjB.x + displacementNormalProjB.y + displacementNormalProjB.z) * mappingInfo.barycentricCoordinates.y * mappingInfo.barycentricCoordinates.y;
+        const float weightedDisplacementC = (displacementNormalProjC.x + displacementNormalProjC.y + displacementNormalProjC.z) * mappingInfo.barycentricCoordinates.z * mappingInfo.barycentricCoordinates.z;
+        const float totalDisplacementInfluence = (weightedDisplacementA + weightedDisplacementB + weightedDisplacementC) * -1.f;
+        const Vector3 adjustedBindingPosition = bindingNormal * totalDisplacementInfluence + bindingPosition;
+
+        const Vector3 vertexPosition = Vector3(directionAB * mappingInfo.positionOffset.x + bindingNormal * mappingInfo.positionOffset.y + directionAC * mappingInfo.positionOffset.z) + adjustedBindingPosition;
+        const Vector3 vertexNormal = Vector3(directionAB * mappingInfo.normalOffset.x + bindingNormal * mappingInfo.normalOffset.y + directionAC * mappingInfo.normalOffset.z);
+        const Vector3 vertexTangent = Vector3(directionAB * mappingInfo.tangentOffset.x + bindingNormal * mappingInfo.tangentOffset.y + directionAC * mappingInfo.tangentOffset.z);
+
+        const float textureCoordinateX = std::static_pointer_cast<PrimitiveNode<float>>(textureCoordinatesNodeChildren[i * 2])->GetPrimitives()[0];
+        const float textureCoordinateY = std::static_pointer_cast<PrimitiveNode<float>>(textureCoordinatesNodeChildren[i * 2 + 1])->GetPrimitives()[0];
+
+        vertices[i].position = vertexPosition;
+        vertices[i].normal = vertexNormal;
+        vertices[i].tangent = Vector4(vertexTangent.x, vertexTangent.y, vertexTangent.z, mappingInfo.tangentOffset.w);
+        vertices[i].textureCoordinates = Vector2(textureCoordinateX, textureCoordinateY);
     }
 
-    const ResourceInfoRegistry::ResourceInfo& tempResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(tempResource->GetHash());
+    return vertices;
+}
 
-    tempResource->LoadResource(0, tempResourceInfo.headerLibraries[0].chunkIndex, tempResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-    tempResource->Deserialize();
-    tempResource->DeleteResourceData();
+void Cloth::GenerateVerticesAndIndicesForSheetMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+{
+    const CloakWorks::SheetMeshControlInstance sheetMeshControlInstance = CloakWorks::SheetMeshControlInstance(shapeDefinition);
+    const unsigned int vertexCount = shapeDefinition.GetNumRows() * shapeDefinition.GetNumColumns();
+    const std::vector<Vector3> startingNormals = CloakWorks::SheetShapeDefinition::GenerateStartingNormals(shapeDefinition);
+    std::vector<Vector2> textureCoordinates;
 
-    std::shared_ptr<STemplateEntity> templateEntity = tempResource->GetTemplateEntity();
-    const std::vector<std::shared_ptr<Resource>>& tempReferences = tempResource->GetReferences();
-    ZRuntimeResourceID materialID;
+    vertices.resize(vertexCount);
 
-    for (size_t i = 0; i < templateEntity->entityTemplates.Size(); ++i)
+    sheetMeshControlInstance.FillIndexBuffer(indices);
+    sheetMeshControlInstance.FillTexCoordsBuffer(textureCoordinates);
+
+    const std::vector<Vector4> tangents = CalculateTangents(shapeDefinition, startingPositions, startingNormals, indices, textureCoordinates);
+
+    for (unsigned int i = 0; i < vertexCount; ++i)
     {
-        const unsigned int referenceIndex = templateEntity->entityTemplates[i].entityTypeResourceIndex;
-        const std::shared_ptr<Resource> reference = tempReferences[referenceIndex];
-
-        if (hasClotBackReference && reference->GetRuntimeResourceID() != clotRuntimeResourceID)
-        {
-            continue;
-        }
-
-        TArray<SEntityTemplateProperty>& properties = templateEntity->entityTemplates[i].propertyValues;
-        TArray<SEntityTemplateProperty>& postInitProperties = templateEntity->entityTemplates[i].postInitPropertyValues;
-        ZRuntimeResourceID fabricResourceID;
-
-        for (size_t j = 0; j < properties.Size(); ++j)
-        {
-            const std::string& propertyName = PropertyRegistry::GetInstance().GetPropertyName(properties[j].nPropertyID);
-
-            if (!hasClotBackReference && propertyName == "m_FabricResourceID")
-            {
-                fabricResourceID = properties[j].value.Get<ZRuntimeResourceID>();
-            }
-            else if (propertyName == "m_MaterialID")
-            {
-                materialID = properties[j].value.Get<ZRuntimeResourceID>();
-            }
-        }
-
-        if (hasClotBackReference && materialID.GetID() != -1)
-        {
-            break;
-        }
-        else if (fabricResourceID == GetRuntimeResourceID())
-        {
-            break;
-        }
-
-        for (size_t j = 0; j < postInitProperties.Size(); ++j)
-        {
-            const std::string& propertyName = PropertyRegistry::GetInstance().GetPropertyName(postInitProperties[j].nPropertyID);
-
-            if (!hasClotBackReference && propertyName == "m_FabricResourceID")
-            {
-                fabricResourceID = postInitProperties[j].value.Get<ZRuntimeResourceID>();
-            }
-            else if (propertyName == "m_MaterialID")
-            {
-                materialID = postInitProperties[j].value.Get<ZRuntimeResourceID>();
-            }
-        }
-
-        if (hasClotBackReference && materialID.GetID() != -1)
-        {
-            break;
-        }
-        else if (fabricResourceID == GetRuntimeResourceID())
-        {
-            break;
-        }
+        vertices[i].position = startingPositions[i];
+        vertices[i].normal = startingNormals[i];
+        vertices[i].tangent = tangents[i];
+        vertices[i].textureCoordinates = textureCoordinates[i];
     }
+}
 
-    if (materialID.GetID() != -1)
+void Cloth::GenerateVerticesAndIndicesForTubeMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+{
+    const CloakWorks::TubeMeshControlInstance tubeMeshControlInstance = CloakWorks::TubeMeshControlInstance(shapeDefinition);
+    const unsigned int vertexCount = shapeDefinition.GetNumRows() * shapeDefinition.GetNumColumns();
+    const std::vector<Vector3> startingNormals = CloakWorks::TubeShapeDefinition::GenerateStartingNormals(shapeDefinition);
+    std::vector<Vector2> textureCoordinates;
+
+    vertices.resize(vertexCount);
+
+    tubeMeshControlInstance.FillIndexBuffer(indices);
+    tubeMeshControlInstance.FillTexCoordsBuffer(textureCoordinates);
+
+    const std::vector<Vector4> tangents = CalculateTangents(shapeDefinition, startingPositions, startingNormals, indices, textureCoordinates);
+
+    for (unsigned int i = 0; i < vertexCount; ++i)
     {
-        const std::string matiResourceID = ResourceIDRegistry::GetInstance().GetResourceID(materialID.GetID());
-        const unsigned long long matiHash = Hash::GetMD5(matiResourceID);
-        const ResourceInfoRegistry::ResourceInfo& matiResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiHash);
-        matiResource = std::static_pointer_cast<RenderMaterialInstance>(ResourceUtility::CreateResource("MATI"));
-
-        matiResource->SetHeaderLibraries(&matiResourceInfo.headerLibraries);
-        matiResource->SetResourceID(matiResourceID);
-        matiResource->LoadResource(0, matiResourceInfo.headerLibraries[0].chunkIndex, matiResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-        matiResource->Deserialize();
-        matiResource->DeleteResourceData();
+        vertices[i].position = startingPositions[i];
+        vertices[i].normal = startingNormals[i];
+        vertices[i].tangent = tangents[i];
+        vertices[i].textureCoordinates = textureCoordinates[i];
     }
+}
 
-    return matiResource;
+void Cloth::GenerateVerticesAndIndicesForStrandMesh(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+{
+    const CloakWorks::StrandMeshControlInstance strandMeshControlInstance = CloakWorks::StrandMeshControlInstance(shapeDefinition);
+    const unsigned int vertexCount = shapeDefinition.GetNumRows() * shapeDefinition.GetNumColumns();
+    const std::vector<Vector3> startingNormals = CloakWorks::StrandShapeDefinition::GenerateStartingNormals(shapeDefinition);
+    std::vector<Vector2> textureCoordinates;
+
+    vertices.resize(vertexCount);
+
+    strandMeshControlInstance.FillIndexBuffer(indices);
+    strandMeshControlInstance.FillTexCoordsBuffer(textureCoordinates);
+
+    const std::vector<Vector4> tangents = CalculateTangents(shapeDefinition, startingPositions, startingNormals, indices, textureCoordinates);
+
+    for (unsigned int i = 0; i < vertexCount; ++i)
+    {
+        vertices[i].position = startingPositions[i];
+        vertices[i].normal = startingNormals[i];
+        vertices[i].tangent = tangents[i];
+        vertices[i].textureCoordinates = textureCoordinates[i];
+    }
 }
 
 std::vector<Vector4> Cloth::CalculateTangents(CloakWorks::ShapeDefinition& shapeDefinition, const std::vector<Vector3>& startingPositions, std::vector<Vector3> startingNormals, const std::vector<unsigned int>& triangleIndices, const std::vector<Vector2>& textureCoordinates)
