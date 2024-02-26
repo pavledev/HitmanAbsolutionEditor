@@ -44,6 +44,7 @@
 #include "UI/Documents/ScatterDataDocument.h"
 #include "UI/Documents/FabricResourceEntityDocument.h"
 #include "UI/Documents/RenderPrimitiveDocument.h"
+#include "UI/Documents/ClothDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -661,6 +662,13 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(renderPrimitiveDocument->GetRenderPrimitive());
         resourceDocument = std::static_pointer_cast<Document>(renderPrimitiveDocument);
+    }
+    else if (resourceInfo.type == "CLOS")
+    {
+        std::shared_ptr<ClothDocument> clothDocument = std::make_shared<ClothDocument>(resourceName.c_str(), ICON_MDI_SHAPE, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(clothDocument->GetCloth());
+        resourceDocument = std::static_pointer_cast<Document>(clothDocument);
     }
 
     resource->SetHash(resourceInfo.hash);
