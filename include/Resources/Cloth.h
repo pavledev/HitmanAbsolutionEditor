@@ -102,6 +102,7 @@ public:
         std::vector<std::shared_ptr<Node>> children;
     };
 
+    ~Cloth();
     void Deserialize() override;
     void Deserialize(std::shared_ptr<Node> node, BinaryReader& binaryReader, unsigned int depth);
     void Export(const std::string& outputPath, const std::string& exportOption) override;

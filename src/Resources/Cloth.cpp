@@ -116,6 +116,11 @@ void Cloth::ArrayNode::AddChild(std::shared_ptr<Node> childNode)
     children.push_back(childNode);
 }
 
+Cloth::~Cloth()
+{
+    delete[] vertexBuffer;
+}
+
 void Cloth::Deserialize()
 {
     BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
