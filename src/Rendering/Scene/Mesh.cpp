@@ -28,7 +28,7 @@ Mesh::Mesh(const char* name, const char* icon, std::weak_ptr<Entity> entity) : C
     meshColor = { 0.721f, 0.709f, 0.709f, 1.0f };
 }
 
-void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiReference)
+void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiResource)
 {
     lodMask = mesh->GetLODMask();
 
