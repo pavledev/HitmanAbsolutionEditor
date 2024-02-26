@@ -10,6 +10,8 @@ public:
 	SceneHierarchyPanel2(const char* name, const char* icon, std::shared_ptr<Resource> resource);
 	void OnSelectedEntityTreeNode(std::shared_ptr<Entity> selectedEntity);
 	void CreateEntities();
+	void CreateEntitiesForPRIM();
+	void CreateEntitiesForCLOS();
 	void Render() override;
 	void RenderTree(std::shared_ptr<Entity> parentEntity);
 	void OnResourceLoaded();
