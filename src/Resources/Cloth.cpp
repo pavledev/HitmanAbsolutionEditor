@@ -671,7 +671,6 @@ std::shared_ptr<RenderMaterialInstance> Cloth::FindMaterialReference()
     return matiResource;
 }
 
-void Cloth::ExportMesh(const std::string& outputPath, const bool exportToOBJ)
 const std::vector<Cloth::Vertex>& Cloth::GetVertices() const
 {
     return vertices;
@@ -730,6 +729,10 @@ void Cloth::CreateVertexBuffer()
         binaryWriter.Write(vertices[i].textureCoordinates);
     }
 }
+
+void Cloth::ExportMesh(const std::string& outputPath, const bool exportToOBJ)
+{
+    GenerateVerticesAndIndices();
 
     const std::shared_ptr<ObjectNode> shroudObject = std::static_pointer_cast<ObjectNode>(this->shroudObject);
     const std::shared_ptr<ObjectNode> simulationObject = std::static_pointer_cast<ObjectNode>(shroudObject->GetChildByName("SimObject"));
