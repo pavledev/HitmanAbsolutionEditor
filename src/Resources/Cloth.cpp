@@ -523,6 +523,13 @@ void Cloth::GenerateVerticesAndIndices()
             GenerateVerticesAndIndicesForStrandMesh(shapeDefinition, startingPositions2, vertices, indices);
         }
     }
+
+    const std::vector<Vector3> bitangents = CalculateBitangents(vertices);
+
+    for (size_t i = 0; i < bitangents.size(); ++i)
+    {
+        vertices[i].bitangent = bitangents[i];
+    }
 }
 
 std::shared_ptr<RenderMaterialInstance> Cloth::FindMaterialReference()
