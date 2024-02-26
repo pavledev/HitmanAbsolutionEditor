@@ -74,7 +74,7 @@ void Model::Initialize(std::shared_ptr<Cloth> cloth)
     std::shared_ptr<RenderMaterialInstance> matiReference = cloth->FindMaterialReference();
     std::shared_ptr<Mesh> mesh = this->meshes[0];
 
-    mesh->Initialize(vertices, indices, matiReference);
+    mesh->Initialize(cloth, matiReference);
     mesh->GetTransform()->SetParent(GetTransform());
     GetTransform()->AddChild(mesh->GetTransform());
 
