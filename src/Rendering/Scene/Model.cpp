@@ -3,6 +3,7 @@
 #include "Rendering/PipelineState.h"
 #include "Rendering/Scene/Transform.h"
 #include "Rendering/DirectXRenderer.h"
+#include "Resources/Cloth.h"
 
 Model::Model(const char* name, const char* icon, std::weak_ptr<Entity> entity) : Component(name, icon, entity)
 {
@@ -60,6 +61,25 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
         collision->GetTransform()->SetParent(GetTransform());
         GetTransform()->AddChild(collision->GetTransform());
     }
+
+    Quaternion worldRotation = Quaternion::FromEulerAngles({ -90.f, 0.f, 0.f });
+
+    GetTransform()->SetWorldRotation(worldRotation);
+}
+
+void Model::Initialize(std::shared_ptr<Cloth> cloth)
+{
+    std::vector<Cloth::Vertex> vertices;
+    std::vector<unsigned int> indices;
+
+    cloth->GenerateVerticesAndIndices(vertices, indices);
+
+    std::shared_ptr<RenderMaterialInstance> matiReference = cloth->FindMaterialReference();
+    std::shared_ptr<Mesh> mesh = this->meshes[0];
+
+    mesh->Initialize(vertices, indices, matiReference);
+    mesh->GetTransform()->SetParent(GetTransform());
+    GetTransform()->AddChild(mesh->GetTransform());
 
     Quaternion worldRotation = Quaternion::FromEulerAngles({ -90.f, 0.f, 0.f });
 
