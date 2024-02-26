@@ -88,8 +88,8 @@ public:
         vertexBuffer->Create(vertices);
     }
 
-    template<typename T>
-    void CreateGpuBuffers(const std::vector<T>& vertices, const std::vector<unsigned short>& indices)
+    template <typename T>
+    void CreateGpuBuffers(const std::vector<T>& vertices, const std::vector<unsigned int>& indices)
     {
         vertexBuffer = std::make_shared<VertexBuffer>();
         vertexBuffer->Create(vertices);
@@ -114,7 +114,7 @@ public:
 
 private:
     std::vector<VertexPosition> vertexPositions;
-    std::vector<unsigned short> indices;
+    std::vector<unsigned int> indices;
     std::shared_ptr<VertexBuffer> vertexBuffer;
     std::shared_ptr<IndexBuffer> indexBuffer;
     std::shared_ptr<Shader> vertexShader;

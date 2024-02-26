@@ -256,7 +256,7 @@ void Camera::Pick()
 		// Get entity geometry
 		std::shared_ptr<Mesh> mesh = hit.entity->GetComponent<Mesh>();
 		const std::vector<VertexPosition>& vertexPositions = mesh->GetVertexPositions();
-		const std::vector<unsigned short>& indices = mesh->GetIndices();
+		const std::vector<unsigned int>& indices = mesh->GetIndices();
 
 		if (indices.empty() || vertexPositions.empty())
 		{

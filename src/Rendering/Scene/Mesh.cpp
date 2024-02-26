@@ -84,7 +84,7 @@ const std::vector<VertexPosition>& Mesh::GetVertexPositions() const
     return vertexPositions;
 }
 
-const std::vector<unsigned short>& Mesh::GetIndices() const
+const std::vector<unsigned int>& Mesh::GetIndices() const
 {
     return indices;
 }
