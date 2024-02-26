@@ -69,6 +69,12 @@ void SceneHierarchyPanel2::CreateEntities()
         case 'PRIM':
             CreateEntitiesForPRIM();
             break;
+        case 'BORG':
+            CreateEntitiesForBORG();
+            break;
+        case 'ALOC':
+            CreateEntitiesForALOC();
+            break;
         case 'CLOS':
             CreateEntitiesForCLOS();
             break;
