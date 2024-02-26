@@ -48,7 +48,7 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
 
     if (boneRig)
     {
-        skeleton->Initialize(renderPrimitive);
+        skeleton->Initialize(boneRig);
         skeleton->GetTransform()->SetParent(GetTransform());
         GetTransform()->AddChild(skeleton->GetTransform());
     }
