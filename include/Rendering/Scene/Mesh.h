@@ -114,6 +114,7 @@ public:
     void SetRenderer3D(std::shared_ptr<Renderer3D> renderer3D);
 
     void CreateGpuBuffers(std::shared_ptr<RenderPrimitive::Mesh> mesh);
+    void CreateGpuBuffers(std::shared_ptr<Cloth> cloth);
 
     template <typename T>
     void CreateGpuBuffers(const std::vector<T>& vertices)

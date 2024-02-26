@@ -209,6 +209,17 @@ void Mesh::CreateGpuBuffers(std::shared_ptr<RenderPrimitive::Mesh> mesh)
     indexBuffer->Create(mesh->GetIndices());
 }
 
+void Mesh::CreateGpuBuffers(std::shared_ptr<Cloth> cloth)
+{
+    cloth->CreateVertexBuffer();
+
+    vertexBuffer = std::make_shared<VertexBuffer>();
+    vertexBuffer->Create(cloth->GetVertexBuffer(), cloth->GetVertexCount(), cloth->GetStride());
+
+    indexBuffer = std::make_shared<IndexBuffer>();
+    indexBuffer->Create(cloth->GetIndices());
+}
+
 void Mesh::CreateBoundingBox(const std::shared_ptr<RenderPrimitive::Mesh> mesh)
 {
     const Vector3 boundingBoxMin = mesh->GetBoundingBoxMin();
