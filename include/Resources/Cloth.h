@@ -207,4 +207,6 @@ private:
 
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
+    void* vertexBuffer;
+    unsigned int vertexBufferSize;
 };
