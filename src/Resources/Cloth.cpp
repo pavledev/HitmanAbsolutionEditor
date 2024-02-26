@@ -416,7 +416,7 @@ void Cloth::Export(const std::string& outputPath, const std::string& exportOptio
     }
 }
 
-void Cloth::GenerateVerticesAndIndices(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+void Cloth::GenerateVerticesAndIndices()
 {
     const std::shared_ptr<ObjectNode> shroudObject = std::static_pointer_cast<ObjectNode>(this->shroudObject);
     const std::shared_ptr<ObjectNode> simulationObject = std::static_pointer_cast<ObjectNode>(shroudObject->GetChildByName("SimObject"));

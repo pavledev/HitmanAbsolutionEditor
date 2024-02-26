@@ -105,7 +105,7 @@ public:
     void Deserialize() override;
     void Deserialize(std::shared_ptr<Node> node, BinaryReader& binaryReader, unsigned int depth);
     void Export(const std::string& outputPath, const std::string& exportOption) override;
-    void GenerateVerticesAndIndices(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
+    void GenerateVerticesAndIndices();
     std::shared_ptr<RenderMaterialInstance> FindMaterialReference();
 
     template <typename T>
@@ -204,4 +204,7 @@ private:
     static std::vector<Vector3> CalculateBitangents(std::vector<Vertex>& vertices);
 
     std::shared_ptr<Node> shroudObject;
+
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
 };
