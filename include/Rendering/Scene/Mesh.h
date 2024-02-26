@@ -24,7 +24,7 @@ public:
 
     Mesh(const char* name, const char* icon, std::weak_ptr<Entity> entity);
     void Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiResource);
-    void Initialize(const std::vector<Cloth::Vertex>& vertices, const std::vector<unsigned int>& indices, std::shared_ptr<RenderMaterialInstance> matiResource);
+    void Initialize(std::shared_ptr<Cloth> cloth, std::shared_ptr<RenderMaterialInstance> matiResource);
 
     template <typename T>
     void Initialize(const std::vector<T>& vertices, const Renderer3D::Shaders vertexShader, const Renderer3D::Shaders pixelShader, Vector3 color, PrimitiveType primitiveType = PrimitiveType::TriangleList)

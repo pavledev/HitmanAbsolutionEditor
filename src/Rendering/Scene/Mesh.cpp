@@ -86,8 +86,11 @@ void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_p
     primitiveType = PrimitiveType::TriangleList;
 }
 
-void Mesh::Initialize(const std::vector<Cloth::Vertex>& vertices, const std::vector<unsigned int>& indices, std::shared_ptr<RenderMaterialInstance> matiResource)
+void Mesh::Initialize(std::shared_ptr<Cloth> cloth, std::shared_ptr<RenderMaterialInstance> matiResource)
 {
+    const std::vector<Cloth::Vertex>& vertices = cloth->GetVertices();
+    const std::vector<unsigned int>& indices = cloth->GetIndices();
+
     CreateBoundingBox(vertices);
 
     vertexPositions.resize(vertices.size());
@@ -104,7 +107,7 @@ void Mesh::Initialize(const std::vector<Cloth::Vertex>& vertices, const std::vec
 
     this->indices = indices;
 
-    CreateGpuBuffers(vertices, indices);
+    CreateGpuBuffers(cloth);
     CreateMaterial(matiResource);
 
     vertexShader = Renderer3D::GetShader(Renderer3D::Shaders::MeshDefaultVertex);
