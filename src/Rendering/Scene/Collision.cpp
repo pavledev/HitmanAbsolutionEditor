@@ -11,9 +11,8 @@ Collision::Collision(const char* name, const char* icon, std::weak_ptr<Entity> e
 {
 }
 
-void Collision::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
+void Collision::Initialize(std::shared_ptr<Physics> physics)
 {
-    std::shared_ptr<Physics> physics = renderPrimitive->GetPhysics();
     const std::vector<G2NxShapeDesc*>& shapeDescriptors = physics->GetCollisionShape().GetShapeDescriptors();
 
     for (size_t i = 0; i < shapeDescriptors.size(); ++i)

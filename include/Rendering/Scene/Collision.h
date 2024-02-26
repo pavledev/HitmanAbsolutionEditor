@@ -7,7 +7,7 @@ class Collision : public Component
 {
 public:
 	Collision(const char* name, const char* icon, std::weak_ptr<Entity> entity);
-	void Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive);
+	void Initialize(std::shared_ptr<Physics> physics);
 	void AddMesh(std::shared_ptr<Mesh> mesh);
 	const std::vector<std::shared_ptr<Mesh>>& GetMeshes() const;
 	void Render() override;

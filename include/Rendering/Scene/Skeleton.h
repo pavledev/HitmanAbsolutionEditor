@@ -2,7 +2,6 @@
 
 #include "Component.h"
 #include "ModelBone.h"
-#include "Resources/RenderPrimitive.h"
 #include "Transform.h"
 #include "VirtualNode.h"
 
@@ -10,7 +9,7 @@ class Skeleton : public Component
 {
 public:
 	Skeleton(const char* name, const char* icon, std::weak_ptr<Entity> entity);
-	void Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive);
+	void Initialize(std::shared_ptr<BoneRig> boneRig);
 	void InitializeVirtualNodes(const unsigned int parentIndex, std::vector<VirtualNode>& virtualNodes, std::shared_ptr<BoneRig> boneRig);
 	void AddModelBone(std::shared_ptr<ModelBone> modelBone);
 	void Render() override;

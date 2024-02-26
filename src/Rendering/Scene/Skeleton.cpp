@@ -4,9 +4,8 @@ Skeleton::Skeleton(const char* name, const char* icon, std::weak_ptr<Entity> ent
 {
 }
 
-void Skeleton::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
+void Skeleton::Initialize(std::shared_ptr<BoneRig> boneRig)
 {
-    std::shared_ptr<BoneRig> boneRig = renderPrimitive->GetBoneRig();
     const std::vector<SBoneDefinition>& boneDefinitions = boneRig->GetBoneDefinitions();
     std::vector<SQV>& bindPoses = boneRig->GetBindPoses();
     std::vector<VirtualNode> virtualNodes;
