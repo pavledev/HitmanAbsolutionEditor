@@ -66,7 +66,7 @@ public:
     }
 
     const std::vector<VertexPosition>& GetVertexPositions() const;
-    const std::vector<unsigned short>& GetIndices() const;
+    const std::vector<unsigned int>& GetIndices() const;
     const VertexBuffer* GetVertexBuffer() const;
     const IndexBuffer* GetIndexBuffer() const;
     Shader* GetVertexShader() const;
