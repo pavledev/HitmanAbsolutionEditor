@@ -45,6 +45,8 @@
 #include "UI/Documents/FabricResourceEntityDocument.h"
 #include "UI/Documents/RenderPrimitiveDocument.h"
 #include "UI/Documents/ClothDocument.h"
+#include "UI/Documents/BoneRigDocument.h"
+#include "UI/Documents/PhysicsDocument.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -669,6 +671,20 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
 
         resource = std::static_pointer_cast<Resource>(clothDocument->GetCloth());
         resourceDocument = std::static_pointer_cast<Document>(clothDocument);
+    }
+    else if (resourceInfo.type == "BORG")
+    {
+        std::shared_ptr<BoneRigDocument> boneRigDocument = std::make_shared<BoneRigDocument>(resourceName.c_str(), ICON_MDI_SHAPE, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(boneRigDocument->GetBoneRig());
+        resourceDocument = std::static_pointer_cast<Document>(boneRigDocument);
+    }
+    else if (resourceInfo.type == "ALOC")
+    {
+        std::shared_ptr<PhysicsDocument> physicsDocument = std::make_shared<PhysicsDocument>(resourceName.c_str(), ICON_MDI_SHAPE, Document::Type::SoundDefinitions, resourceInfo.hash, false, defaultDockID);
+
+        resource = std::static_pointer_cast<Resource>(physicsDocument->GetPhysics());
+        resourceDocument = std::static_pointer_cast<Document>(physicsDocument);
     }
 
     resource->SetHash(resourceInfo.hash);
