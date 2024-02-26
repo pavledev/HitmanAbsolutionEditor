@@ -672,11 +672,64 @@ std::shared_ptr<RenderMaterialInstance> Cloth::FindMaterialReference()
 }
 
 void Cloth::ExportMesh(const std::string& outputPath, const bool exportToOBJ)
+const std::vector<Cloth::Vertex>& Cloth::GetVertices() const
 {
-    std::vector<Cloth::Vertex> vertices;
-    std::vector<unsigned int> indices;
+    return vertices;
+}
 
-    GenerateVerticesAndIndices(vertices, indices);
+const std::vector<unsigned int>& Cloth::GetIndices() const
+{
+    return indices;
+}
+
+const void* Cloth::GetVertexBuffer() const
+{
+    return vertexBuffer;
+}
+
+const size_t Cloth::GetVertexCount() const
+{
+    return vertices.size();
+}
+
+const size_t Cloth::GetVertexBufferSize() const
+{
+    return vertexBufferSize;
+}
+
+const unsigned int Cloth::GetStride() const
+{
+    return sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2);
+}
+
+void Cloth::CreateVertexBuffer()
+{
+    vertexBufferSize = vertices.size() * (sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2));
+    vertexBuffer = operator new(vertexBufferSize);
+
+    BinaryWriter binaryWriter = BinaryWriter(vertexBuffer, vertexBufferSize);
+
+    for (unsigned int i = 0; i < vertices.size(); ++i)
+    {
+        binaryWriter.Write(vertices[i].position.x);
+        binaryWriter.Write(vertices[i].position.y);
+        binaryWriter.Write(vertices[i].position.z);
+
+        binaryWriter.Write(vertices[i].normal.x);
+        binaryWriter.Write(vertices[i].normal.y);
+        binaryWriter.Write(vertices[i].normal.z);
+
+        binaryWriter.Write(vertices[i].tangent.x);
+        binaryWriter.Write(vertices[i].tangent.y);
+        binaryWriter.Write(vertices[i].tangent.z);
+
+        binaryWriter.Write(vertices[i].bitangent.x);
+        binaryWriter.Write(vertices[i].bitangent.y);
+        binaryWriter.Write(vertices[i].bitangent.z);
+
+        binaryWriter.Write(vertices[i].textureCoordinates);
+    }
+}
 
     const std::shared_ptr<ObjectNode> shroudObject = std::static_pointer_cast<ObjectNode>(this->shroudObject);
     const std::shared_ptr<ObjectNode> simulationObject = std::static_pointer_cast<ObjectNode>(shroudObject->GetChildByName("SimObject"));

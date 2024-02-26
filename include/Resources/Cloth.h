@@ -109,6 +109,14 @@ public:
     void GenerateVerticesAndIndices();
     std::shared_ptr<RenderMaterialInstance> FindMaterialReference();
 
+    const std::vector<Vertex>& GetVertices() const;
+    const std::vector<unsigned int>& GetIndices() const;
+    const void* GetVertexBuffer() const;
+    const size_t GetVertexCount() const;
+    const size_t GetVertexBufferSize() const;
+    const unsigned int GetStride() const;
+    void CreateVertexBuffer();
+
     template <typename T>
     void DeserializePrimitives(BinaryReader& binaryReader, std::shared_ptr<Node>& childNode, const CloakWorks::BinaryNode& binaryNode, const std::string& name, const std::string& className)
     {
