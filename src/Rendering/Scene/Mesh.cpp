@@ -58,6 +58,10 @@ void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_p
     }*/
 
     const std::vector<RenderPrimitive::Vertex>& vertices = mesh->GetVertices();
+    const std::vector<unsigned short>& indices = mesh->GetIndices();
+
+    vertexPositions.resize(vertices.size());
+    this->indices.resize(indices.size());
 
     for (size_t i = 0; i < vertices.size(); ++i)
     {
@@ -65,13 +69,22 @@ void Mesh::Initialize(std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_p
 
         vertexPosition.position = Vector3(vertices[i].position);
 
-        vertexPositions.push_back(vertexPosition);
+        vertexPositions[i] = vertexPosition;
     }
 
-    indices = mesh->GetIndices();
+    for (size_t i = 0; i < indices.size(); ++i)
+    {
+        this->indices[i] = indices[i];
+    }
 
     CreateGpuBuffers(mesh);
-    CreateMaterial(mesh, matiReference);
+    CreateMaterial(matiResource);
+
+    vertexShader = Renderer3D::GetShader(Renderer3D::Shaders::MeshDefaultVertex);
+    pixelShader = Renderer3D::GetShader(Renderer3D::Shaders::MeshBlinnPhongPixel);
+
+    primitiveType = PrimitiveType::TriangleList;
+}
 
     vertexShader = Renderer3D::GetShader(Renderer3D::Shaders::MeshDefaultVertex);
     pixelShader = Renderer3D::GetShader(Renderer3D::Shaders::MeshBlinnPhongPixel);
