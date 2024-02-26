@@ -10,6 +10,7 @@
 #include "Rendering/Scene/Skeleton.h"
 #include "Rendering/Scene/BulletCollision.h"
 #include "Rendering/Scene/CollisionBone.h"
+#include "Resources/RenderPrimitive.h"
 
 SceneHierarchyPanel2::SceneHierarchyPanel2(const char* name, const char* icon, std::shared_ptr<Resource> resource) : BasePanel(name, icon)
 {

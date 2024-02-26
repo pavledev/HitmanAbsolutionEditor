@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BasePanel.h"
-#include "Resources/RenderPrimitive.h"
 #include "Rendering/Scene/Entity.h"
 #include "Rendering/Renderer3D.h"
 
