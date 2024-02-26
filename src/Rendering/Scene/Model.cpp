@@ -69,10 +69,7 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
 
 void Model::Initialize(std::shared_ptr<Cloth> cloth)
 {
-    std::vector<Cloth::Vertex> vertices;
-    std::vector<unsigned int> indices;
-
-    cloth->GenerateVerticesAndIndices(vertices, indices);
+    cloth->GenerateVerticesAndIndices();
 
     std::shared_ptr<RenderMaterialInstance> matiReference = cloth->FindMaterialReference();
     std::shared_ptr<Mesh> mesh = this->meshes[0];
