@@ -253,6 +253,85 @@ void SceneHierarchyPanel2::CreateEntitiesForPRIM()
     children[children.size() - 1]->GetComponent<Model>()->Initialize(renderPrimitive);
 }
 
+void SceneHierarchyPanel2::CreateEntitiesForBORG()
+{
+    const std::vector<std::shared_ptr<Entity>>& children = rootEntity->GetChildren();
+    std::shared_ptr<BoneRig> boneRig = std::static_pointer_cast<BoneRig>(resource);
+
+    std::string skeletonEntityName = std::format("{} Skeleton", ICON_MDI_BONE);
+    std::shared_ptr<Entity> skeletonEntity = std::make_shared<Entity>(skeletonEntityName);
+    const std::vector<SBoneDefinition>& boneDefinitions = boneRig->GetBoneDefinitions();
+
+    skeletonEntity->Initialize();
+    skeletonEntity->AddComponent<Skeleton>("Skeleton", ICON_MDI_BONE);
+
+    for (size_t i = 0; i < boneDefinitions.size(); ++i)
+    {
+        std::string boneName = std::format("{} {}", ICON_MDI_BONE, boneDefinitions[i].Name);
+        std::shared_ptr<Entity> modelBoneEntity = std::make_shared<Entity>(boneName);
+
+        modelBoneEntity->Initialize();
+        modelBoneEntity->AddComponent<ModelBone>("Model Bone", ICON_MDI_BONE);
+
+        static const char* meshNames[3] = { "Head", "Tail", "Bone" };
+
+        for (unsigned int j = 0; j < 3; ++j)
+        {
+            std::string meshName = std::format("{} {} Mesh", ICON_MDI_SHAPE, meshNames[j]);
+            std::shared_ptr<Entity> meshEntity = std::make_shared<Entity>(meshName);
+
+            meshEntity->Initialize();
+            meshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
+            meshEntity->GetComponent<Mesh>()->SetRenderer3D(renderer3D);
+            modelBoneEntity->GetComponent<ModelBone>()->AddMesh(meshEntity->GetComponent<Mesh>());
+            modelBoneEntity->AddChild(meshEntity);
+        }
+
+        skeletonEntity->GetComponent<Skeleton>()->AddModelBone(modelBoneEntity->GetComponent<ModelBone>());
+        skeletonEntity->AddChild(modelBoneEntity);
+    }
+
+    rootEntity->AddChild(skeletonEntity);
+    children[children.size() - 1]->GetComponent<Skeleton>()->Initialize(boneRig);
+
+    Quaternion worldRotation = Quaternion::FromEulerAngles({ 0.f, 0.f, 180.f });
+
+    children[children.size() - 1]->GetComponent<Skeleton>()->GetTransform()->SetWorldRotation(worldRotation);
+}
+
+void SceneHierarchyPanel2::CreateEntitiesForALOC()
+{
+    const std::vector<std::shared_ptr<Entity>>& children = rootEntity->GetChildren();
+    std::shared_ptr<Physics> physics = std::static_pointer_cast<Physics>(resource);
+
+    std::string collisionEntityName = std::format("{} Collision", ICON_MDI_SHAPE);
+    std::shared_ptr<Entity> collisionEntity = std::make_shared<Entity>(collisionEntityName);
+    const std::vector<G2NxShapeDesc*>& shapeDescriptors = physics->GetCollisionShape().GetShapeDescriptors();
+
+    collisionEntity->Initialize();
+    collisionEntity->AddComponent<Collision>("Collision", ICON_MDI_SHAPE);
+
+    for (size_t i = 0; i < shapeDescriptors.size(); ++i)
+    {
+        std::string shapeType = G2NxShapeDesc::ConvertShapeTypeToString(shapeDescriptors[i]->m_pDesc->getType());
+        std::string meshName = std::format("{} {} Shape {}", ICON_MDI_SHAPE, shapeType, i + 1);
+        std::shared_ptr<Entity> meshEntity = std::make_shared<Entity>(meshName);
+
+        meshEntity->Initialize();
+        meshEntity->AddComponent<Mesh>("Mesh", ICON_MDI_SHAPE);
+        meshEntity->GetComponent<Mesh>()->SetRenderer3D(renderer3D);
+        collisionEntity->GetComponent<Collision>()->AddMesh(meshEntity->GetComponent<Mesh>());
+        collisionEntity->AddChild(meshEntity);
+    }
+
+    rootEntity->AddChild(collisionEntity);
+    children[children.size() - 1]->GetComponent<Collision>()->Initialize(physics);
+
+    Quaternion worldRotation = Quaternion::FromEulerAngles({ -90.f, 0.f, 0.f });
+
+    children[children.size() - 1]->GetComponent<Collision>()->GetTransform()->SetWorldRotation(worldRotation);
+}
+
 void SceneHierarchyPanel2::CreateEntitiesForCLOS()
 {
     const std::vector<std::shared_ptr<Entity>>& children = rootEntity->GetChildren();

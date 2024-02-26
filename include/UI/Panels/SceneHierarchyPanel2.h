@@ -11,6 +11,8 @@ public:
 	void OnSelectedEntityTreeNode(std::shared_ptr<Entity> selectedEntity);
 	void CreateEntities();
 	void CreateEntitiesForPRIM();
+	void CreateEntitiesForBORG();
+	void CreateEntitiesForALOC();
 	void CreateEntitiesForCLOS();
 	void Render() override;
 	void RenderTree(std::shared_ptr<Entity> parentEntity);
