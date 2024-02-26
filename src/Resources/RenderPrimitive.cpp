@@ -432,18 +432,7 @@ const unsigned int RenderPrimitive::Mesh::GetStride() const
 
 void RenderPrimitive::Mesh::CreateVertexBuffer()
 {
-	SPrimObject::SUBTYPE subType = static_cast<SPrimObject::SUBTYPE>(primSubMesh.lSubType);
-
-	if (subType == SPrimObject::SUBTYPE::SUBTYPE_STANDARD || subType == SPrimObject::SUBTYPE::SUBTYPE_LINKED)
-	{
-		//vertexBufferSize = primSubMesh.lNumVertices * 72;
-		vertexBufferSize = primSubMesh.lNumVertices * (sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2));
-	}
-	else
-	{
-		vertexBufferSize = primSubMesh.lNumVertices * 80;
-	}
-
+	vertexBufferSize = primSubMesh.lNumVertices * (sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector3) + sizeof(Vector2));
 	vertexBuffer = operator new(vertexBufferSize);
 
 	BinaryWriter binaryWriter = BinaryWriter(vertexBuffer, vertexBufferSize);
@@ -456,9 +445,6 @@ void RenderPrimitive::Mesh::CreateVertexBuffer()
 		binaryWriter.Write(vertices[i].position.z);
 		//binaryWriter.Write(1.0f);
 
-		/*binaryWriter.Write(vertices[i].normal);
-		binaryWriter.Write(vertices[i].tangent);
-		binaryWriter.Write(vertices[i].binormal);*/
 		binaryWriter.Write(vertices[i].normal.x);
 		binaryWriter.Write(vertices[i].normal.y);
 		binaryWriter.Write(vertices[i].normal.z);
@@ -472,14 +458,6 @@ void RenderPrimitive::Mesh::CreateVertexBuffer()
 		binaryWriter.Write(vertices[i].binormal.z);
 
 		binaryWriter.Write(vertices[i].uv[0]);
-
-		if (subType == SPrimObject::SUBTYPE::SUBTYPE_WEIGHTED)
-		{
-			for (unsigned int j = 0; j < 4; ++j)
-			{
-				binaryWriter.Write(vertices[i].weights[j]);
-			}
-		}
 	}
 }
 
