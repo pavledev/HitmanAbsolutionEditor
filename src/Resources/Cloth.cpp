@@ -418,10 +418,30 @@ void Cloth::Export(const std::string& outputPath, const std::string& exportOptio
 
 void Cloth::ExportMesh(const std::string& outputPath, const bool exportToOBJ)
 {
+    std::vector<Cloth::Vertex> vertices;
+    std::vector<unsigned int> indices;
+
+    GenerateVerticesAndIndices(vertices, indices);
+
+    const std::shared_ptr<ObjectNode> shroudObject = std::static_pointer_cast<ObjectNode>(this->shroudObject);
+    const std::shared_ptr<ObjectNode> simulationObject = std::static_pointer_cast<ObjectNode>(shroudObject->GetChildByName("SimObject"));
+    const std::string simulationObjectName = std::static_pointer_cast<PrimitiveNode<std::string>>(simulationObject->GetChildByName("name"))->GetPrimitives()[0];
+
+    if (exportToOBJ)
+    {
+        ExportMeshToOBJ(vertices, indices, simulationObjectName, outputPath);
+    }
+    else
+    {
+        ExportMeshToGLB(vertices, indices, simulationObjectName, outputPath, true);
+    }
+}
+
+void Cloth::GenerateVerticesAndIndices(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
+{
     const std::shared_ptr<ObjectNode> shroudObject = std::static_pointer_cast<ObjectNode>(this->shroudObject);
     const std::shared_ptr<ObjectNode> simulationObject = std::static_pointer_cast<ObjectNode>(shroudObject->GetChildByName("SimObject"));
     const std::shared_ptr<ObjectNode> shapeDefinitionObject = std::static_pointer_cast<ObjectNode>(simulationObject->GetChildByName("shapeDefinition"));
-    const std::string simulationObjectName = std::static_pointer_cast<PrimitiveNode<std::string>>(simulationObject->GetChildByName("name"))->GetPrimitives()[0];
 
     CloakWorks::ShapeDefinition shapeDefinition;
     const unsigned int rowCount = std::static_pointer_cast<PrimitiveNode<unsigned int>>(shapeDefinitionObject->GetChildByName("numRows"))->GetPrimitives()[0];
@@ -479,8 +499,6 @@ void Cloth::ExportMesh(const std::string& outputPath, const bool exportToOBJ)
     shapeDefinition.SetStartingFlags(startingFlags);
 
     const std::shared_ptr<ObjectNode> thickMeshControlObject = std::static_pointer_cast<ObjectNode>(simulationObject->GetChildByClassName("ThickMeshControl"));
-    std::vector<Cloth::Vertex> vertices;
-    std::vector<unsigned int> indices;
 
     if (thickMeshControlObject)
     {
@@ -525,15 +543,6 @@ void Cloth::ExportMesh(const std::string& outputPath, const bool exportToOBJ)
         {
             GenerateVerticesAndIndicesForStrandMesh(shapeDefinition, startingPositions2, vertices, indices);
         }
-    }
-
-    if (exportToOBJ)
-    {
-        ExportMeshToOBJ(vertices, indices, simulationObjectName, outputPath);
-    }
-    else
-    {
-        ExportMeshToGLB(vertices, indices, simulationObjectName, outputPath, true);
     }
 }
 
@@ -1225,6 +1234,20 @@ std::vector<Vector4> Cloth::CalculateTangents(CloakWorks::ShapeDefinition& shape
     }
 
     return tangents2;
+}
+
+std::vector<Vector3> Cloth::CalculateBitangents(std::vector<Vertex>& vertices)
+{
+    std::vector<Vector3> bitangents;
+
+    bitangents.resize(vertices.size());
+
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
+        bitangents[i] = Vector3::Cross(vertices[i].normal, Vector3(vertices[i].tangent)) * vertices[i].tangent.w;
+    }
+
+    return bitangents;
 }
 
 unsigned char Cloth::GetBaseTypeSize(const CloakWorks::Reflection::FieldType fieldType)
