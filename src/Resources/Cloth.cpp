@@ -134,6 +134,8 @@ void Cloth::Deserialize()
     shroudObject = std::make_shared<ObjectNode>(CloakWorks::Reflection::FieldType::kFieldType_Invalid);
 
     Deserialize(shroudObject, binaryReader, 0);
+
+    isResourceDeserialized = true;
 }
 
 void Cloth::Deserialize(std::shared_ptr<Node> node, BinaryReader& binaryReader, unsigned int depth)

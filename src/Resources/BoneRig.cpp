@@ -18,6 +18,8 @@ void BoneRig::Deserialize()
 	DeserializeNames(binaryReader);
 	DeserializeNamesEntryIndices(binaryReader);
 	DeserializeFaceBoneIndices(binaryReader);
+
+	isResourceDeserialized = true;
 }
 
 void BoneRig::DeserializePrimaryHeader(BinaryReader& binaryReader)
