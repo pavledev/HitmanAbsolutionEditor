@@ -57,7 +57,7 @@ void Model::Initialize(std::shared_ptr<RenderPrimitive> renderPrimitive)
 
     if (physics)
     {
-        collision->Initialize(renderPrimitive);
+        collision->Initialize(physics);
         collision->GetTransform()->SetParent(GetTransform());
         GetTransform()->AddChild(collision->GetTransform());
     }
