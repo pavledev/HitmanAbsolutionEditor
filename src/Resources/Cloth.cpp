@@ -663,9 +663,7 @@ std::shared_ptr<RenderMaterialInstance> Cloth::FindMaterialReference()
 
         matiResource->SetHeaderLibraries(&matiResourceInfo.headerLibraries);
         matiResource->SetResourceID(matiResourceID);
-        matiResource->LoadResource(0, matiResourceInfo.headerLibraries[0].chunkIndex, matiResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
-        matiResource->Deserialize();
-        matiResource->DeleteResourceData();
+        matiResource->SetHash(matiHash);
     }
 
     return matiResource;
@@ -772,6 +770,12 @@ void Cloth::ExportMeshToOBJ(const std::vector<Vertex>& vertices, const std::vect
 
     if (matiResource)
     {
+        const ResourceInfoRegistry::ResourceInfo& matiResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiResource->GetHash());
+
+        matiResource->LoadResource(0, matiResourceInfo.headerLibraries[0].chunkIndex, matiResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+        matiResource->Deserialize();
+        matiResource->DeleteResourceData();
+
         const std::string materialResourceName = ResourceUtility::GetResourceName(matiResource->GetResourceID());
         const std::vector<std::shared_ptr<Resource>>& matiReferences = matiResource->GetReferences();
         std::vector<RenderMaterialInstance::Texture> textures;
@@ -912,7 +916,16 @@ void Cloth::ExportMeshToGLB(const std::vector<Vertex>& vertices, const std::vect
     std::shared_ptr<RenderMaterialInstance> matiResource = FindMaterialReference();
     std::vector<RenderMaterialInstance::Texture> textures;
 
-    matiResource->GetTextures(matiResource, textures);
+    if (matiResource)
+    {
+        const ResourceInfoRegistry::ResourceInfo& matiResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(matiResource->GetHash());
+
+        matiResource->LoadResource(0, matiResourceInfo.headerLibraries[0].chunkIndex, matiResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+        matiResource->Deserialize();
+        matiResource->DeleteResourceData();
+
+        matiResource->GetTextures(matiResource, textures);
+    }
 
     const std::string materialResourceName = ResourceUtility::GetResourceName(matiResource->GetResourceID());
     const std::vector<std::shared_ptr<Resource>>& matiReferences = matiResource->GetReferences();
