@@ -106,7 +106,7 @@ public:
         boundingBox = BoundingBox(vertices);
     }
 
-    void CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiResource);
+    void CreateMaterial(std::shared_ptr<RenderMaterialInstance> matiResource);
     void Render() override;
     void RenderProperties() override;
     void SetWireframe(const bool wireframe);

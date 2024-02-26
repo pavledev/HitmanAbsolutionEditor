@@ -181,7 +181,7 @@ void Mesh::CreateBoundingBox(const std::shared_ptr<RenderPrimitive::Mesh> mesh)
     boundingBox = boundingBoxUntransformed.Transform(GetTransform()->GetWorldMatrix());
 }
 
-void Mesh::CreateMaterial(const std::shared_ptr<RenderPrimitive::Mesh> mesh, std::shared_ptr<RenderMaterialInstance> matiResource)
+void Mesh::CreateMaterial(std::shared_ptr<RenderMaterialInstance> matiResource)
 {
     std::shared_ptr<RenderMaterialInstance> matiResource2;
 
