@@ -27,13 +27,15 @@ public:
     template <typename T>
     void Initialize(const std::vector<T>& vertices, const Renderer3D::Shaders vertexShader, const Renderer3D::Shaders pixelShader, Vector3 color, PrimitiveType primitiveType = PrimitiveType::TriangleList)
     {
+        vertexPositions.resize(vertices.size());
+
         for (size_t i = 0; i < vertices.size(); ++i)
         {
             VertexPosition vertexPosition;
 
             vertexPosition.position = Vector3(vertices[i].position);
 
-            vertexPositions.push_back(vertexPosition);
+            vertexPositions[i] = vertexPosition;
         }
 
         this->vertexShader = Renderer3D::GetShader(vertexShader);
@@ -47,13 +49,43 @@ public:
     template <typename T>
     void Initialize(const std::vector<T>& vertices, const std::vector<unsigned short>& indices, const Renderer3D::Shaders vertexShader, const Renderer3D::Shaders pixelShader, Vector3 color, PrimitiveType primitiveType = PrimitiveType::TriangleList)
     {
+        vertexPositions.resize(vertices.size());
+        this->indices.resize(indices.size());
+
         for (size_t i = 0; i < vertices.size(); ++i)
         {
             VertexPosition vertexPosition;
 
             vertexPosition.position = Vector3(vertices[i].position);
 
-            vertexPositions.push_back(vertexPosition);
+            vertexPositions[i] = vertexPosition;
+        }
+
+        for (size_t i = 0; i < indices.size(); ++i)
+        {
+            this->indices[i] = indices[i];
+        }
+
+        this->vertexShader = Renderer3D::GetShader(vertexShader);
+        this->pixelShader = Renderer3D::GetShader(pixelShader);
+        this->primitiveType = primitiveType;
+
+        CreateGpuBuffers(vertices, this->indices);
+        CreateBoundingBox(vertices);
+    }
+
+    template <typename T>
+    void Initialize(const std::vector<T>& vertices, const std::vector<unsigned int>& indices, const Renderer3D::Shaders vertexShader, const Renderer3D::Shaders pixelShader, Vector3 color, PrimitiveType primitiveType = PrimitiveType::TriangleList)
+    {
+        vertexPositions.resize(vertices.size());
+
+        for (size_t i = 0; i < vertices.size(); ++i)
+        {
+            VertexPosition vertexPosition;
+
+            vertexPosition.position = Vector3(vertices[i].position);
+
+            vertexPositions[i] = vertexPosition;
         }
 
         this->indices = indices;
