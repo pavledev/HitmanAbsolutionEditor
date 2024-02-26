@@ -18,7 +18,7 @@ RenderPrimitiveDocument::RenderPrimitiveDocument(const char* name, const char* i
     renderPrimitive = std::make_shared<RenderPrimitive>();
 
     std::shared_ptr<SceneHierarchyPanel2> sceneHierarchyPanel = std::make_shared<SceneHierarchyPanel2>("Scene Hierarchy", ICON_MDI_VIEW_LIST, renderPrimitive);
-    std::shared_ptr<ComponentPropertiesPanel> componentPropertiesPanel = std::make_shared<ComponentPropertiesPanel>("Properties", ICON_MDI_WRENCH, renderPrimitive);
+    std::shared_ptr<ComponentPropertiesPanel> componentPropertiesPanel = std::make_shared<ComponentPropertiesPanel>("Properties", ICON_MDI_WRENCH);
     std::shared_ptr<ModelViewerPanel> modelViewerPanel = std::make_shared<ModelViewerPanel>("Model Viewer", ICON_MDI_MONITOR);
     std::shared_ptr<ResourceInfoPanel> resourceInfoPanel = std::make_shared<ResourceInfoPanel>("Resource Info", ICON_MDI_INFORMATION, renderPrimitive);
     std::shared_ptr<HexViewerPanel> headerLibraryHexViewerPanel = std::make_shared<HexViewerPanel>("Header Library Hex Viewer", ICON_MDI_MEMORY, false, renderPrimitive);
