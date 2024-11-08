@@ -165,7 +165,7 @@
       "typeNum": 16,
       "pTypeInfo": {
         "m_nTypeSize": 16,
-        "m_nTypeAlignment": 0,
+        "m_nTypeAlignment": 4,
         "m_nTypeInfoFlags": 4,
         "pszTypeName": "SColorRGBA"
       }
