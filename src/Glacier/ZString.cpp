@@ -59,6 +59,8 @@ ZString::~ZString()
 	if (m_chars)
 	{
 		delete[] m_chars;
+
+		m_chars = nullptr;
 	}
 }
 
