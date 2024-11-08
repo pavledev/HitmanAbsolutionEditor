@@ -9,6 +9,7 @@ class TemplateEntity : public Resource
 public:
 	void Deserialize() override;
 	void Export(const std::string& outputPath, const std::string& exportOption) override;
+	void SerializeToJson(const std::string& outputFilePath);
 	void Parse(void* templateEntity);
 	void ParseProperties(void* templateEntity, const unsigned int propertyValuesStartAddress, const unsigned int propertyValuesEndAddress, TArray<SEntityTemplateProperty>& properties);
 	std::shared_ptr<STemplateEntity> GetTemplateEntity();

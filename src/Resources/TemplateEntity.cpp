@@ -9,8 +9,10 @@
 #include "Glacier/ZCurve.h"
 
 #include "Resources/TemplateEntity.h"
+#include "Resources/TemplateEntityBlueprint.h"
 #include "Utility/ResourceUtility.h"
 #include "Registry/TypeRegistry.h"
+#include "Registry/ResourceInfoRegistry.h"
 
 void TemplateEntity::Deserialize()
 {
@@ -31,10 +33,132 @@ void TemplateEntity::Export(const std::string& outputPath, const std::string& ex
 	{
 		ExportRawData(outputPath);
 	}
-	else
+	else if (exportOption.contains(".ENTITYTEMPLATE"))
 	{
 		templateEntity->SerializeToJson(outputPath);
 	}
+	else
+	{
+		SerializeToJson(outputPath);
+	}
+}
+
+void TemplateEntity::SerializeToJson(const std::string& outputFilePath)
+{
+	std::shared_ptr<TemplateEntityBlueprint> tbluResource;
+	std::vector<std::shared_ptr<Resource>>& tempReferences = GetReferences();
+
+	for (size_t i = 0; i < tempReferences.size(); ++i)
+	{
+		const ResourceInfoRegistry::ResourceInfo& referenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(tempReferences[i]->GetHash());
+
+		if (referenceInfo.type == "TBLU")
+		{
+			tbluResource = std::static_pointer_cast<TemplateEntityBlueprint>(tempReferences[i]);
+
+			break;
+		}
+	}
+
+	if (!tbluResource->IsResourceLoaded())
+	{
+		const ResourceInfoRegistry::ResourceInfo& tbluResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(tbluResource->GetHash());
+
+		tbluResource->LoadResource(0, tbluResourceInfo.headerLibraries[0].chunkIndex, tbluResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+		tbluResource->Deserialize();
+		tbluResource->DeleteResourceData();
+	}
+
+	rapidjson::StringBuffer stringBuffer;
+	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(stringBuffer);
+
+	writer.StartObject();
+
+	writer.String("templateEntityResourceID");
+	writer.String(GetResourceID().c_str());
+
+	writer.String("templateEntityBlueprintResourceID");
+	writer.String(tbluResource->GetResourceID().c_str());
+
+	writer.String("blueprintIndexInResourceHeader");
+	writer.Int(templateEntity->blueprintIndexInResourceHeader);
+
+	writer.String("rootEntityIndex");
+	writer.Int(templateEntity->rootEntityIndex);
+
+	writer.String("entityTemplates");
+	writer.StartArray();
+
+	std::vector<std::shared_ptr<Resource>>& tbluReferences = tbluResource->GetReferences();
+	std::shared_ptr<STemplateEntityBlueprint> templateEntityBlueprint = tbluResource->GetTemplateEntityBlueprint();
+
+	for (unsigned int i = 0; i < templateEntity->entityTemplates.Size(); ++i)
+	{
+		writer.StartObject();
+
+		std::string templateEntityResourceID = tempReferences[templateEntity->entityTemplates[i].entityTypeResourceIndex]->GetResourceID();
+		std::string templateEntityBlueprintResourceID = tbluReferences[templateEntityBlueprint->entityTemplates[i].entityTypeResourceIndex]->GetResourceID();
+
+		writer.String("templateEntityResourceID");
+		writer.String(templateEntityResourceID.c_str());
+
+		writer.String("templateEntityBlueprintResourceID");
+		writer.String(templateEntityBlueprintResourceID.c_str());
+
+		writer.String("entityIndex");
+		writer.Uint(i);
+
+		writer.String("parentIndex");
+		writer.Int(templateEntity->entityTemplates[i].parentIndex);
+
+		writer.String("tempEntityTypeResourceIndex");
+		writer.Int(templateEntity->entityTemplates[i].entityTypeResourceIndex);
+
+		writer.String("tbluEntityTypeResourceIndex");
+		writer.Int(templateEntityBlueprint->entityTemplates[i].entityTypeResourceIndex);
+
+		writer.String("entityName");
+		writer.String(templateEntityBlueprint->entityTemplates[i].entityName.ToCString());
+
+		writer.String("propertyValues");
+		templateEntity->entityTemplates[i].propertyValues.SerializeToJson(writer);
+
+		writer.String("postInitPropertyValues");
+		templateEntity->entityTemplates[i].postInitPropertyValues.SerializeToJson(writer);
+
+		writer.String("propertyAliases");
+		templateEntityBlueprint->entityTemplates[i].propertyAliases.SerializeToJson(writer);
+
+		writer.String("exposedEntities");
+		templateEntityBlueprint->entityTemplates[i].exposedEntities.SerializeToJson(writer);
+
+		writer.String("exposedInterfaces");
+		templateEntityBlueprint->entityTemplates[i].exposedInterfaces.SerializeToJson(writer);
+
+		writer.String("entitySubsets");
+		templateEntityBlueprint->entityTemplates[i].entitySubsets.SerializeToJson(writer);
+
+		writer.EndObject();
+	}
+
+	writer.EndArray();
+
+	writer.String("pinConnections");
+	templateEntityBlueprint->pinConnections.SerializeToJson(writer);
+
+	writer.String("inputPinForwardings");
+	templateEntityBlueprint->inputPinForwardings.SerializeToJson(writer);
+
+	writer.String("outputPinForwardings");
+	templateEntityBlueprint->outputPinForwardings.SerializeToJson(writer);
+
+	writer.EndObject();
+
+	std::ofstream outputFileStream = std::ofstream(outputFilePath);
+
+	outputFileStream << stringBuffer.GetString();
+
+	outputFileStream.close();
 }
 
 void TemplateEntity::Parse(void* templateEntity)
