@@ -5,7 +5,10 @@
 
 GFXMovie::~GFXMovie()
 {
-	delete[] this->gfxResource->gfxData;
+	if (gfxResource)
+	{
+		delete[] gfxResource->gfxData;
+	}
 }
 
 void GFXMovie::Deserialize()
