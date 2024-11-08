@@ -766,14 +766,14 @@ void UI::ResourceExportPopup(bool& showPopup, std::shared_ptr<Resource> resource
 
 			ImGui::CloseCurrentPopup();
 
-			if (!resource->IsResourceDeserialized())
-			{
-				resource->Deserialize();
-			}
-
 			const std::string fileName = ResourceUtility::GenerateFileName(resource);
 			std::string outputPath;
 			const std::string selectedExportOption2 = selectedExportOption;
+
+			if (!selectedExportOption2.starts_with("Raw") && !resource->IsResourceDeserialized())
+			{
+				resource->Deserialize();
+			}
 
 			if (strncmp(selectedExportOption, "Folder", 6) == 0)
 			{
