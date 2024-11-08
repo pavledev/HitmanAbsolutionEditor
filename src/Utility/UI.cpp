@@ -880,9 +880,9 @@ const std::vector<std::string>& UI::GetExportOptions(std::shared_ptr<Resource> r
 		static std::vector<std::string> sbpdExportOptions = { "Raw File (.SBPD)", "Json File (.JSON)" };
 		static std::vector<std::string> scdaExportOptions = { "Raw File (.SCDA)", "Json File (.JSON)" };
 		static std::vector<std::string> sdefExportOptions = { "Raw File (.SDEF)", "Json File (.JSON)" };
-		static std::vector<std::string> tbluExportOptions = { "Raw File (.TBLU)", "Json File (.JSON)" };
-		static std::vector<std::string> teliExportOptions = { "Raw File (.TELI)", "Json File (.JSON)" };
-		static std::vector<std::string> tempExportOptions = { "Raw File (.TEMP)", "Json File (.JSON)" };
+		static std::vector<std::string> tbluExportOptions = { "Raw File (.TBLU)", "Json File (.ENTITYBLUEPRINT.JSON)" };
+		static std::vector<std::string> teliExportOptions = { "Raw File (.TELI)", "Json File (.TEXTLIST.JSON)" };
+		static std::vector<std::string> tempExportOptions = { "Raw File (.TEMP)", "Json File - TEMP (.ENTITYTEMPLATE.JSON)", "Json File - TEMP and TBLU (.ENTITY.JSON)" };
 		static std::vector<std::string> textExportOptions = { "Raw File (.TEXT)", "DDS File (.DDS)", "PNG File (.PNG)", "BMP File (.BMP)", "TGA File (.TGA)" };
 		static std::vector<std::string> videExportOptions = { "Raw File (.VIDE)", "BINK File (.BIK)" };
 		static std::vector<std::string> wavbExportOptions = { "Raw File (.WAVB)", "Json File (.JSON)" };
