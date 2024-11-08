@@ -30,6 +30,7 @@ public:
         std::vector<std::shared_ptr<Resource>> blueprintResources;
         std::string templateResourceID;
         std::string blueprintResourceID;
+        bool markedForDeletion = false;
     };
 
     using SelectedEntityCallback = std::function<void(std::shared_ptr<EntityTreeNode> selectedEntityTreeNode)>;
@@ -56,12 +57,24 @@ private:
     void SearchEntityNameInTree(std::shared_ptr<EntityTreeNode> node, const std::string& entityName, std::unordered_map<std::shared_ptr<EntityTreeNode>, std::shared_ptr<EntityTreeNode>>& parentMap);
     void SearchTypeNameInTree(std::shared_ptr<EntityTreeNode> node, const std::string& typeName, std::unordered_map<std::shared_ptr<EntityTreeNode>, std::shared_ptr<EntityTreeNode>>& parentMap);
     std::shared_ptr<EntityTreeNode> GeneratedFilteredEntityTree(const std::unordered_map<std::shared_ptr<EntityTreeNode>, std::shared_ptr<EntityTreeNode>>& parentMap);
+    void DeleteEntity(std::shared_ptr<EntityTreeNode> entityTreeNode);
 
     static const std::string& GetTEMPReferenceType(std::shared_ptr<TemplateEntity> tempResource, const unsigned int referenceIndex);
     static const std::string& GetTEMPReferenceResourceID(std::shared_ptr<TemplateEntity> tempResource, const unsigned int referenceIndex);
     static const std::string& GetTBLUReferenceResourceID(std::shared_ptr<TemplateEntityBlueprint> tbluResource, const unsigned int referenceIndex);
     static void LoadAndDeserializeTEMP(std::shared_ptr<TemplateEntity> tempResource);
     static void LoadAndDeserializeTBLU(std::shared_ptr<TemplateEntityBlueprint> tbluResource);
+
+    void UpdateEntities(const unsigned int deletedEntityIndex);
+    void UpdateEntityIndicesInTree(std::shared_ptr<EntityTreeNode> entityTreeNode, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices);
+    void UpdateParentIndicesAndEntityReferences(std::shared_ptr<EntityTreeNode> entityTreeNode, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices);
+    static void UpdateEntityReferences(TArray<SEntityTemplateProperty>& properties, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices);
+    void UpdatePins(const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices);
+    static void UpdatePins(TArray<SEntityTemplatePinConnection>& pinConnections, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices);
+    static void UpdatePropertyAliases(TArray<SEntityTemplatePropertyAlias>& propertyAliases, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices);
+    static void UpdateExposedEntities(TArray<TPair<ZString, SEntityTemplateReference>>& exposedEntities, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices);
+    static void UpdateExposedInterfaces(TArray<TPair<ZString, int>>& exposedInterfaces, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices);
+    static void UpdateEntitySubsets(TArray<TPair<ZString, SEntityTemplateEntitySubset>>& entitySubsets, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices);
 
     std::shared_ptr<TemplateEntity> tempResource;
     bool isEntityTreeGenerated;

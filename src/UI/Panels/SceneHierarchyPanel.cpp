@@ -232,6 +232,13 @@ void SceneHierarchyPanel::RenderEntityTree()
         {
             RenderEntityTree(rootNode, false);
         }
+
+        if (selectedEntityTreeNode && selectedEntityTreeNode->markedForDeletion)
+        {
+            DeleteEntity(selectedEntityTreeNode);
+
+            selectedEntityTreeNode = nullptr;
+        }
     }
 }
 
@@ -353,17 +360,7 @@ void SceneHierarchyPanel::RenderContextMenu(std::shared_ptr<EntityTreeNode> enti
 
     if (ImGui::MenuItem(deleteEntityLabel.c_str()))
     {
-        std::shared_ptr<EntityTreeNode> parentNode = entityTreeNode->parentNode.lock();
-
-        for (auto it = parentNode->children.begin(); it != parentNode->children.end(); ++it)
-        {
-            if (*it == entityTreeNode)
-            {
-                parentNode->children.erase(it);
-
-                break;
-            }
-        }
+        entityTreeNode->markedForDeletion = true;
     }
 
     if (ImGui::MenuItem(renameEntityLabel.c_str()))
@@ -828,6 +825,40 @@ std::shared_ptr<SceneHierarchyPanel::EntityTreeNode> SceneHierarchyPanel::Genera
     return searchRoot;
 }
 
+void SceneHierarchyPanel::DeleteEntity(std::shared_ptr<EntityTreeNode> entityTreeNode)
+{
+    std::vector<std::shared_ptr<Resource>>& tempReferences = tempResource->GetReferences();
+    std::shared_ptr<TemplateEntityBlueprint> tbluResource = std::static_pointer_cast<TemplateEntityBlueprint>(tempReferences[tempReferences.size() - 1]);
+
+    tempResource->GetTemplateEntity()->entityTemplates.RemoveAt(entityTreeNode->entityIndex);
+    tbluResource->GetTemplateEntityBlueprint()->entityTemplates.RemoveAt(entityTreeNode->entityIndex);
+
+    std::shared_ptr<EntityTreeNode> parentNode = entityTreeNode->parentNode.lock();
+    std::vector<unsigned int> childrenEntityIndices;
+
+    for (auto it = entityTreeNode->children.begin(); it != entityTreeNode->children.end(); ++it)
+    {
+        childrenEntityIndices.push_back((*it)->entityIndex);
+    }
+
+    for (auto it = parentNode->children.begin(); it != parentNode->children.end(); ++it)
+    {
+        if (*it == entityTreeNode)
+        {
+            parentNode->children.erase(it);
+
+            break;
+        }
+    }
+
+    for (size_t i = 0; i < childrenEntityIndices.size(); ++i)
+    {
+        UpdateEntities(childrenEntityIndices[0]);
+    }
+
+    UpdateEntities(entityTreeNode->entityIndex);
+}
+
 const std::string& SceneHierarchyPanel::GetTEMPReferenceType(std::shared_ptr<TemplateEntity> tempResource, const unsigned int referenceIndex)
 {
     const std::vector<std::shared_ptr<Resource>>& tempReferences = tempResource->GetReferences();
@@ -873,7 +904,286 @@ void SceneHierarchyPanel::LoadAndDeserializeTBLU(std::shared_ptr<TemplateEntityB
     tbluResource->DeleteResourceData();
 }
 
+void SceneHierarchyPanel::UpdateEntities(const unsigned int deletedEntityIndex)
+{
+    std::unordered_map<unsigned int, unsigned int> oldEntityIndicesToNewEntityIndices;
+
+    UpdateEntityIndicesInTree(rootNode, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+
+    std::shared_ptr<STemplateEntity> templateEntity = tempResource->GetTemplateEntity();
+    std::vector<std::shared_ptr<Resource>>& tempReferences = tempResource->GetReferences();
+    std::shared_ptr<TemplateEntityBlueprint> tbluResource = std::static_pointer_cast<TemplateEntityBlueprint>(tempReferences[tempReferences.size() - 1]);
+    std::shared_ptr<STemplateEntityBlueprint> templateEntityBlueprint = tbluResource->GetTemplateEntityBlueprint();
+
+    templateEntity->rootEntityIndex = rootNode->entityIndex;
+    templateEntityBlueprint->rootEntityIndex = rootNode->entityIndex;
+
+    UpdateParentIndicesAndEntityReferences(rootNode, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+
+    for (int i = 0; i < templateEntityBlueprint->entityTemplates.Size(); ++i)
+    {
+        if (i == 2845)
+        {
+            int a = 2;
+        }
+
+        UpdatePropertyAliases(templateEntityBlueprint->entityTemplates[i].propertyAliases, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+        UpdateExposedEntities(templateEntityBlueprint->entityTemplates[i].exposedEntities, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+        UpdateExposedInterfaces(templateEntityBlueprint->entityTemplates[i].exposedInterfaces, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+        UpdateEntitySubsets(templateEntityBlueprint->entityTemplates[i].entitySubsets, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+    }
+
+    UpdatePins(deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+}
+
+void SceneHierarchyPanel::UpdateEntityIndicesInTree(std::shared_ptr<EntityTreeNode> entityTreeNode, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices)
+{
+    const bool isExternalEntity = entityTreeNode->templateResources[0] != tempResource;
+
+    if (isExternalEntity)
+    {
+        return;
+    }
+
+    if (entityTreeNode->entityIndex > deletedEntityIndex)
+    {
+        oldEntityIndicesToNewEntityIndices[entityTreeNode->entityIndex] = entityTreeNode->entityIndex - 1;
+
+        --entityTreeNode->entityIndex;
+    }
+
+    for (int i = 0; i < entityTreeNode->children.size(); ++i)
+    {
+        UpdateEntityIndicesInTree(entityTreeNode->children[i], deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+    }
+}
+
+void SceneHierarchyPanel::UpdateParentIndicesAndEntityReferences(std::shared_ptr<EntityTreeNode> entityTreeNode, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices)
+{
+    const bool isExternalEntity = entityTreeNode->templateResources[0] != tempResource;
+
+    if (isExternalEntity)
+    {
+        return;
+    }
+
+    std::shared_ptr<STemplateEntity> templateEntity = tempResource->GetTemplateEntity();
+    std::vector<std::shared_ptr<Resource>>& tempReferences = tempResource->GetReferences();
+    std::shared_ptr<TemplateEntityBlueprint> tbluResource = std::static_pointer_cast<TemplateEntityBlueprint>(tempReferences[tempReferences.size() - 1]);
+    std::shared_ptr<STemplateEntityBlueprint> templateEntityBlueprint = tbluResource->GetTemplateEntityBlueprint();
+    std::shared_ptr<EntityTreeNode> parentNode = entityTreeNode->parentNode.lock();
+
+    if (parentNode)
+    {
+        templateEntity->entityTemplates[entityTreeNode->entityIndex].parentIndex = parentNode->entityIndex;
+        templateEntityBlueprint->entityTemplates[entityTreeNode->entityIndex].parentIndex = parentNode->entityIndex;
+    }
+
+    TArray<SEntityTemplateProperty>& properties = templateEntity->entityTemplates[entityTreeNode->entityIndex].propertyValues;
+    TArray<SEntityTemplateProperty>& postInitProperties = templateEntity->entityTemplates[entityTreeNode->entityIndex].postInitPropertyValues;
+
+    UpdateEntityReferences(properties, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+    UpdateEntityReferences(postInitProperties, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+
+    for (int i = 0; i < entityTreeNode->children.size(); ++i)
+    {
+        UpdateParentIndicesAndEntityReferences(entityTreeNode->children[i], deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+    }
+}
+
+void SceneHierarchyPanel::UpdateEntityReferences(TArray<SEntityTemplateProperty>& properties, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices)
+{
+    for (int i = 0; i < properties.Size(); ++i)
+    {
+        const IType* typeInfo = properties[i].value.GetTypeID()->pTypeInfo;
+
+        if (strcmp(typeInfo->GetTypeName(), "SEntityTemplateReference") == 0)
+        {
+            SEntityTemplateReference* entityTemplateReference = static_cast<SEntityTemplateReference*>(properties[i].value.GetData());
+
+            if (entityTemplateReference->entityIndex == deletedEntityIndex)
+            {
+                entityTemplateReference->entityIndex = -1;
+            }
+            else
+            {
+                auto iterator = oldEntityIndicesToNewEntityIndices.find(entityTemplateReference->entityIndex);
+
+                if (iterator != oldEntityIndicesToNewEntityIndices.end())
+                {
+                    entityTemplateReference->entityIndex = iterator->second;
+                }
+            }
+        }
+        else if (strcmp(typeInfo->GetTypeName(), "TArray<SEntityTemplateReference>") == 0)
+        {
+            TArray<SEntityTemplateReference>* entityTemplateReferences = static_cast<TArray<SEntityTemplateReference>*>(properties[i].value.GetData());
+
+            for (int j = 0; j < entityTemplateReferences->Size(); ++j)
+            {
+                SEntityTemplateReference& entityTemplateReference = (*entityTemplateReferences)[j];
+
+                if (entityTemplateReference.entityIndex == deletedEntityIndex)
+                {
+                    entityTemplateReference.entityIndex = -1;
+                }
+                else
+                {
+                    auto iterator = oldEntityIndicesToNewEntityIndices.find(entityTemplateReference.entityIndex);
+
+                    if (iterator != oldEntityIndicesToNewEntityIndices.end())
+                    {
+                        entityTemplateReference.entityIndex = iterator->second;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void SceneHierarchyPanel::UpdatePins(const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices)
+{
+    std::vector<std::shared_ptr<Resource>>& tempReferences = tempResource->GetReferences();
+    std::shared_ptr<TemplateEntityBlueprint> tbluResource = std::static_pointer_cast<TemplateEntityBlueprint>(tempReferences[tempReferences.size() - 1]);
+    std::shared_ptr<STemplateEntityBlueprint> templateEntityBlueprint = tbluResource->GetTemplateEntityBlueprint();
+
+    UpdatePins(templateEntityBlueprint->pinConnections, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+    UpdatePins(templateEntityBlueprint->inputPinForwardings, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+    UpdatePins(templateEntityBlueprint->outputPinForwardings, deletedEntityIndex, oldEntityIndicesToNewEntityIndices);
+}
+
+void SceneHierarchyPanel::UpdatePins(TArray<SEntityTemplatePinConnection>& pinConnections, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices)
+{
+    for (int i = 0; i < pinConnections.Size(); ++i)
+    {
+        if (pinConnections[i].fromID == deletedEntityIndex || pinConnections[i].toID == deletedEntityIndex)
+        {
+            pinConnections.RemoveAt(i);
+
+            --i;
+        }
+    }
+
+    for (int i = 0; i < pinConnections.Size(); ++i)
+    {
+        auto iterator = oldEntityIndicesToNewEntityIndices.find(pinConnections[i].fromID);
+
+        if (iterator != oldEntityIndicesToNewEntityIndices.end())
+        {
+            pinConnections[i].fromID = iterator->second;
+        }
+
+        iterator = oldEntityIndicesToNewEntityIndices.find(pinConnections[i].toID);
+
+        if (iterator != oldEntityIndicesToNewEntityIndices.end())
+        {
+            pinConnections[i].toID = iterator->second;
+        }
+    }
+}
+
+void SceneHierarchyPanel::UpdatePropertyAliases(TArray<SEntityTemplatePropertyAlias>& propertyAliases, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices)
+{
+    for (int i = 0; i < propertyAliases.Size(); ++i)
+    {
+        if (propertyAliases[i].entityID == deletedEntityIndex)
+        {
+            propertyAliases.RemoveAt(i);
+
+            --i;
+        }
+    }
+
+    for (int i = 0; i < propertyAliases.Size(); ++i)
+    {
+        auto iterator = oldEntityIndicesToNewEntityIndices.find(propertyAliases[i].entityID);
+
+        if (iterator != oldEntityIndicesToNewEntityIndices.end())
+        {
+            propertyAliases[i].entityID = iterator->second;
+        }
+    }
+}
+
+void SceneHierarchyPanel::UpdateExposedEntities(TArray<TPair<ZString, SEntityTemplateReference>>& exposedEntities, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices)
+{
+    for (int i = 0; i < exposedEntities.Size(); ++i)
+    {
+        if (exposedEntities[i].Value().entityIndex == deletedEntityIndex)
+        {
+            exposedEntities.RemoveAt(i);
+
+            --i;
+        }
+    }
+
+    for (int i = 0; i < exposedEntities.Size(); ++i)
+    {
+        auto iterator = oldEntityIndicesToNewEntityIndices.find(exposedEntities[i].Value().entityIndex);
+
+        if (iterator != oldEntityIndicesToNewEntityIndices.end())
+        {
+            exposedEntities[i].Value().entityIndex = iterator->second;
+        }
+    }
+}
+
+void SceneHierarchyPanel::UpdateExposedInterfaces(TArray<TPair<ZString, int>>& exposedInterfaces, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices)
+{
+    for (int i = 0; i < exposedInterfaces.Size(); ++i)
+    {
+        if (exposedInterfaces[i].Value() == deletedEntityIndex)
+        {
+            exposedInterfaces.RemoveAt(i);
+
+            --i;
+        }
+    }
+
+    for (int i = 0; i < exposedInterfaces.Size(); ++i)
+    {
+        auto iterator = oldEntityIndicesToNewEntityIndices.find(exposedInterfaces[i].Value());
+
+        if (iterator != oldEntityIndicesToNewEntityIndices.end())
+        {
+            exposedInterfaces[i].Value() = iterator->second;
+        }
+    }
+}
+
+void SceneHierarchyPanel::UpdateEntitySubsets(TArray<TPair<ZString, SEntityTemplateEntitySubset>>& entitySubsets, const unsigned int deletedEntityIndex, std::unordered_map<unsigned int, unsigned int>& oldEntityIndicesToNewEntityIndices)
+{
+    for (int i = 0; i < entitySubsets.Size(); ++i)
+    {
+        TArray<int>& entities = entitySubsets[i].Value().entities;
+
+        for (int j = 0; j < entities.Size(); ++j)
+        {
+            if (entities[j] == deletedEntityIndex)
+            {
+                entities.RemoveAt(j);
+
+                --j;
+            }
+        }
+    }
+
+    for (int i = 0; i < entitySubsets.Size(); ++i)
+    {
+        TArray<int>& entities = entitySubsets[i].Value().entities;
+
+        for (int j = 0; j < entities.Size(); ++j)
+        {
+            auto iterator = oldEntityIndicesToNewEntityIndices.find(entities[j]);
+
+            if (iterator != oldEntityIndicesToNewEntityIndices.end())
+            {
+                entities[j] = iterator->second;
+            }
+        }
+    }
+}
+
 void SceneHierarchyPanel::OnReceiveMessage(const std::string& type, const std::string& content)
 {
-
 }
