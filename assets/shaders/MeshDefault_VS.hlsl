@@ -26,7 +26,7 @@ struct PSInput
 PSInput mainVS(VSInput input)
 {
     PSInput output;
-
+	
 	//Set position into world space	
     output.position = mul(float4(input.position, 1.f), world);
 	
