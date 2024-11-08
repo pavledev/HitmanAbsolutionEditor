@@ -211,7 +211,7 @@ void RenderPrimitive::Mesh::ReadVertexPosition(BinaryReader& binaryReader, const
 	}
 }
 
-void RenderPrimitive::Mesh::ReadVertexWeighsAndBoneRemapValues(BinaryReader& binaryReader, const unsigned int vertexIndex)
+void RenderPrimitive::Mesh::ReadVertexWeightsAndBoneRemapValues(BinaryReader& binaryReader, const unsigned int vertexIndex)
 {
 	unsigned char weightA = binaryReader.Read<unsigned char>();
 	unsigned char weightB = binaryReader.Read<unsigned char>();
@@ -706,7 +706,7 @@ void RenderPrimitive::WeightedMesh::ReadVertices(BinaryReader& binaryReader, con
 
 	for (unsigned int i = 0; i < primSubMesh.lNumVertices; ++i)
 	{
-		ReadVertexWeighsAndBoneRemapValues(binaryReader, i);
+		ReadVertexWeightsAndBoneRemapValues(binaryReader, i);
 	}
 
 	for (unsigned int i = 0; i < primSubMesh.lNumVertices; ++i)

@@ -54,7 +54,7 @@ public:
 		void ReadIndices(BinaryReader& binaryReader);
 		virtual void ReadVertices(BinaryReader& binaryReader, const bool hasHighResolutionPositions) = 0;
 		void ReadVertexPosition(BinaryReader& binaryReader, const unsigned int vertexIndex, const bool hasHighResolutionPositions, const Vector4& scale, const Vector4& bias);
-		void ReadVertexWeighsAndBoneRemapValues(BinaryReader& binaryReader, const unsigned int vertexIndex);
+		void ReadVertexWeightsAndBoneRemapValues(BinaryReader& binaryReader, const unsigned int vertexIndex);
 		void ReadVertexNormal(BinaryReader& binaryReader, const unsigned int vertexIndex);
 		void ReadVertexTangent(BinaryReader& binaryReader, const unsigned int vertexIndex);
 		void ReadVertexBinormal(BinaryReader& binaryReader, const unsigned int vertexIndex);
