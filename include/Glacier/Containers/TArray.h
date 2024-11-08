@@ -272,15 +272,13 @@ public:
 
         element->~T();
 
-        if (Size() > 1)
-        {
-            std::move(element + 1, m_pEnd, element);
+        std::move(element + 1, m_pEnd, element);
 
-            --m_pEnd;
-        }
-        else
+        --m_pEnd;
+
+        if (m_pStart != m_pEnd)
         {
-            m_pEnd = m_pStart;
+            m_pEnd->~T();
         }
     }
 
