@@ -31,8 +31,10 @@ Shader::~Shader()
 void* Shader::Compile()
 {
     unsigned int compileFlags = 0;
+    std::string pdbFilename;
 #ifdef _DEBUG
-    compileFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_PREFER_FLOW_CONTROL;
+    compileFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PREFER_FLOW_CONTROL;
+    pdbFilename = std::filesystem::path(filePath).stem().string() + ".pdb";
 #else
     compileFlags |= D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #endif
@@ -58,7 +60,7 @@ void* Shader::Compile()
     (
         preprocessedSource.c_str(),
         static_cast<SIZE_T>(preprocessedSource.size()),
-        nullptr,
+        pdbFilename.c_str(),
         defines.data(),
         nullptr,
         GetEntryPoint(),
