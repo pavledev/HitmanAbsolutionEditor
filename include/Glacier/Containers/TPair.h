@@ -25,6 +25,16 @@ public:
 		return m_value;
 	}
 
+	TKey& Key()
+	{
+		return m_key;
+	}
+
+	TValue& Value()
+	{
+		return m_value;
+	}
+
 	void SerializeToJson(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer)
 	{
 		writer.StartObject();
