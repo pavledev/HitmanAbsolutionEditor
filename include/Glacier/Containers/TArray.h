@@ -63,6 +63,10 @@ public:
         }
 
         operator delete(m_pStart, std::align_val_t(alignof(T)));
+
+        m_pStart = nullptr;
+        m_pEnd = nullptr;
+        m_pLast = nullptr;
     }
 
     TArray& operator=(const TArray& other)
