@@ -1,6 +1,6 @@
 #include "Resources/Navmesh.h"
 
-void Navmesh::Export(const std::string& outputPath, const std::string& exportOption)
+void NavMesh::Export(const std::string& outputPath, const std::string& exportOption)
 {
 	if (exportOption.starts_with("Raw"))
 	{
