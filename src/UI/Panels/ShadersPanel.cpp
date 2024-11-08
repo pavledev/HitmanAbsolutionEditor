@@ -24,6 +24,9 @@ void ShadersPanel::Render()
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading render material effect...");
+
+		ImGui::PopFont();
+
 		End();
 
 		return;
