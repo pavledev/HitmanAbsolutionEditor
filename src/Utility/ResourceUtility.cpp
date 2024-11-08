@@ -388,7 +388,7 @@ std::shared_ptr<Resource> ResourceUtility::CreateResource(const std::string& typ
     }
     else if (type == "NMSH")
     {
-        resource = std::make_shared<Navmesh>();
+        resource = std::make_shared<NavMesh>();
     }
     else if (type == "PKGL")
     {
