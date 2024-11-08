@@ -590,20 +590,22 @@ void SceneHierarchyPanel::AddChildrenFromReferencedASET(std::shared_ptr<EntityTr
     {
         const ResourceInfoRegistry::ResourceInfo& asetResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(asetReference->GetHash());
 
-        asetReference->LoadResource(0, asetResourceInfo.headerLibraries[0].chunkIndex, asetResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+        asetReference->LoadResource(0, asetResourceInfo.headerLibraries[0].chunkIndex, asetResourceInfo.headerLibraries[0].indexInLibrary, true, false, false);
     }
 
     if (!asebReference->IsResourceLoaded())
     {
         const ResourceInfoRegistry::ResourceInfo& asebResourceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(asebReference->GetHash());
 
-        asebReference->LoadResource(0, asebResourceInfo.headerLibraries[0].chunkIndex, asebResourceInfo.headerLibraries[0].indexInLibrary, true, false, true);
+        asebReference->LoadResource(0, asebResourceInfo.headerLibraries[0].chunkIndex, asebResourceInfo.headerLibraries[0].indexInLibrary, true, false, false);
     }
 
     const std::vector<std::shared_ptr<Resource>>& asetReferences = asetReference->GetReferences();
     const std::vector<std::shared_ptr<Resource>>& asebReferences = asebReference->GetReferences();
 
-    if (asetReferences[0]->GetResourceHeaderHeader().m_type == 'TEMP')
+    const ResourceInfoRegistry::ResourceInfo& asetReferenceInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(asetReferences[0]->GetHash());
+
+    if (asetReferenceInfo.type == "TEMP")
     {
         childNode->templateResources.push_back(asetReference);
         childNode->blueprintResources.push_back(asebReference);
@@ -615,7 +617,9 @@ void SceneHierarchyPanel::AddChildrenFromReferencedASET(std::shared_ptr<EntityTr
 
         for (size_t i = 1; i < asetReferences.size() - 1; ++i)
         {
-            if (asetReferences[i]->GetResourceHeaderHeader().m_type == 'TEMP')
+            const ResourceInfoRegistry::ResourceInfo& asetReferenceInfo2 = ResourceInfoRegistry::GetInstance().GetResourceInfo(asetReferences[i]->GetHash());
+
+            if (asetReferenceInfo2.type == "TEMP")
             {
                 std::shared_ptr<TemplateEntity> reference = std::static_pointer_cast<TemplateEntity>(asetReferences[i]);
 
