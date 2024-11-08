@@ -20,8 +20,6 @@
 #include "Glacier/Entity/ZEntityReference.h"
 #include "Registry/EnumRegistry.h"
 
-std::unordered_map<void*, unsigned int> propertyDataPointersToReferenceCounts;
-
 ZVariant::ZVariant() : ZObjectRef()
 {
 
@@ -34,92 +32,80 @@ ZVariant::ZVariant(const ZVariant& other)
 
 ZVariant::~ZVariant()
 {
-	unsigned int referenceCount = 0;
-
-	if (!propertyDataPointersToReferenceCounts.empty())
+	if (m_TypeID->pTypeInfo->IsPrimitiveType() || m_TypeID->pTypeInfo->IsEnumType())
 	{
-		propertyDataPointersToReferenceCounts[m_pData]--;
-
-		referenceCount = propertyDataPointersToReferenceCounts[m_pData];
+		operator delete(m_pData);
 	}
-
-	if (referenceCount == 0)
+	else
 	{
-		if (m_TypeID->pTypeInfo->IsPrimitiveType() || m_TypeID->pTypeInfo->IsEnumType())
+		switch (m_TypeID->typeNum)
 		{
-			operator delete(m_pData);
-		}
-		else
-		{
-			switch (m_TypeID->typeNum)
-			{
-				case 12:
-					delete static_cast<SVector2*>(m_pData);
-					break;
-				case 13:
-					delete static_cast<SVector3*>(m_pData);
-					break;
-				case 14:
-					delete static_cast<SMatrix43*>(m_pData);
-					break;
-				case 15:
-					delete static_cast<SColorRGB*>(m_pData);
-					break;
-				case 16:
-					delete static_cast<SColorRGBA*>(m_pData);
-					break;
-				case 17:
-					delete static_cast<SEntityTemplateReference*>(m_pData);
-					break;
-				case 18:
-					delete static_cast<SBodyPartDamageMultipliers*>(m_pData);
-					break;
-				case 19:
-					delete static_cast<ZRuntimeResourceID*>(m_pData);
-					break;
-				case 20:
-					delete static_cast<ZString*>(m_pData);
-					break;
-				case 21:
-					delete static_cast<ZCurve*>(m_pData);
-					break;
-				case 22:
-					delete static_cast<ZGameTime*>(m_pData);
-					break;
-				case 23:
-					delete static_cast<ZSpeakerLevels*>(m_pData);
-					break;
-				case 25:
-					delete static_cast<TArray<SEntityTemplateReference>*>(m_pData);
-					break;
-				case 26:
-					delete static_cast<TArray<float>*>(m_pData);
-					break;
-				case 27:
-					delete static_cast<TArray<ZGameTime>*>(m_pData);
-					break;
-				case 28:
-					delete static_cast<TArray<SVector2>*>(m_pData);
-					break;
-				case 29:
-					delete static_cast<TArray<bool>*>(m_pData);
-					break;
-				case 30:
-					delete static_cast<TArray<ZSharedSensorDef::SVisibilitySetting>*>(m_pData);
-					break;
-				case 31:
-					delete static_cast<TArray<ZString>*>(m_pData);
-					break;
-				case 32:
-					delete static_cast<TArray<SSettingsParamMultiplier>*>(m_pData);
-					break;
-				case 33:
-					delete static_cast<TArray<SColorRGB>*>(m_pData);
-					break;
-				case 34:
-					delete static_cast<TArray<ECameraState>*>(m_pData);
-					break;
-			}
+			case 12:
+				delete static_cast<SVector2*>(m_pData);
+				break;
+			case 13:
+				delete static_cast<SVector3*>(m_pData);
+				break;
+			case 14:
+				delete static_cast<SMatrix43*>(m_pData);
+				break;
+			case 15:
+				delete static_cast<SColorRGB*>(m_pData);
+				break;
+			case 16:
+				delete static_cast<SColorRGBA*>(m_pData);
+				break;
+			case 17:
+				delete static_cast<SEntityTemplateReference*>(m_pData);
+				break;
+			case 18:
+				delete static_cast<SBodyPartDamageMultipliers*>(m_pData);
+				break;
+			case 19:
+				delete static_cast<ZRuntimeResourceID*>(m_pData);
+				break;
+			case 20:
+				delete static_cast<ZString*>(m_pData);
+				break;
+			case 21:
+				delete static_cast<ZCurve*>(m_pData);
+				break;
+			case 22:
+				delete static_cast<ZGameTime*>(m_pData);
+				break;
+			case 23:
+				delete static_cast<ZSpeakerLevels*>(m_pData);
+				break;
+			case 25:
+				delete static_cast<TArray<SEntityTemplateReference>*>(m_pData);
+				break;
+			case 26:
+				delete static_cast<TArray<float>*>(m_pData);
+				break;
+			case 27:
+				delete static_cast<TArray<ZGameTime>*>(m_pData);
+				break;
+			case 28:
+				delete static_cast<TArray<SVector2>*>(m_pData);
+				break;
+			case 29:
+				delete static_cast<TArray<bool>*>(m_pData);
+				break;
+			case 30:
+				delete static_cast<TArray<ZSharedSensorDef::SVisibilitySetting>*>(m_pData);
+				break;
+			case 31:
+				delete static_cast<TArray<ZString>*>(m_pData);
+				break;
+			case 32:
+				delete static_cast<TArray<SSettingsParamMultiplier>*>(m_pData);
+				break;
+			case 33:
+				delete static_cast<TArray<SColorRGB>*>(m_pData);
+				break;
+			case 34:
+				delete static_cast<TArray<ECameraState>*>(m_pData);
+				break;
 		}
 	}
 
