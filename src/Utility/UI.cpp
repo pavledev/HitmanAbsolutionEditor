@@ -786,7 +786,6 @@ void UI::ResourceExportPopup(bool& showPopup, std::shared_ptr<Resource> resource
 			}
 			else
 			{
-				const std::string selectedExportOption2 = selectedExportOption;
 				const size_t index = selectedExportOption2.find("(");
 				const std::string extension = StringUtility::ToLowerCase(selectedExportOption2.substr(index + 1, selectedExportOption2.find(")") - index - 1));
 
