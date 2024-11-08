@@ -43,7 +43,7 @@ void Physics::Deserialize()
 		return;
 	}
 
-	ECollisionPack collisionPack = static_cast<ECollisionPack>(headerData.m_nCollFlags);
+	const ECollisionPack collisionPack = static_cast<ECollisionPack>(headerData.m_nCollFlags);
 
 	if ((collisionPack & ECollisionPack::ECOLLISIONPACK_CONVEXMESH) == ECollisionPack::ECOLLISIONPACK_CONVEXMESH ||
 		(collisionPack & ECollisionPack::ECOLLISIONPACK_TRIMESH) == ECollisionPack::ECOLLISIONPACK_TRIMESH ||
@@ -85,7 +85,7 @@ bool Physics::DeserializeHeader(BinaryReader& binaryReader)
 	headerData.m_nCollFlags = binaryReader.Read<unsigned int>();
 	headerData.m_eObjType = binaryReader.Read<unsigned int>();
 
-	EObjectEntity objectEntity = static_cast<EObjectEntity>(headerData.m_eObjType);
+	const EObjectEntity objectEntity = static_cast<EObjectEntity>(headerData.m_eObjType);
 
 	if (objectEntity == EObjectEntity::EOBJECTENTITY_BACKWARDSCOMPATIBLE)
 	{
@@ -97,9 +97,9 @@ bool Physics::DeserializeHeader(BinaryReader& binaryReader)
 		}
 	}
 
-	std::string idString = binaryReader.ReadString(2, false);
+	const std::string idString = binaryReader.ReadString(2, false);
 	id = binaryReader.Read<unsigned int>();
-	std::string physXString = binaryReader.ReadString(5, false);
+	const std::string physXString = binaryReader.ReadString(5, false);
 
 	if (idString != "ID" || physXString != "PhysX")
 	{
@@ -113,7 +113,7 @@ bool Physics::DeserializeHeader(BinaryReader& binaryReader)
 
 bool Physics::DeserializeCollisionShape(BinaryReader& binaryReader)
 {
-	ECollisionPack collisionPack = static_cast<ECollisionPack>(headerData.m_nCollFlags);
+	const ECollisionPack collisionPack = static_cast<ECollisionPack>(headerData.m_nCollFlags);
 
 	if ((collisionPack & ECollisionPack::ECOLLISIONPACK_CONVEXMESH) == ECollisionPack::ECOLLISIONPACK_CONVEXMESH)
 	{
@@ -178,8 +178,6 @@ bool Physics::DeserializeConvexMesh(BinaryReader& binaryReader)
 
 		g2ShapeDescriptor->m_pDesc = convexShapeDescriptor;
 		g2ShapeDescriptor->m_bIsOpaque = true;
-		g2ShapeDescriptor->m_pStatic = nullptr;
-		g2ShapeDescriptor->m_pDynamic = nullptr;
 
 		collisionShape.AddShapeDescriptor(g2ShapeDescriptor);
 	}
@@ -236,6 +234,8 @@ bool Physics::DeserializeImplicitPrimitives(std::vector<G2NxShapeDesc*>& shapeDe
 
 	const unsigned int shapeCount = binaryReader.Read<unsigned int>();
 
+	shapeDescriptors.resize(shapeCount);
+
 	for (unsigned int i = 0; i < shapeCount; ++i)
 	{
 		const std::string shapeType = binaryReader.ReadString(3, true);
@@ -275,12 +275,10 @@ bool Physics::DeserializeImplicitPrimitives(std::vector<G2NxShapeDesc*>& shapeDe
 		}
 
 		shapeDescriptor->skinWidth = skinWidth;
-		g2ShapeDescriptor->m_pStatic = nullptr;
-		g2ShapeDescriptor->m_pDynamic = nullptr;
 		g2ShapeDescriptor->m_pDesc = shapeDescriptor;
 		g2ShapeDescriptor->m_bIsOpaque = IsCollisionLayerOpaque(static_cast<ECollidableLayer>(shapeDescriptor->group));
 
-		shapeDescriptors.push_back(g2ShapeDescriptor);
+		shapeDescriptors[i] = g2ShapeDescriptor;
 	}
 
 	return true;
@@ -320,20 +318,20 @@ bool Physics::DeserializeShatterData(BinaryReader& binaryReader)
 	}
 
 	std::unordered_map<unsigned int, int> boneMapper;
-	unsigned int collisionPrimitiveCount = binaryReader.Read<unsigned int>();
+	const unsigned int collisionPrimitiveCount = binaryReader.Read<unsigned int>();
 
 	if (collisionPrimitiveCount == 0)
 	{
 		return false;
 	}
 
-	shatterData.m_sShatterConfig.m_aBoneShards.reserve(collisionPrimitiveCount);
+	shatterData.m_sShatterConfig.m_aBoneShards.resize(collisionPrimitiveCount);
 
 	for (unsigned int i = 0; i < collisionPrimitiveCount; ++i)
 	{
-		unsigned int boneID = binaryReader.Read<unsigned int>();
-		unsigned int parentID = binaryReader.Read<unsigned int>();
-		std::string boneName = binaryReader.ReadString();
+		const unsigned int boneID = binaryReader.Read<unsigned int>();
+		const unsigned int parentID = binaryReader.Read<unsigned int>();
+		const std::string boneName = binaryReader.ReadString();
 		unsigned int globalBoneID = -1;
 
 		if (GlobalBoneRegistry::GetInstance().GetBoneID(boneName) == -1)
@@ -343,23 +341,23 @@ bool Physics::DeserializeShatterData(BinaryReader& binaryReader)
 
 		boneMapper[boneID] = globalBoneID;
 
-		unsigned int remainFlag = binaryReader.Read<unsigned int>();
-		bool remain = remainFlag || i == 0;
-		unsigned int adjacentBoneCount = binaryReader.Read<unsigned int>();
+		const unsigned int remainFlag = binaryReader.Read<unsigned int>();
+		const bool remain = remainFlag || i == 0;
+		const unsigned int adjacentBoneCount = binaryReader.Read<unsigned int>();
 		std::vector<unsigned int> adjacentBones;
 
-		adjacentBones.reserve(adjacentBoneCount);
+		adjacentBones.resize(adjacentBoneCount);
 
 		for (unsigned int j = 0; j < adjacentBoneCount; ++j)
 		{
 			unsigned int id = binaryReader.Read<unsigned int>();
 
-			adjacentBones.push_back(id);
+			adjacentBones[j] = id;
 		}
 
-		unsigned int collisionDataSize = binaryReader.Read<unsigned int>();
+		const unsigned int collisionDataSize = binaryReader.Read<unsigned int>();
 		ZPhysicsResourceData::SShatterData::SShardData& shardData = shatterData.m_shardMap[globalBoneID];
-		SShatterBoneShard shatterBoneShard;
+		SShatterBoneShard& shatterBoneShard = shatterData.m_sShatterConfig.m_aBoneShards[i];
 
 		shardData.m_nShardIndex = i;
 
@@ -398,8 +396,6 @@ bool Physics::DeserializeShatterData(BinaryReader& binaryReader)
 				shatterBoneShard.m_pShape.AddShapeDescriptor(shapeDescriptors[j]);
 			}
 		}
-
-		shatterData.m_sShatterConfig.m_aBoneShards.push_back(shatterBoneShard);
 	}
 
 	for (unsigned int i = 0; i < collisionPrimitiveCount; ++i)
@@ -408,7 +404,7 @@ bool Physics::DeserializeShatterData(BinaryReader& binaryReader)
 
 		for (size_t j = 0; j < connections.size(); ++j)
 		{
-			unsigned int globalBoneID = boneMapper[connections[j]];
+			const unsigned int globalBoneID = boneMapper[connections[j]];
 
 			connections[j] = shatterData.m_shardMap[globalBoneID].m_nShardIndex;
 		}
@@ -419,7 +415,7 @@ bool Physics::DeserializeShatterData(BinaryReader& binaryReader)
 
 bool Physics::DeserializeKinematicLinkedData(BinaryReader& binaryReader)
 {
-	ECollisionPack collisionPack = static_cast<ECollisionPack>(headerData.m_nCollFlags);
+	const ECollisionPack collisionPack = static_cast<ECollisionPack>(headerData.m_nCollFlags);
 
 	if ((collisionPack & ECollisionPack::ECOLLISIONPACK_KINEMATIC_BONEPRIMITIVE) != ECollisionPack::ECOLLISIONPACK_KINEMATIC_BONEPRIMITIVE)
 	{
@@ -436,22 +432,22 @@ bool Physics::DeserializeKinematicLinkedData(BinaryReader& binaryReader)
 	}
 
 	std::unordered_map<unsigned int, int> boneMapper;
-	unsigned int boneCount = binaryReader.Read<unsigned int>();
+	const unsigned int boneCount = binaryReader.Read<unsigned int>();
 
 	if (boneCount == 0)
 	{
 		return false;
 	}
 
-	linkedPrimData.m_aBonePrimitives.reserve(boneCount);
+	linkedPrimData.m_aBonePrimitives.resize(boneCount);
 
 	for (unsigned int i = 0; i < boneCount; ++i)
 	{
-		SKinematicBoneData kinematicBoneData;
-		unsigned int localBoneID = binaryReader.Read<unsigned int>();
-		unsigned int localParentID = binaryReader.Read<unsigned int>();
-		std::string boneName = binaryReader.ReadString();
-		unsigned int collisionDataSize = binaryReader.Read<unsigned int>();
+		SKinematicBoneData& kinematicBoneData = linkedPrimData.m_aBonePrimitives[i];
+		const unsigned int localBoneID = binaryReader.Read<unsigned int>();
+		const unsigned int localParentID = binaryReader.Read<unsigned int>();
+		const std::string boneName = binaryReader.ReadString();
+		const unsigned int collisionDataSize = binaryReader.Read<unsigned int>();
 
 		if (collisionDataSize > 0)
 		{
@@ -474,8 +470,6 @@ bool Physics::DeserializeKinematicLinkedData(BinaryReader& binaryReader)
 
 		kinematicBoneData.m_nGlobalBoneId = globalBoneID;
 		kinematicBoneData.m_nParentBoneId = localParentID;
-
-		linkedPrimData.m_aBonePrimitives.push_back(kinematicBoneData);
 	}
 
 	return true;
