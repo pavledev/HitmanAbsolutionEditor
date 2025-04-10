@@ -12,9 +12,9 @@ AudioPlayerPanel::AudioPlayerPanel(const char* name, const char* icon, std::shar
 
 AudioPlayerPanel::~AudioPlayerPanel()
 {
-	if (sound.getStatus() == sf::Sound::Playing)
+	if (sound->getStatus() == sf::Sound::Status::Playing)
 	{
-		sound.stop();
+		sound->stop();
 	}
 }
 
@@ -48,7 +48,7 @@ void AudioPlayerPanel::Render()
 			{
 				selectedAudioSampleIndex = i;
 
-				sound.setBuffer(soundBuffers[i]);
+				sound->setBuffer(soundBuffers[i]);
 			}
 
 			if (isSelected)
@@ -71,18 +71,18 @@ void AudioPlayerPanel::Render()
 	{
 		isPaused = !isPaused;
 
-		if (sound.getStatus() == sf::Sound::Stopped)
+		if (sound->getStatus() == sf::Sound::Status::Stopped)
 		{
-			sound.stop();
+			sound->stop();
 		}
 
 		if (isPaused)
 		{
-			sound.play();
+			sound->play();
 		}
 		else
 		{
-			sound.pause();
+			sound->pause();
 		}
 	}
 
@@ -90,10 +90,10 @@ void AudioPlayerPanel::Render()
 
 	if (ImGui::Button(ICON_MDI_STOP))
 	{
-		sound.stop();
+		sound->stop();
 	}
 
-	const float playingOffset = sound.getPlayingOffset().asSeconds();
+	const float playingOffset = sound->getPlayingOffset().asSeconds();
 	const float duration = soundBuffers[selectedAudioSampleIndex].getDuration().asSeconds();
 	const int playingOffset2 = static_cast<int>(playingOffset);
 	const int duration2 = static_cast<int>(duration);
@@ -114,7 +114,7 @@ void AudioPlayerPanel::Render()
 
 	if (UI::PlayerBar("PlayerBar", &currentTrackPosition, 0.0f, duration, playerBarSize))
 	{
-		sound.setPlayingOffset(sf::seconds(currentTrackPosition));
+		sound->setPlayingOffset(sf::seconds(currentTrackPosition));
 	}
 
 	ImGui::SameLine();
@@ -133,7 +133,7 @@ void AudioPlayerPanel::Render()
 
 	if (ImGui::SliderFloat("##Volume", &volume, 0.f, 100.f, "%.0f%%"))
 	{
-		sound.setVolume(volume);
+		sound->setVolume(volume);
 	}
 
 	ImGui::PopItemWidth();
@@ -176,5 +176,5 @@ void AudioPlayerPanel::OnResourceLoaded()
 		soundBuffers[i].loadFromMemory(audioSamples[i]->data, audioSamples[i]->dataSize);
 	}
 
-	sound.setBuffer(soundBuffers[0]);
+	sound->setBuffer(soundBuffers[0]);
 }

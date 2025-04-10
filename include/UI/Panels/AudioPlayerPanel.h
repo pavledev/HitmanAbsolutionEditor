@@ -17,7 +17,7 @@ public:
 
 private:
 	std::shared_ptr<WaveBankFSB> waveBankFSBResource;
-	sf::Sound sound;
+	std::unique_ptr<sf::Sound> sound;
 	std::vector<sf::SoundBuffer> soundBuffers;
 	float volume;
 	unsigned int selectedAudioSampleIndex;
