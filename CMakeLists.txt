@@ -14,7 +14,7 @@ add_subdirectory(External/ImGuiColorTextEdit)
 find_package(directxtex CONFIG REQUIRED)
 find_package(directxtk CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
-find_package(SFML COMPONENTS audio CONFIG REQUIRED)
+find_package(SFML COMPONENTS Audio CONFIG REQUIRED)
 find_package(effects11 CONFIG REQUIRED)
 
 file(GLOB_RECURSE SRC_FILES
@@ -65,7 +65,7 @@ target_link_libraries(HitmanAbsolutionEditor PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/PhysXCore64.lib
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/PhysXLoader64.lib
 	${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/PhysXLoader64.lib
-	sfml-audio
+	SFML::Audio
 	Microsoft::Effects11
 	hlsl-decompiler
 	imgui-color-text-edit
