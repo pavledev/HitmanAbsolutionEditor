@@ -1,0 +1,53 @@
+# Build directories
+build/
+install/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+build.ninja
+compile_commands.json
+*.ninja
+
+# vcpkg build artifacts (submodule source is tracked, build products are not)
+External/vcpkg/buildtrees/
+External/vcpkg/packages/
+External/vcpkg/downloads/
+External/vcpkg/installed/
+External/vcpkg/vcpkg/
+External/vcpkg/*.log
+External/vcpkg/.vcpkg-root
+
+# IDE / editor
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.ncb
+*.opensdf
+*.sdf
+*.db
+*.opendb
+
+# Compiled objects and binaries (outside of committed lib/bin dirs)
+*.obj
+*.o
+*.pdb
+*.ilk
+*.exp
+*.iobj
+*.ipdb
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# NuGet
+packages/
+
