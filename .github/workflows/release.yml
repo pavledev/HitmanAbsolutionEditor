@@ -1,0 +1,36 @@
+name: Build and Package
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Ninja
+        run: choco install ninja -y
+
+      - name: Bootstrap vcpkg
+        run: External\vcpkg\bootstrap-vcpkg.bat
+
+      - name: Configure
+        run: cmake --preset x64-Release
+
+      - name: Build
+        run: cmake --build build/x64-Release
+
+      - name: Package
+        run: Compress-Archive -Path build/x64-Release/HitmanAbsolutionEditor.exe,build/x64-Release/*.dll,build/x64-Release/assets -DestinationPath HitmanAbsolutionEditor.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HitmanAbsolutionEditor
+          path: HitmanAbsolutionEditor.zip
