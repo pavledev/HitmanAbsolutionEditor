@@ -41,5 +41,8 @@ private:
 	unsigned int nodeIndex;
 	unsigned int selectedNodeIndex;
 	bool showResourceExportPopup;
+	bool showImportJsonPopup;
+	bool showPatchPopup;
 	std::shared_ptr<Resource> resource;
+	ResourceNode pendingResourceNode;
 };

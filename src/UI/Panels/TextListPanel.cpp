@@ -1,4 +1,10 @@
+#include <format>
+
+#include <IconsMaterialDesignIcons.h>
+
 #include "UI/Panels/TextListPanel.h"
+#include "Utility/FileDialog.h"
+#include "Logger.h"
 
 TextListPanel::TextListPanel(const char* name, const char* icon, std::shared_ptr<TextList> textListResource) : BasePanel(name, icon)
 {
@@ -24,6 +30,20 @@ void TextListPanel::Render()
 		return;
 	}
 
+	if (ImGui::Button(ICON_MDI_IMPORT " Import JSON"))
+	{
+		ImportJson();
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button(ICON_MDI_CONTENT_SAVE " Patch Back To Game"))
+	{
+		PatchBackToGame();
+	}
+
+	ImGui::Separator();
+
 	if (!UI::BeginProperties("TextListEntries", tableColumns))
 	{
 		End();
@@ -46,4 +66,83 @@ void TextListPanel::Render()
 void TextListPanel::OnResourceLoaded()
 {
 	textListResource->Deserialize();
+}
+
+void TextListPanel::ImportJson()
+{
+	std::string filePath;
+	std::string extension;
+
+	FileDialog::OpenSaveFileDialog("", ".json", "JSON Files (*.json)\0*.json\0All Files (*.*)\0*.*\0", filePath, extension);
+
+	if (filePath.empty())
+	{
+		return;
+	}
+
+	textListResource->ImportFromJson(filePath);
+}
+
+void TextListPanel::PatchBackToGame()
+{
+	std::vector<unsigned char> newResourceData;
+
+	if (!textListResource->SerializeToBinary(newResourceData))
+	{
+		ImGui::OpenPopup("Patch Failed");
+
+		patchErrorMessage = "Failed to serialize text list to binary.";
+
+		return;
+	}
+
+	if (newResourceData.size() != textListResource->GetResourceDataSize())
+	{
+		ImGui::OpenPopup("Patch Failed");
+
+		patchErrorMessage = std::format("New data size ({}) does not match original ({}). You can only change text to the same length or shorter.", newResourceData.size(), textListResource->GetResourceDataSize());
+
+		return;
+	}
+
+	if (textListResource->PatchResourceLibrary())
+	{
+		ImGui::OpenPopup("Patch Success");
+	}
+	else
+	{
+		ImGui::OpenPopup("Patch Failed");
+
+		patchErrorMessage = "Failed to patch. Check the log for details.";
+	}
+
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+	if (ImGui::BeginPopupModal("Patch Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("Text list patched successfully!");
+		ImGui::Separator();
+
+		if (ImGui::Button("OK", ImVec2(120, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("Patch Failed", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::TextWrapped("%s", patchErrorMessage.c_str());
+		ImGui::Separator();
+
+		if (ImGui::Button("OK", ImVec2(120, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
 }

@@ -12,6 +12,10 @@ public:
 	void OnResourceLoaded();
 
 private:
+	void ImportJson();
+	void PatchBackToGame();
+
 	std::shared_ptr<TextList> textListResource;
 	std::vector<UI::TableColumn> tableColumns;
+	std::string patchErrorMessage;
 };
