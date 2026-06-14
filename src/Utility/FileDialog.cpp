@@ -53,11 +53,50 @@ std::string FileDialog::OpenFolder()
     return folderPath;
 }
 
+std::string FileDialog::OpenFile(const char* filters)
+{
+    OPENFILENAMEA ofn;
+    char filePath[MAX_PATH] = "";
+
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = NULL;
+    ofn.lpstrFilter = filters;
+    ofn.lpstrFile = filePath;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+    if (GetOpenFileNameA(&ofn))
+    {
+        return std::string(filePath);
+    }
+    return "";
+}
+
+std::string FileDialog::SaveFile(const char* filters)
+{
+    OPENFILENAMEA ofn;
+    char filePath[MAX_PATH] = "";
+
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = NULL;
+    ofn.lpstrFilter = filters;
+    ofn.lpstrFile = filePath;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_EXPLORER | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
+
+    if (GetSaveFileNameA(&ofn))
+    {
+        return std::string(filePath);
+    }
+    return "";
+}
+
 void FileDialog::OpenSaveFileDialog(const char* defaultFileName, const char* defaultExtension, const char* filters, std::string& outputFilePath, std::string& extension)
 {
-    OPENFILENAME ofn;
+    OPENFILENAMEA ofn;
     char filePath[MAX_PATH] = "";
-    char fileTitle[MAX_PATH] = "";
 
     strcpy_s(filePath, MAX_PATH, defaultFileName);
 
@@ -68,12 +107,10 @@ void FileDialog::OpenSaveFileDialog(const char* defaultFileName, const char* def
     ofn.lpstrFilter = filters;
     ofn.lpstrFile = filePath;
     ofn.nMaxFile = MAX_PATH;
-    ofn.lpstrFileTitle = fileTitle;
-    ofn.nMaxFileTitle = MAX_PATH;
-    ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
     ofn.lpstrDefExt = defaultExtension;
+    ofn.Flags = OFN_EXPLORER | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
 
-    if (GetSaveFileName(&ofn))
+    if (GetSaveFileNameA(&ofn))
     {
         outputFilePath = filePath;
         extension = outputFilePath.substr(outputFilePath.find_last_of("."));
