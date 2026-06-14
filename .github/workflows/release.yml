@@ -32,8 +32,13 @@ jobs:
       - name: Package
         run: Compress-Archive -Path build/x64-Release/HitmanAbsolutionEditor.exe,build/x64-Release/*.dll,build/x64-Release/assets -DestinationPath HitmanAbsolutionEditor.zip
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Get short SHA
+        id: sha
+        run: echo "short=${GITHUB_SHA::7}" >> $env:GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: HitmanAbsolutionEditor
-          path: HitmanAbsolutionEditor.zip
+          tag_name: build-${{ steps.sha.outputs.short }}
+          name: Build ${{ steps.sha.outputs.short }}
+          files: HitmanAbsolutionEditor.zip
