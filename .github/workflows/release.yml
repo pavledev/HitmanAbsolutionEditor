@@ -50,7 +50,7 @@ jobs:
 
       - name: Get short SHA
         id: sha
-        run: echo "short=${GITHUB_SHA::7}" >> $env:GITHUB_OUTPUT
+        run: echo "short=$(${env:GITHUB_SHA}.Substring(0, 7))" >> $env:GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
