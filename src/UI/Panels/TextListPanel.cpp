@@ -85,34 +85,17 @@ void TextListPanel::ImportJson()
 
 void TextListPanel::PatchBackToGame()
 {
-	std::vector<unsigned char> newResourceData;
+	bool patchSuccess = false;
 
-	if (!textListResource->SerializeToBinary(newResourceData))
-	{
-		ImGui::OpenPopup("Patch Failed");
+	patchSuccess = textListResource->PatchResourceLibrary();
 
-		patchErrorMessage = "Failed to serialize text list to binary.";
-
-		return;
-	}
-
-	if (newResourceData.size() != textListResource->GetResourceDataSize())
-	{
-		ImGui::OpenPopup("Patch Failed");
-
-		patchErrorMessage = std::format("New data size ({}) does not match original ({}). You can only change text to the same length or shorter.", newResourceData.size(), textListResource->GetResourceDataSize());
-
-		return;
-	}
-
-	if (textListResource->PatchResourceLibrary())
+	if (patchSuccess)
 	{
 		ImGui::OpenPopup("Patch Success");
 	}
 	else
 	{
 		ImGui::OpenPopup("Patch Failed");
-
 		patchErrorMessage = "Failed to patch. Check the log for details.";
 	}
 
