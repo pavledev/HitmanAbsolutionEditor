@@ -12,7 +12,7 @@ AudioPlayerPanel::AudioPlayerPanel(const char* name, const char* icon, std::shar
 
 AudioPlayerPanel::~AudioPlayerPanel()
 {
-	if (sound->getStatus() == sf::Sound::Status::Playing)
+	if (sound && sound->getStatus() == sf::Sound::Status::Playing)
 	{
 		sound->stop();
 	}
@@ -25,7 +25,7 @@ void AudioPlayerPanel::Render()
 		return;
 	}
 
-	if (soundBuffers.size() == 0)
+	if (!loaded)
 	{
 		ImGui::SetCursorPos(ImVec2(ImGui::GetContentRegionAvail().x / 2, ImGui::GetContentRegionAvail().y / 2));
 		ImGui::Text("Loading FSB...");
@@ -176,5 +176,7 @@ void AudioPlayerPanel::OnResourceLoaded()
 		soundBuffers[i].loadFromMemory(audioSamples[i]->data, audioSamples[i]->dataSize);
 	}
 
-	sound->setBuffer(soundBuffers[0]);
+	sound = std::make_unique<sf::Sound>(soundBuffers[0]);
+
+	loaded = true;
 }

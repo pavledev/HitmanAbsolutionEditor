@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 
@@ -19,6 +21,7 @@ private:
 	std::shared_ptr<WaveBankFSB> waveBankFSBResource;
 	std::unique_ptr<sf::Sound> sound;
 	std::vector<sf::SoundBuffer> soundBuffers;
+	std::atomic<bool> loaded{false};
 	float volume;
 	unsigned int selectedAudioSampleIndex;
 };
