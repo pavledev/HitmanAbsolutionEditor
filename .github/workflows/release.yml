@@ -14,6 +14,9 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Install Ninja
         run: choco install ninja -y
 
