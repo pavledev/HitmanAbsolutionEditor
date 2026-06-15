@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.8)
 
 project("HitmanAbsolutionEditor" C CXX)
 
@@ -33,6 +33,7 @@ file(GLOB_RECURSE HEADER_FILES
 add_executable(HitmanAbsolutionEditor
 	${SRC_FILES}
 	${HEADER_FILES}
+	resources/app.rc
 )
 
 target_compile_definitions(HitmanAbsolutionEditor PRIVATE

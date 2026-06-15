@@ -1,6 +1,7 @@
 #include "imgui_internal.h"
 #include "misc/cpp/imgui_stdlib.h"
 
+#include <filesystem>
 #include <IconsMaterialDesignIcons.h>
 
 #include "ImGuizmo.h"
@@ -59,7 +60,11 @@ Editor& Editor::GetInstance()
 
 bool Editor::Setup()
 {
+    HICON hIcon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(101));
+
     wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, "Hitman Absolution Editor", nullptr };
+    wc.hIcon = hIcon;
+    wc.hIconSm = hIcon;
 
     RegisterClassExA(&wc);
 

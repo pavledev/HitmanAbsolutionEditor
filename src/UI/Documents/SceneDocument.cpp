@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <IconsMaterialDesignIcons.h>
 
 #include <UI/Documents/SceneDocument.h>
@@ -9,6 +10,7 @@
 #include <UI/Panels/ConsolePanel.h>
 #include <UI/Panels/ResourceBrowserPanel.h>
 #include <Editor.h>
+#include <Logger.h>
 
 SceneDocument::SceneDocument(const char* name, const char* icon, const Type type) : Document(name, icon, type)
 {
@@ -119,6 +121,38 @@ void SceneDocument::RenderMenuBar()
         {
             if (ImGui::MenuItem(settingsLabel.c_str()))
             {
+            }
+
+            if (ImGui::MenuItem(ICON_MDI_RESTORE " Restore Backups"))
+            {
+                Settings& settings = Settings::GetInstance();
+                std::string runtimeFolder = settings.GetRuntimeFolderPath();
+
+                if (!runtimeFolder.empty())
+                {
+                    int restoredCount = 0;
+
+                    for (const auto& entry : std::filesystem::recursive_directory_iterator(runtimeFolder))
+                    {
+                        if (entry.is_regular_file() && entry.path().extension() == ".bak")
+                        {
+                            std::string originalPath = entry.path().string();
+                            originalPath.erase(originalPath.length() - 4);
+
+                            std::filesystem::copy_file(entry.path(), originalPath, std::filesystem::copy_options::overwrite_existing);
+                            restoredCount++;
+                        }
+                    }
+
+                    if (restoredCount > 0)
+                    {
+                        Logger::GetInstance().Log(Logger::Level::Info, std::format("Restored {} backup files", restoredCount));
+                    }
+                    else
+                    {
+                        Logger::GetInstance().Log(Logger::Level::Warning, "No backup files found to restore");
+                    }
+                }
             }
 
             ImGui::EndMenu();

@@ -1,5 +1,7 @@
 #include <filesystem>
 
+#pragma comment(linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+
 #include "Editor.h"
 #include "Utility/StringUtility.h"
 
