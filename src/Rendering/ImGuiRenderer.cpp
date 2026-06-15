@@ -218,23 +218,23 @@ void ImGuiRenderer::SetFont()
     constexpr const char* consolasRegularFontPath = "assets/fonts/Consolas Regular.ttf";
     constexpr const char* consolasBoldFontPath = "assets/fonts/Consolas Bold.ttf";
 
-    defaultFont = io.Fonts->AddFontFromFileTTF(regularFontPath, defaultFontSize);
+    defaultFont = io.Fonts->AddFontFromFileTTF(regularFontPath, defaultFontSize, nullptr, io.Fonts->GetGlyphRangesCyrillic());
     AddIconFont(defaultFontSize);
 
-    middleFont = io.Fonts->AddFontFromFileTTF(regularFontPath, middleFontSize);
+    middleFont = io.Fonts->AddFontFromFileTTF(regularFontPath, middleFontSize, nullptr, io.Fonts->GetGlyphRangesCyrillic());
     AddIconFont(middleFontSize);
 
-    smallFont = io.Fonts->AddFontFromFileTTF(regularFontPath, smallFontSize);
+    smallFont = io.Fonts->AddFontFromFileTTF(regularFontPath, smallFontSize, nullptr, io.Fonts->GetGlyphRangesCyrillic());
     AddIconFont(smallFontSize);
 
-    boldFont = io.Fonts->AddFontFromFileTTF(boldFontPath, defaultFontSize);
+    boldFont = io.Fonts->AddFontFromFileTTF(boldFontPath, defaultFontSize, nullptr, io.Fonts->GetGlyphRangesCyrillic());
     AddIconFont(defaultFontSize);
 
-    middleitalicFont = io.Fonts->AddFontFromFileTTF(italicFontPath, middleFontSize);
+    middleitalicFont = io.Fonts->AddFontFromFileTTF(italicFontPath, middleFontSize, nullptr, io.Fonts->GetGlyphRangesCyrillic());
     AddIconFont(middleFontSize);
 
-    consolasRegularFont = io.Fonts->AddFontFromFileTTF(consolasRegularFontPath, middleFontSize);
-    consolasBoldFont = io.Fonts->AddFontFromFileTTF(consolasBoldFontPath, middleFontSize);
+    consolasRegularFont = io.Fonts->AddFontFromFileTTF(consolasRegularFontPath, middleFontSize, nullptr, io.Fonts->GetGlyphRangesCyrillic());
+    consolasBoldFont = io.Fonts->AddFontFromFileTTF(consolasBoldFontPath, middleFontSize, nullptr, io.Fonts->GetGlyphRangesCyrillic());
 }
 
 ImFont* ImGuiRenderer::GetDefaultFont()
