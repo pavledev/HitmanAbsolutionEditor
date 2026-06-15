@@ -1,4 +1,10 @@
+#include <format>
+
+#include <IconsMaterialDesignIcons.h>
+
 #include "UI/Panels/MultiLanguagePanel.h"
+#include "Utility/FileDialog.h"
+#include "Logger.h"
 
 MultiLanguagePanel::MultiLanguagePanel(const char* name, const char* icon, std::shared_ptr<MultiLanguage> multiLanguageResource) : BasePanel(name, icon)
 {
@@ -22,6 +28,62 @@ void MultiLanguagePanel::Render()
 		End();
 
 		return;
+	}
+
+	if (ImGui::Button(ICON_MDI_IMPORT " Import JSON"))
+	{
+		std::string filePath = FileDialog::OpenFile("JSON Files (*.json)\0*.json\0All Files (*.*)\0*.*\0");
+
+		if (!filePath.empty())
+		{
+			multiLanguageResource->ImportFromJson(filePath);
+		}
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button(ICON_MDI_CONTENT_SAVE " Patch Back To Game"))
+	{
+		if (multiLanguageResource->PatchResourceLibrary())
+		{
+			ImGui::OpenPopup("Patch Success");
+		}
+		else
+		{
+			ImGui::OpenPopup("Patch Failed");
+		}
+	}
+
+	ImGui::Separator();
+
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+	if (ImGui::BeginPopupModal("Patch Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("Multi language patched successfully!");
+		ImGui::Separator();
+
+		if (ImGui::Button("OK", ImVec2(120, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("Patch Failed", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("Failed to patch. Check the log for details.");
+		ImGui::Separator();
+
+		if (ImGui::Button("OK", ImVec2(120, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
 	}
 
 	if (!UI::BeginProperties("MultiLanguage", tableColumns))

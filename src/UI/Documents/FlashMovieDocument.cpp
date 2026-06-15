@@ -7,6 +7,7 @@
 #include <Editor.h>
 #include <Registry/ResourceInfoRegistry.h>
 #include <Utility/UI.h>
+#include <Utility/FileDialog.h>
 
 FlashMovieDocument::FlashMovieDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
 {
@@ -14,7 +15,7 @@ FlashMovieDocument::FlashMovieDocument(const char* name, const char* icon, const
     sliderValue = 0.f;
 
     const std::string& swffResourceID = ResourceInfoRegistry::GetInstance().GetResourceInfo(runtimeResourceID).resourceID;
-    const bool hasSwfFile = swffResourceID.ends_with(".swf].pc_swf");
+    const bool hasSwfFile = swffResourceID.contains(".swf");
     std::shared_ptr<TextureViewerPanel> textureViewerPanel;
 
     if (hasSwfFile)
@@ -103,6 +104,7 @@ void FlashMovieDocument::RenderMenuBar()
     }
 
     static std::string exportResourceLabel = std::format("{} Export Resource", ICON_MDI_EXPORT);
+    static std::string patchLabel = std::format("{} Patch Back To Game", ICON_MDI_CONTENT_SAVE);
     static bool showResourceExportPopup = false;
 
     if (ImGui::BeginMenu("Export"))
@@ -115,7 +117,57 @@ void FlashMovieDocument::RenderMenuBar()
         ImGui::EndMenu();
     }
 
+    if (flashMovie->IsResourceLoaded() && flashMovie->GetFormat() == FlashMovie::Format::SWF)
+    {
+        if (ImGui::MenuItem(patchLabel.c_str()))
+        {
+            std::string filePath = FileDialog::OpenFile("SWF Files (*.swf)\0*.swf\0All Files (*.*)\0*.*\0");
+
+            if (!filePath.empty())
+            {
+                if (flashMovie->PatchResourceLibrary(filePath))
+                {
+                    ImGui::OpenPopup("Patch Success");
+                }
+                else
+                {
+                    ImGui::OpenPopup("Patch Failed");
+                }
+            }
+        }
+    }
+
     UI::ResourceExportPopup(showResourceExportPopup, flashMovie);
+
+    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+    if (ImGui::BeginPopupModal("Patch Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("SWF patched successfully!");
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    if (ImGui::BeginPopupModal("Patch Failed", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("Failed to patch. Check the log for details.");
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
 
     ImGui::EndMenuBar();
 }
@@ -185,7 +237,7 @@ void FlashMovieDocument::RenderToolBar()
 
 void FlashMovieDocument::OnResourceLoaded()
 {
-    const bool hasSwfFile = flashMovie->GetResourceID().ends_with(".swf].pc_swf");
+    const bool hasSwfFile = flashMovie->GetResourceID().contains(".swf");
 
     if (!hasSwfFile)
     {

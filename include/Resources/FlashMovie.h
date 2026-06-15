@@ -23,6 +23,8 @@ public:
 	const unsigned int GetTextureHeight() const;
 	ID3D11Resource* GetTexture() const;
 	ID3D11ShaderResourceView* GetTextureView() const;
+	void ImportSwf(const std::string& swfFilePath);
+	bool PatchResourceLibrary(const std::string& swfFilePath);
 
 private:
 	ID3D11Resource* texture;

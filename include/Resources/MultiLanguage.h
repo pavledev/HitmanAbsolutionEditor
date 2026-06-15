@@ -11,6 +11,9 @@ public:
 	std::vector<int>& GetIndices();
 	std::vector<std::string>& GetLocales();
 	void SerializeToJson(const std::string& outputFilePath);
+	void ImportFromJson(const std::string& jsonFilePath);
+	bool SerializeToBinary(std::vector<unsigned char>& outputBuffer);
+	bool PatchResourceLibrary();
 
 private:
 	char localizationCategory;
