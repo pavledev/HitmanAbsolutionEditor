@@ -11,10 +11,25 @@
 
 void TextList::Deserialize()
 {
-	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
-	const unsigned int entryCount = binaryReader.Read<unsigned int>();
+	if (!resourceData || resourceDataSize == 0)
+	{
+		Logger::GetInstance().Log(Logger::Level::Error, std::format("TextList::Deserialize: resourceData is empty for {}", GetName()));
+		return;
+	}
 
-	entries.reserve(entryCount);
+	try
+	{
+		BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
+		const unsigned int entryCount = binaryReader.Read<unsigned int>();
+
+		// Sanity check entryCount to avoid bad_alloc
+		if (entryCount > 1000000)
+		{
+			Logger::GetInstance().Log(Logger::Level::Error, std::format("TextList::Deserialize: extremely high entry count ({}) for {}", entryCount, GetName()));
+			return;
+		}
+
+		entries.reserve(entryCount);
 
 	for (unsigned int i = 0; i < entryCount; ++i)
 	{
@@ -22,6 +37,13 @@ void TextList::Deserialize()
 
 		const unsigned int key = binaryReader.Read<unsigned int>();
 		const unsigned int textLength = binaryReader.Read<unsigned int>();
+
+		if (binaryReader.GetPosition() + textLength > resourceDataSize)
+		{
+			Logger::GetInstance().Log(Logger::Level::Error, std::format("TextList::Deserialize: textLength {} out of bounds for {}", textLength, GetName()));
+			break;
+		}
+
 		const std::string text = binaryReader.ReadString(static_cast<size_t>(textLength));
 		const std::string name = TextListHashRegistry::GetInstance().GetName(key);
 
@@ -41,6 +63,15 @@ void TextList::Deserialize()
 	}
 
 	isResourceDeserialized = true;
+	}
+	catch (const std::exception& e)
+	{
+		Logger::GetInstance().Log(Logger::Level::Error, std::format("TextList::Deserialize: Exception parsing {}: {}", GetName(), e.what()));
+	}
+	catch (...)
+	{
+		Logger::GetInstance().Log(Logger::Level::Error, std::format("TextList::Deserialize: Unknown exception parsing {}", GetName()));
+	}
 }
 
 void TextList::Export(const std::string& outputPath, const std::string& exportOption)

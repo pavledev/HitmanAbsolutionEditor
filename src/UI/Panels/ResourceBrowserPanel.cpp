@@ -1,6 +1,8 @@
 #include <format>
 #include <fstream>
 #include <thread>
+#include <filesystem>
+#include <algorithm>
 
 #include <IconsMaterialDesignIcons.h>
 
@@ -58,6 +60,9 @@ ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) :
     showImportJsonPopup = false;
     showPatchPopup = false;
     showFsbsPatchPopup = false;
+    showBatchTeliExportPopup = false;
+    showBatchTeliImportPopup = false;
+    batchExportFormatIndex = 0;
 
     LoadResourceTypes();
     AddRootResourceNodes();
@@ -167,6 +172,167 @@ void ResourceBrowserPanel::Render()
 
         UI::ResourceExportPopup(showResourceExportPopup, resource);
 
+        // Batch TELI export popup
+        if (showBatchTeliExportPopup)
+        {
+            ImGui::OpenPopup("Batch Export TELI Files");
+        }
+
+        {
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImVec2 modalSize = ImVec2(650, 500);
+            ImVec2 centerPosition = ImVec2(
+                viewport->GetCenter().x - modalSize.x / 2,
+                viewport->GetCenter().y - modalSize.y / 2
+            );
+
+            ImGui::SetNextWindowSize(modalSize);
+            ImGui::SetNextWindowPos(centerPosition);
+
+            if (ImGui::BeginPopupModal("Batch Export TELI Files", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::PushFont(Editor::GetInstance().GetImGuiRenderer()->GetMiddleFont());
+
+                // Language selection
+                ImGui::TextUnformatted("Select Languages to Export:");
+                ImGui::Spacing();
+
+                ImGui::BeginChild("LanguageSelection", ImVec2(0, 150), true);
+
+                for (size_t i = 0; i < detectedLanguages.size(); ++i)
+                {
+                    bool selected = selectedLanguages[i];
+                    std::string label = detectedLanguages[i];
+
+                    if (label == "_en") label = "English";
+                    else if (label == "_fr") label = "French";
+                    else if (label == "_it") label = "Italian";
+                    else if (label == "_de") label = "German";
+                    else if (label == "_es") label = "Spanish";
+                    else if (label == "_ru") label = "Russian";
+                    else if (label == "_pl") label = "Polish";
+                    else if (label == "_pt") label = "Portuguese";
+                    else if (label == "_ja") label = "Japanese";
+                    else if (label == "_tr") label = "Turkish";
+                    else if (label == "_cn") label = "Chinese";
+                    else if (label == "_ko") label = "Korean";
+
+                    if (ImGui::Checkbox(label.c_str(), &selected))
+                    {
+                        selectedLanguages[i] = selected;
+                    }
+                }
+
+                ImGui::EndChild();
+
+                ImGui::Spacing();
+
+                // Select All / Deselect All
+                if (ImGui::Button("Select All"))
+                {
+                    for (size_t i = 0; i < selectedLanguages.size(); ++i)
+                        selectedLanguages[i] = true;
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Deselect All"))
+                {
+                    for (size_t i = 0; i < selectedLanguages.size(); ++i)
+                        selectedLanguages[i] = false;
+                }
+
+                ImGui::Spacing();
+                ImGui::Spacing();
+
+                // Export format
+                ImGui::TextUnformatted("Export Format:");
+                ImGui::Spacing();
+
+                ImGui::RadioButton("JSON File (.TEXTLIST.JSON)", &batchExportFormatIndex, 0);
+                ImGui::RadioButton("Raw File (.TELI)", &batchExportFormatIndex, 1);
+
+                ImGui::Spacing();
+                ImGui::Spacing();
+
+                // Output folder
+                static std::string batchOutputFolder;
+
+                ImGui::TextUnformatted("Output Folder:");
+
+                float windowWidth = ImGui::GetContentRegionAvail().x;
+                float buttonWidth = UI::GetIconButtonSize(ICON_MDI_FOLDER, "").x;
+                float inputTextWidth = windowWidth - buttonWidth - ImGui::GetStyle().ItemSpacing.x;
+
+                ImGui::PushItemWidth(inputTextWidth);
+                ImGui::InputText("##BatchOutputFolder", &batchOutputFolder);
+                ImGui::PopItemWidth();
+                ImGui::SameLine();
+
+                if (ImGui::Button(ICON_MDI_FOLDER))
+                {
+                    batchOutputFolder = FileDialog::OpenFolder();
+                }
+
+                ImGui::Spacing();
+                ImGui::Spacing();
+                ImGui::Spacing();
+
+                // Export button
+                if (UI::IconButton("  " ICON_MDI_EXPORT, " Export All "))
+                {
+                    showBatchTeliExportPopup = false;
+                    ImGui::CloseCurrentPopup();
+
+                    if (!batchOutputFolder.empty())
+                    {
+                        // Collect language filters
+                        std::vector<std::string> langFilters;
+
+                        for (size_t i = 0; i < detectedLanguages.size(); ++i)
+                        {
+                            if (selectedLanguages[i])
+                            {
+                                langFilters.push_back(detectedLanguages[i]);
+                            }
+                        }
+
+                        // Collect TELI files with language filter
+                        batchTeliHashes.clear();
+                        batchTeliNames.clear();
+                        CollectTeliChildren(batchTeliParentPath, langFilters, batchTeliHashes, batchTeliNames);
+
+                        std::string formatStr = (batchExportFormatIndex == 0) ? "Json" : "Raw";
+                        BatchExportTeliFiles(batchOutputFolder, formatStr);
+                    }
+                }
+
+                ImGui::SameLine();
+
+                if (UI::IconButton("  " ICON_MDI_CLOSE, " Cancel "))
+                {
+                    showBatchTeliExportPopup = false;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::PopFont();
+                ImGui::EndPopup();
+            }
+        }
+
+        // Batch TELI import
+        if (showBatchTeliImportPopup)
+        {
+            showBatchTeliImportPopup = false;
+
+            std::string inputFolder = FileDialog::OpenFolder();
+
+            if (!inputFolder.empty())
+            {
+                BatchImportTeliFiles(inputFolder);
+            }
+        }
+
         if (showImportJsonPopup && resource && resource->IsResourceLoaded())
         {
             showImportJsonPopup = false;
@@ -246,6 +412,12 @@ void ResourceBrowserPanel::RenderTree(ResourceNode& parentNode, std::string pare
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
         {
             selectedNodeIndex = parentNode.index;
+        }
+
+        if (ImGui::BeginPopupContextItem())
+        {
+            RenderFolderContextMenu(parentNode, parentPath);
+            ImGui::EndPopup();
         }
 
         if (isNodeOpen)
@@ -811,4 +983,361 @@ void ResourceBrowserPanel::CreateResourceDocument(const ResourceNode& resourceNo
     std::thread thread(&ResourceBrowserPanel::LoadResource, this, resource, resourceNode, true);
 
     thread.detach();
+}
+
+void ResourceBrowserPanel::RenderFolderContextMenu(ResourceNode& folderNode, const std::string& folderPath)
+{
+    // Check if this folder has any TELI children
+    const auto& resourcesInfo = ResourceInfoRegistry::GetInstance().GetResourcesInfo();
+    bool hasTeli = false;
+    std::set<std::string> languageSuffixes;
+
+    for (const auto& [hash, info] : resourcesInfo)
+    {
+        if (info.type != "TELI")
+        {
+            continue;
+        }
+
+        if (info.resourceID.starts_with("[" + folderPath) || info.resourceID.starts_with("[[" + folderPath))
+        {
+            hasTeli = true;
+
+            // Extract language suffix from resource name (e.g., _en, _pl, _ru)
+            std::string resName = ResourceUtility::GetResourceName(info.resourceID);
+            std::string lowerName = StringUtility::ToLowerCase(resName);
+
+            // Find last underscore followed by 2 letters
+            size_t lastUnderscore = lowerName.rfind('_');
+
+            if (lastUnderscore != std::string::npos)
+            {
+                std::string suffix = lowerName.substr(lastUnderscore + 1);
+
+                // Remove any trailing characters after the language code (e.g., file extensions in the name)
+                if (suffix.length() >= 2)
+                {
+                    std::string langCode = suffix.substr(0, 2);
+
+                    // Check it's alphabetic
+                    if (std::isalpha(langCode[0]) && std::isalpha(langCode[1]))
+                    {
+                        languageSuffixes.insert("_" + langCode);
+                    }
+                }
+            }
+        }
+    }
+
+    if (!hasTeli)
+    {
+        ImGui::TextDisabled("No TELI files in this folder");
+        return;
+    }
+
+    static std::string exportLabel = std::format("{} Export All TELI Files", ICON_MDI_EXPORT);
+    static std::string importLabel = std::format("{} Patch Back To Game (Import All JSON Files)", ICON_MDI_IMPORT);
+
+    if (ImGui::MenuItem(exportLabel.c_str()))
+    {
+        batchTeliParentPath = folderPath;
+        showBatchTeliExportPopup = true;
+
+        // Populate detected languages
+        detectedLanguages.clear();
+        selectedLanguages.clear();
+
+        for (const auto& lang : languageSuffixes)
+        {
+            detectedLanguages.push_back(lang);
+            selectedLanguages.push_back(true);
+        }
+
+        // If no language suffixes detected, add a default "all" option
+        if (detectedLanguages.empty())
+        {
+            detectedLanguages.push_back("(all files - no language suffix detected)");
+            selectedLanguages.push_back(true);
+        }
+    }
+
+    if (ImGui::MenuItem(importLabel.c_str()))
+    {
+        batchTeliParentPath = folderPath;
+        showBatchTeliImportPopup = true;
+    }
+}
+
+void ResourceBrowserPanel::CollectTeliChildren(const std::string& folderPath,
+    const std::vector<std::string>& languageFilters,
+    std::vector<unsigned long long>& outHashes,
+    std::vector<std::string>& outNames)
+{
+    const auto& resourcesInfo = ResourceInfoRegistry::GetInstance().GetResourcesInfo();
+
+    for (const auto& [hash, info] : resourcesInfo)
+    {
+        if (info.type != "TELI")
+        {
+            continue;
+        }
+
+        if (!info.resourceID.starts_with("[" + folderPath) && !info.resourceID.starts_with("[[" + folderPath))
+        {
+            continue;
+        }
+
+        std::string resName = ResourceUtility::GetResourceName(info.resourceID);
+        std::string lowerName = StringUtility::ToLowerCase(resName);
+
+        // Apply language filter
+        if (!languageFilters.empty())
+        {
+            bool hasDefaultAll = (languageFilters.size() == 1 && languageFilters[0].starts_with("(all"));
+
+            if (!hasDefaultAll)
+            {
+                bool matchesLanguage = false;
+
+                for (const auto& lang : languageFilters)
+                {
+                    if (lowerName.contains(lang))
+                    {
+                        matchesLanguage = true;
+                        break;
+                    }
+                }
+
+                if (!matchesLanguage)
+                {
+                    continue;
+                }
+            }
+        }
+
+        outHashes.push_back(hash);
+        outNames.push_back(resName);
+    }
+}
+
+void ResourceBrowserPanel::BatchExportTeliFiles(const std::string& outputFolder, const std::string& exportFormat)
+{
+    Logger::GetInstance().Log(Logger::Level::Info, std::format("Batch exporting {} TELI files to {}", batchTeliHashes.size(), outputFolder));
+
+    unsigned int exportedCount = 0;
+
+    for (size_t i = 0; i < batchTeliHashes.size(); ++i)
+    {
+        try
+        {
+            const ResourceInfoRegistry::ResourceInfo& resInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(batchTeliHashes[i]);
+
+            std::shared_ptr<Resource> teliResource = ResourceUtility::CreateResource(resInfo.type);
+            std::string resName = batchTeliNames[i];
+
+            teliResource->SetHash(resInfo.hash);
+            teliResource->SetResourceID(resInfo.resourceID);
+            teliResource->SetHeaderLibraries(&resInfo.headerLibraries);
+            teliResource->SetName(resName);
+
+            // Load resource synchronously without references to avoid OOM / freeze
+            if (resInfo.headerLibraries.size() > 0)
+            {
+                teliResource->LoadResource(0, resInfo.headerLibraries[0].chunkIndex, resInfo.headerLibraries[0].indexInLibrary, false, false, true);
+            }
+            else
+            {
+                teliResource->LoadResource(0, -1, -1, false, false, true);
+            }
+
+            if (!teliResource->IsResourceLoaded())
+            {
+                Logger::GetInstance().Log(Logger::Level::Error, std::format("Failed to load TELI resource: {}", resName));
+                continue;
+            }
+
+        // Extract relative folder path to maintain directory structure
+        std::string resID = resInfo.resourceID;
+        std::string lowerResID = StringUtility::ToLowerCase(resID);
+        std::string lowerParentPath = StringUtility::ToLowerCase(batchTeliParentPath);
+        
+        size_t pos = lowerResID.find(lowerParentPath);
+        std::string relativePath = "";
+
+        if (pos != std::string::npos)
+        {
+            size_t start = pos + batchTeliParentPath.length();
+            size_t end = resID.find_last_of('/');
+            if (end != std::string::npos && end > start)
+            {
+                relativePath = resID.substr(start, end - start);
+            }
+        }
+
+        if (relativePath.starts_with("/"))
+            relativePath = relativePath.substr(1);
+
+            std::replace(relativePath.begin(), relativePath.end(), '/', '\\');
+
+            // Sanitize path (remove invalid windows path characters)
+            std::string invalidChars = "<>:\"|?*";
+            for (char c : invalidChars)
+            {
+                std::replace(relativePath.begin(), relativePath.end(), c, '_');
+                std::replace(resName.begin(), resName.end(), c, '_');
+            }
+
+            std::string finalOutputFolder = outputFolder;
+            if (!relativePath.empty())
+            {
+                finalOutputFolder = std::format("{}\\{}", outputFolder, relativePath);
+            }
+
+            if (!std::filesystem::exists(finalOutputFolder))
+            {
+                std::filesystem::create_directories(finalOutputFolder);
+            }
+
+            std::string outputPath;
+
+            if (exportFormat == "Json")
+            {
+                teliResource->Deserialize();
+                outputPath = std::format("{}\\{}.TEXTLIST.JSON", finalOutputFolder, resName);
+                teliResource->Export(outputPath, "Json File (.TEXTLIST.JSON)");
+            }
+            else
+            {
+                outputPath = std::format("{}\\{}.TELI", finalOutputFolder, resName);
+                teliResource->Export(outputPath, "Raw File (.TELI)");
+            }
+
+            Logger::GetInstance().Log(Logger::Level::Info, std::format("Exported: {}", outputPath));
+            exportedCount++;
+        }
+        catch (const std::exception& e)
+        {
+            Logger::GetInstance().Log(Logger::Level::Error, std::format("Exception during export of file {}: {}", batchTeliNames[i], e.what()));
+        }
+        catch (...)
+        {
+            Logger::GetInstance().Log(Logger::Level::Error, std::format("Unknown exception during export of file {}", batchTeliNames[i]));
+        }
+    }
+
+    Logger::GetInstance().Log(Logger::Level::Info, std::format("Batch export complete: {}/{} files exported", exportedCount, batchTeliHashes.size()));
+}
+
+void ResourceBrowserPanel::BatchImportTeliFiles(const std::string& inputFolder)
+{
+    Logger::GetInstance().Log(Logger::Level::Info, std::format("Batch importing TELI files from {}", inputFolder));
+
+    // Scan for JSON files in the input folder (recursively)
+    std::vector<std::string> jsonFiles;
+
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(inputFolder))
+    {
+        if (entry.is_regular_file())
+        {
+            std::string ext = entry.path().extension().string();
+            std::string lowerExt = StringUtility::ToLowerCase(ext);
+
+            if (lowerExt == ".json")
+            {
+                jsonFiles.push_back(entry.path().string());
+            }
+        }
+    }
+
+    if (jsonFiles.empty())
+    {
+        Logger::GetInstance().Log(Logger::Level::Warning, "No JSON files found in selected folder");
+        return;
+    }
+
+    Logger::GetInstance().Log(Logger::Level::Info, std::format("Found {} JSON files", jsonFiles.size()));
+
+    // Collect all TELI resources under this folder path (no language filter)
+    std::vector<unsigned long long> teliHashes;
+    std::vector<std::string> teliNames;
+    std::vector<std::string> noFilter;
+    CollectTeliChildren(batchTeliParentPath, noFilter, teliHashes, teliNames);
+
+    unsigned int patchedCount = 0;
+
+    for (const auto& jsonFile : jsonFiles)
+    {
+        std::string jsonFileName = std::filesystem::path(jsonFile).stem().string();
+
+        // Remove .TEXTLIST suffix if present
+        std::string lowerJsonName = StringUtility::ToLowerCase(jsonFileName);
+
+        if (lowerJsonName.ends_with(".textlist"))
+        {
+            jsonFileName = jsonFileName.substr(0, jsonFileName.length() - 9); // remove ".TEXTLIST"
+        }
+
+        // Find matching TELI resource
+        bool found = false;
+
+        for (size_t i = 0; i < teliHashes.size(); ++i)
+        {
+            if (teliNames[i] == jsonFileName)
+            {
+                try
+                {
+                    const ResourceInfoRegistry::ResourceInfo& resInfo = ResourceInfoRegistry::GetInstance().GetResourceInfo(teliHashes[i]);
+
+                    std::shared_ptr<Resource> teliResource = ResourceUtility::CreateResource(resInfo.type);
+
+                    teliResource->SetHash(resInfo.hash);
+                    teliResource->SetResourceID(resInfo.resourceID);
+                    teliResource->SetHeaderLibraries(&resInfo.headerLibraries);
+                    teliResource->SetName(teliNames[i]);
+
+                    // Load resource synchronously without references to avoid OOM / freeze
+                    if (resInfo.headerLibraries.size() > 0)
+                    {
+                        teliResource->LoadResource(0, resInfo.headerLibraries[0].chunkIndex, resInfo.headerLibraries[0].indexInLibrary, false, false, true);
+                    }
+                    else
+                    {
+                        teliResource->LoadResource(0, -1, -1, false, false, true);
+                    }
+
+                    if (!teliResource->IsResourceLoaded())
+                    {
+                        Logger::GetInstance().Log(Logger::Level::Error, std::format("Failed to load TELI resource: {}", teliNames[i]));
+                        continue;
+                    }
+
+                    teliResource->Deserialize();
+
+                    std::shared_ptr<TextList> textList = std::static_pointer_cast<TextList>(teliResource);
+                    textList->ImportFromJson(jsonFile);
+                    textList->PatchResourceLibrary();
+
+                    Logger::GetInstance().Log(Logger::Level::Info, std::format("Patched: {} from {}", teliNames[i], jsonFile));
+                    patchedCount++;
+                    found = true;
+                }
+                catch (const std::exception& e)
+                {
+                    Logger::GetInstance().Log(Logger::Level::Error, std::format("Exception during import of file {}: {}", jsonFile, e.what()));
+                }
+                catch (...)
+                {
+                    Logger::GetInstance().Log(Logger::Level::Error, std::format("Unknown exception during import of file {}", jsonFile));
+                }
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            Logger::GetInstance().Log(Logger::Level::Warning, std::format("No matching TELI resource found for: {}", jsonFileName));
+        }
+    }
+
+    Logger::GetInstance().Log(Logger::Level::Info, std::format("Batch import complete: {}/{} files patched", patchedCount, jsonFiles.size()));
 }

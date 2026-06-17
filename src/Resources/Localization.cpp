@@ -9,6 +9,9 @@
 
 void Localization::Deserialize()
 {
+	indices.clear();
+	locales.clear();
+
 	BinaryReader binaryReader = BinaryReader(resourceData, resourceDataSize);
 	localizationCategory = binaryReader.Read<char>();
 	const unsigned int count = (GetResourceDataSize() - 1) >> 3;
@@ -161,16 +164,14 @@ bool Localization::SerializeToBinary(std::vector<unsigned char>& outputBuffer)
 
 	for (size_t i = 0; i < locales.size(); ++i)
 	{
-		buffer.push_back(0x00);
-
 		const std::string& locale = locales[i];
 		size_t copyLen = locale.size() < 4 ? locale.size() : 4;
 		buffer.insert(buffer.end(), locale.begin(), locale.begin() + copyLen);
-		buffer.push_back('\0');
-
+		
+		// Pad with null bytes until the string block is exactly 4 bytes long
 		while (buffer.size() % 8 != 5)
 		{
-			buffer.push_back(0x00);
+			buffer.push_back('\0');
 		}
 
 		const int index = indices[i];
