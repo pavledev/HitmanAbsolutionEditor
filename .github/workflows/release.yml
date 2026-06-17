@@ -46,7 +46,7 @@ jobs:
         run: cmake --build build/x64-Release
 
       - name: Package
-        run: Compress-Archive -Path build/x64-Release/HitmanAbsolutionEditor.exe,build/x64-Release/*.dll,build/x64-Release/assets -DestinationPath HitmanAbsolutionEditor.zip
+        run: Compress-Archive -Path build/x64-Release/HitmanAbsolutionEditor.exe,build/x64-Release/*.dll,build/x64-Release/assets,build/x64-Release/Tools -DestinationPath HitmanAbsolutionEditor.zip
 
       - name: Get short SHA
         id: sha
