@@ -316,15 +316,24 @@ void ConsolePanel::RenderTable(const std::vector<Logger::Message>& messages)
 					std::string copySelectedRowLabel = std::format("  {} Copy selected row(s) ", ICON_MDI_CONTENT_COPY);
 					std::string clearMessageLabel = std::format("  {} Clear selected message(s) ", ICON_MDI_CLOSE);
 
+					auto GetMessageById = [&](int id) -> const Logger::Message* {
+						const std::vector<Logger::Message>& allMsgs = Logger::GetInstance().GetMessages();
+						for (const auto& msg : allMsgs) {
+							if (msg.id == id) return &msg;
+						}
+						return nullptr;
+					};
+
 					if (ImGui::MenuItem(copySelectedMessageLabel.c_str()))
 					{
 						std::string content;
 
 						for (int i = 0; i < selections.size(); ++i)
 						{
-							int selection = selections[i];
-
-							content += messages[selection].content + "\n";
+							if (const Logger::Message* msg = GetMessageById(selections[i]))
+							{
+								content += msg->content + "\n";
+							}
 						}
 
 						CopyToClipboard(content);
@@ -336,9 +345,10 @@ void ConsolePanel::RenderTable(const std::vector<Logger::Message>& messages)
 
 						for (int i = 0; i < selections.size(); ++i)
 						{
-							int selection = selections[i];
-
-							content += messages[selection].ToString() + "\n";
+							if (const Logger::Message* msg = GetMessageById(selections[i]))
+							{
+								content += msg->ToString() + "\n";
+							}
 						}
 
 						CopyToClipboard(content);

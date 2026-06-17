@@ -52,9 +52,16 @@ std::vector<Logger::Message>& Logger::GetMessages()
     return messages;
 }
 
-void Logger::ClearMessage(const unsigned int index)
+void Logger::ClearMessage(const int id)
 {
-    messages.erase(messages.begin() + index);
+    for (auto it = messages.begin(); it != messages.end(); ++it)
+    {
+        if (it->id == id)
+        {
+            messages.erase(it);
+            break;
+        }
+    }
 }
 
 void Logger::ClearAllMessages()
