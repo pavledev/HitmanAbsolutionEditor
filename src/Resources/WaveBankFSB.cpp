@@ -69,6 +69,7 @@ void WaveBankFSB::ConvertFSB5ToOGG()
 	BinaryReader binaryReader = BinaryReader(fsb5Data, fsb5Size);
 	FSB::Container container = FSB::Container(binaryReader);
 
+	audioSamples.clear();
 	audioSamples.reserve(container.Samples().size());
 
 	for (const FSB::Sample& sample : container.Samples())
@@ -98,6 +99,7 @@ void WaveBankFSB::ConvertFSB5ToWAV()
 	BinaryReader binaryReader = BinaryReader(fsb5Data, fsb5Size);
 	FSB::Container container = FSB::Container(binaryReader);
 
+	audioSamples.clear();
 	audioSamples.reserve(container.Samples().size());
 
 	for (const FSB::Sample& sample : container.Samples())

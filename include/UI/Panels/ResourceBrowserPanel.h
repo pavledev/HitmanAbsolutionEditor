@@ -43,6 +43,7 @@ private:
 	bool showResourceExportPopup;
 	bool showImportJsonPopup;
 	bool showPatchPopup;
+	bool showFsbsPatchPopup;
 	std::shared_ptr<Resource> resource;
 	ResourceNode pendingResourceNode;
 };

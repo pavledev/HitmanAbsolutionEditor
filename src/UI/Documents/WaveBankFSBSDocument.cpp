@@ -4,6 +4,7 @@
 #include <UI/Panels/AudioPlayerPanel.h>
 #include <UI/Panels/ResourceInfoPanel.h>
 #include <UI/Panels/HexViewerPanel.h>
+#include <Utility/FileDialog.h>
 #include <Editor.h>
 
 WaveBankFSBSDocument::WaveBankFSBSDocument(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, const ImGuiID dockID) : Document(name, icon, type, runtimeResourceID, hasToolBar, dockID)
@@ -75,6 +76,7 @@ void WaveBankFSBSDocument::RenderMenuBar()
     }
 
     static std::string exportResourceLabel = std::format("{} Export Resource", ICON_MDI_EXPORT);
+    static std::string patchLabel = std::format("{} Patch Back To Game", ICON_MDI_CONTENT_SAVE);
     static bool showResourceExportPopup = false;
 
     if (ImGui::BeginMenu("Export"))
@@ -87,7 +89,73 @@ void WaveBankFSBSDocument::RenderMenuBar()
         ImGui::EndMenu();
     }
 
+    if (ImGui::BeginMenu("Import"))
+    {
+        if (ImGui::MenuItem(patchLabel.c_str()))
+        {
+            std::string filePath = FileDialog::OpenFile("OGG Files (*.ogg)\0*.ogg\0All Files (*.*)\0*.*\0");
+
+            if (!filePath.empty())
+            {
+                std::weak_ptr<AudioPlayerPanel> audioPlayerPanel2 = std::static_pointer_cast<AudioPlayerPanel>(panels[0]);
+                std::shared_ptr<AudioPlayerPanel> audioPlayerPanel3 = audioPlayerPanel2.lock();
+                unsigned int indexToReplace = 0;
+                
+                if (audioPlayerPanel3)
+                {
+                    indexToReplace = audioPlayerPanel3->GetSelectedAudioSampleIndex();
+                }
+
+                if (waveBankFSBS->PatchResourceLibrary(filePath, indexToReplace))
+                {
+                    if (audioPlayerPanel3)
+                    {
+                        audioPlayerPanel3->Refresh();
+                    }
+
+                    ImGui::OpenPopup("Patch Success");
+                }
+                else
+                {
+                    ImGui::OpenPopup("Patch Failed");
+                }
+            }
+        }
+
+        ImGui::EndMenu();
+    }
+
     UI::ResourceExportPopup(showResourceExportPopup, waveBankFSBS);
+
+    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+    if (ImGui::BeginPopupModal("Patch Success", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("FSBS patched successfully!");
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    if (ImGui::BeginPopupModal("Patch Failed", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("Failed to patch. Check the log for details.");
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
 
     ImGui::EndMenuBar();
 }

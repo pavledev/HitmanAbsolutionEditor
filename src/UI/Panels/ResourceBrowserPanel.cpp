@@ -47,6 +47,7 @@
 #include "UI/Documents/ClothDocument.h"
 #include "UI/Documents/BoneRigDocument.h"
 #include "UI/Documents/PhysicsDocument.h"
+#include "Resources/WaveBankFSBS.h"
 #include "Editor.h"
 
 ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) : BasePanel(name, icon)
@@ -56,6 +57,7 @@ ResourceBrowserPanel::ResourceBrowserPanel(const char* name, const char* icon) :
     showResourceExportPopup = false;
     showImportJsonPopup = false;
     showPatchPopup = false;
+    showFsbsPatchPopup = false;
 
     LoadResourceTypes();
     AddRootResourceNodes();
@@ -187,6 +189,27 @@ void ResourceBrowserPanel::Render()
 
             std::shared_ptr<TextList> textList = std::static_pointer_cast<TextList>(resource);
             textList->PatchResourceLibrary();
+        }
+
+        if (showFsbsPatchPopup && resource && resource->IsResourceLoaded())
+        {
+            showFsbsPatchPopup = false;
+
+            std::string filePath = FileDialog::OpenFile("OGG Files (*.ogg)\0*.ogg\0All Files (*.*)\0*.*\0");
+
+            if (!filePath.empty())
+            {
+                std::shared_ptr<WaveBankFSBS> waveBankFSBS = std::static_pointer_cast<WaveBankFSBS>(resource);
+
+                if (waveBankFSBS->PatchResourceLibrary(filePath))
+                {
+                    Logger::GetInstance().Log(Logger::Level::Info, "FSBS patched successfully from Resource Browser");
+                }
+                else
+                {
+                    Logger::GetInstance().Log(Logger::Level::Error, "Failed to patch FSBS from Resource Browser");
+                }
+            }
         }
     }
 
@@ -323,6 +346,29 @@ void ResourceBrowserPanel::RenderContextMenu(ResourceNode& resourceNode)
         if (ImGui::MenuItem(patchResourceLabel.c_str()))
         {
             showPatchPopup = true;
+
+            resource = ResourceUtility::CreateResource(resourceInfo.type);
+            std::string resourceName = ResourceUtility::GetResourceName(resourceInfo.resourceID);
+
+            resource->SetHash(resourceInfo.hash);
+            resource->SetResourceID(resourceInfo.resourceID);
+            resource->SetHeaderLibraries(&resourceInfo.headerLibraries);
+            resource->SetName(resourceName);
+            pendingResourceNode = resourceNode;
+
+            std::thread thread(&ResourceBrowserPanel::LoadResource, this, resource, resourceNode, true);
+
+            thread.detach();
+        }
+    }
+
+    if (resourceInfo.type == "FSBS")
+    {
+        static std::string fsbsPatchLabel = std::format("{} Patch Back To Game", ICON_MDI_CONTENT_SAVE);
+
+        if (ImGui::MenuItem(fsbsPatchLabel.c_str()))
+        {
+            showFsbsPatchPopup = true;
 
             resource = ResourceUtility::CreateResource(resourceInfo.type);
             std::string resourceName = ResourceUtility::GetResourceName(resourceInfo.resourceID);

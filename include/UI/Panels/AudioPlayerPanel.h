@@ -16,6 +16,8 @@ public:
 	~AudioPlayerPanel();
 	void Render() override;
 	void OnResourceLoaded();
+	void Refresh();
+	unsigned int GetSelectedAudioSampleIndex() const;
 
 private:
 	std::shared_ptr<WaveBankFSB> waveBankFSBResource;

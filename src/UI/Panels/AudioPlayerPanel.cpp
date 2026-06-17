@@ -173,10 +173,31 @@ void AudioPlayerPanel::OnResourceLoaded()
 
 	for (int i = 0; i < audioSamples.size(); ++i)
 	{
-		soundBuffers[i].loadFromMemory(audioSamples[i]->data, audioSamples[i]->dataSize);
+		(void)soundBuffers[i].loadFromMemory(audioSamples[i]->data, audioSamples[i]->dataSize);
 	}
 
 	sound = std::make_unique<sf::Sound>(soundBuffers[0]);
 
 	loaded = true;
+}
+
+void AudioPlayerPanel::Refresh()
+{
+	if (sound)
+	{
+		sound->stop();
+
+		sound.reset();
+	}
+
+	soundBuffers.clear();
+	loaded = false;
+	selectedAudioSampleIndex = 0;
+
+	OnResourceLoaded();
+}
+
+unsigned int AudioPlayerPanel::GetSelectedAudioSampleIndex() const
+{
+	return selectedAudioSampleIndex;
 }
