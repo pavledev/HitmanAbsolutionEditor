@@ -1,5 +1,3 @@
-# Hitman Absolution Editor
-
 ![Hitman Absolution Editor](docs/images/preview.png)
 
 Потужний десктопний редактор (написаний на C++23) для модифікації ігрових ресурсів **Hitman: Absolution**. Цей інструмент надає зручний інтерфейс для перегляду, експорту та модифікації ассетів гри безпосередньо з файлів рушія `.pc_resourcelib` та `.pc_headerlib`.
