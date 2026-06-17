@@ -1,5 +1,7 @@
 # Hitman Absolution Editor
 
+![Hitman Absolution Editor](docs/images/preview.png)
+
 A powerful C++23 desktop editor for modifying **Hitman: Absolution** game resources. This tool provides a UI for inspecting, extracting, and modifying in-game assets directly from the engine's `.pc_resourcelib` and `.pc_headerlib` files. 
 
 *Language:* [English](README.md) | [Українська](README_ua.md)
@@ -30,14 +32,14 @@ When patching resources back into the game, please follow these strict formattin
 
 ### 🔤 Fonts (`.swf`)
 
-![Fonts SWF Editing](docs/images/image1.png)
+![Fonts SWF Editing](docs/images/image3.png)
 
 * Font resources are stored as Flash Movie (`.swf`) files.
 * **Recommendation:** Export the original font resource to disk, open it using [JPEXS Free Flash Decompiler](https://github.com/jindrapetrik/jpexs-decompiler), make your typography changes, save the new `.swf`, and then patch it back to the game.
 
 ### 🌐 Localization & Text Lists (`.locm` / `.locr` / `.teli`)
 
-![Localization Editing](docs/images/image3.png)
+![Localization Editing](docs/images/image1.png)
 ![Text List Editor](docs/images/image2.png)
 
 * Subtitles, UI strings, and localization texts can be modified in two ways:
