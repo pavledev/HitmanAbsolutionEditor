@@ -6,6 +6,7 @@
         "directxtk",
         "rapidjson",
         "sfml",
-        "effects11"
+        "effects11",
+        "discord-rpc"
     ]
 }

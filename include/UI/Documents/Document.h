@@ -47,6 +47,7 @@ public:
     Document(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID = -1, const bool hasToolBar = false, const ImGuiID dockID = 0);
     virtual ~Document() = default;
     const char* GetName() const;
+    const char* GetRawName() const;
     const Type GetType() const;
     const ImGuiID GetID() const;
     const ImGuiID GetDockID() const;
@@ -89,6 +90,7 @@ public:
 
 protected:
     std::string name;
+    std::string rawName;
     const char* icon;
     Type type;
     ImGuiID id;

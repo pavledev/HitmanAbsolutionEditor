@@ -16,6 +16,7 @@ find_package(directxtk CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
 find_package(SFML COMPONENTS Audio CONFIG REQUIRED)
 find_package(effects11 CONFIG REQUIRED)
+find_library(DISCORD_RPC_LIBRARY discord-rpc REQUIRED)
 
 file(GLOB_RECURSE SRC_FILES
 	CONFIGURE_DEPENDS
@@ -70,6 +71,7 @@ target_link_libraries(HitmanAbsolutionEditor PUBLIC
 	Microsoft::Effects11
 	hlsl-decompiler
 	imgui-color-text-edit
+	${DISCORD_RPC_LIBRARY}
 )
 
 install(TARGETS HitmanAbsolutionEditor

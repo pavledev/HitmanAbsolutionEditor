@@ -7,6 +7,7 @@
 
 Document::Document(const char* name, const char* icon, const Type type, const unsigned long long runtimeResourceID, const bool hasToolBar, ImGuiID dockID) : icon(icon), type(type), hasToolBar(hasToolBar), dockID(dockID)
 {
+    this->rawName = name;
     this->name = std::format(" {} {}\t\t", icon, name);
 
     if (runtimeResourceID != -1)
@@ -32,6 +33,11 @@ Document::Document(const char* name, const char* icon, const Type type, const un
 const char* Document::GetName() const
 {
     return name.c_str();
+}
+
+const char* Document::GetRawName() const
+{
+    return rawName.c_str();
 }
 
 const Document::Type Document::GetType() const

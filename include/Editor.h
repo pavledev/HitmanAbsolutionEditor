@@ -32,6 +32,8 @@ public:
 	void UpdateDocumentLocation(std::shared_ptr<Document> document, const ImGuiID toplevelDockspaceID);
 	void UpdateDocumentContents(std::shared_ptr<Document> document);
 
+	void UpdateDiscordPresence();
+
 private:
 	Editor();
 	Editor(const Editor& other) = delete;
